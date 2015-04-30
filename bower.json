@@ -1,0 +1,22 @@
+{
+  "name": "angular-widget-grid",
+  "version": "0.1",
+  "homepage": "https://github.com/patbuergin/angular-widget-grid",
+  "authors": [
+    "Patrick Buergin <hi@patrickbuergin.com>"
+  ],
+  "description": "todo",
+  "keywords": [
+    "angular",
+    "grid",
+    "widget"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
