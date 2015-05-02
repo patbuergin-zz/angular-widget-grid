@@ -1,5 +1,5 @@
 (function () {
-	'use strict';
-	
-	angular.module('widgetGrid', []);
+  'use strict';
+  
+  angular.module('widgetGrid', []);
 })();
