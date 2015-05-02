@@ -1,0 +1,44 @@
+.wg-grid {
+  position: absolute;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.wg-widget {
+  position: absolute;
+  overflow: auto;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+.demo-config {
+  height: 20px;
+  margin: 10px 20px;
+}
+
+.demo-config label {
+  font-size: 12px;
+}
+
+.demo-config input+label {
+  margin-left: 10px;
+}
+
+.demo-grid {
+  background-color: #ccc;
+  top: 40px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.demo-grid-dimensions {
+  color: #999;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 6px;
+  position: relative;
+}
