@@ -4,15 +4,17 @@
 describe('gridRenderer', function () {
   beforeEach(module('widgetGrid'));
   
-  var gridRenderer;
+  var gridRenderer, Grid;
   
-  beforeEach(inject(function (_gridRenderer_) {
+  beforeEach(inject(function (_gridRenderer_, _Grid_) {
     gridRenderer = _gridRenderer_;
+    Grid = _Grid_;
   }));
   
   describe('#render', function () {
     xit('returns an empty GridRendering when passed an empty/no grid', function () {
-    
+      var grid = new Grid({ columns: 2, rows: 2 });
+      grid.add();
     });
     
     xit('adopts the original positioning if there are no conflicts', function () {

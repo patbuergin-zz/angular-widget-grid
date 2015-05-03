@@ -2,12 +2,7 @@
   angular.module('widgetGrid').controller('wgWidgetController', ['$scope', 'Widget', function($scope, Widget) {
     var self = this;
     
-    var widgetOptions = {
-      width: $scope.options.width,
-      height: $scope.options.height,
-      top: $scope.options.top,
-      left: $scope.options.left
-    };
+    var widgetOptions = { position: $scope.position };
     
     self.widget = new Widget(widgetOptions);
   }]);

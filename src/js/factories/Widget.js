@@ -6,15 +6,17 @@
       DEFAULT_TOP = 0,
       DEFAULT_LEFT = 0;
   
-  angular.module('widgetGrid').factory('Widget', [function () {
+  angular.module('widgetGrid').factory('Widget', ['gridUtil', function (gridUtil) {
     var Widget = function Widget(options) {
       var self = this;
       
-      self.width = parseInt(options.position.width) || DEFAULT_WIDTH;
-      self.height = parseInt(options.position.height) || DEFAULT_HEIGHT;
+      self.id = gridUtil.getUID();
       
-      self.top = parseInt(options.position.top) || DEFAULT_TOP;
-      self.left = parseInt(options.position.left) || DEFAULT_LEFT;
+      self.width = parseInt(options.width) || DEFAULT_WIDTH;
+      self.height = parseInt(options.height) || DEFAULT_HEIGHT;
+      
+      self.top = parseInt(options.top) || DEFAULT_TOP;
+      self.left = parseInt(options.left) || DEFAULT_LEFT;
       
       self.style = {};
     };

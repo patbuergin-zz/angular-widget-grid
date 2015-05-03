@@ -4,7 +4,7 @@
     
     return {
       getUID: function () {
-        return nextId++;
+        return (nextId++).toString();
       },
       
       sortWidgets: function (widgets) {

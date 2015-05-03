@@ -10,16 +10,18 @@
         for (var idx = 0; idx < _renderedPositions.length; idx++) {
           var pos = _renderedPositions[idx];
           
-          if (pos.top <= i && i <= pos.top + pos.height &&
-              pos.left <= j && i <= pos.left + pos.width) {
+          if (pos.top <= i && i <= (pos.top + pos.height - 1) &&
+              pos.left <= j && i <= (pos.left + pos.width - 1)) {
             return _grid.widgets[idx];
           }
         }
-        
         return null;
       };
       
       self.isObstructed = function (i, j) {
+        if (i < 0 || j < 0 || i >= _grid.cellSize.height || j >= _grid.cellSize.width) {
+          return true;
+        }
         return self.getWidgetAt(i, j) !== null;
       };
       
