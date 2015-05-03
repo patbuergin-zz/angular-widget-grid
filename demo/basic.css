@@ -6,9 +6,101 @@
 
 .wg-widget {
   position: absolute;
+  overflow: hidden;
+}
+
+.wg-widget-content,
+.wg-widget-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.wg-widget-content {
   overflow: auto;
 }
 
+.wg-widget-overlay {
+  background-color: rgba(223, 223, 223, 0.7);
+  z-index: 9990;
+}
+
+.wg-resize {
+  position: absolute;
+}
+
+.wg-resize-diag {
+  border-color: #3377dd;
+  border-style: solid;
+  width: 12px;
+  height: 12px;
+}
+
+.wg-resize-axis {
+  background-color: rgba(51, 119, 221, 0.12);
+}
+
+.wg-resize-nw {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+  border-width: 6px 0 0 6px;
+}
+
+.wg-resize-ne {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+  border-width: 6px 6px 0 0;
+}
+
+.wg-resize-se {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  border-width: 0 6px 6px 0;
+}
+
+.wg-resize-sw {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+  border-width: 0 0 6px 6px;
+}
+
+.wg-resize-n {
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 6px;
+  cursor: n-resize;
+}
+
+.wg-resize-e {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: e-resize;
+}
+
+.wg-resize-s {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 6px;
+  cursor: s-resize;
+}
+
+.wg-resize-w {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  cursor: w-resize;
+}
+
+/* Demo Stuff */
 body {
   font-family: sans-serif;
   margin: 0;
@@ -28,7 +120,7 @@ body {
 }
 
 .demo-grid {
-  background-color: #ccc;
+  background-color: #eee;
   top: 40px;
   right: 0;
   bottom: 0;
@@ -36,7 +128,7 @@ body {
 }
 
 .demo-grid-dimensions {
-  color: #999;
+  color: #bbb;
   font-weight: bold;
   font-size: 13px;
   padding: 6px;

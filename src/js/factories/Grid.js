@@ -2,15 +2,15 @@
   var DEFAULT_COLUMNS = 4,
       DEFAULT_ROWS = 4;
   
-  angular.module('widgetGrid').factory('Grid', function () {
+  angular.module('widgetGrid').factory('Grid', ['gridUtil', function (gridUtil) {
     var Grid = function Grid(options) {
       var self = this;
       
       self.columns = parseInt(options.columns) || DEFAULT_COLUMNS;
       self.rows = parseInt(options.rows) || DEFAULT_ROWS;
-      self.cellSize = computeCellSize(self.rows, self.columns);
+      self.cellSize = gridUtil.computeCellSize(self.rows, self.columns);
       
-      var stateGrid = initStateGrid(self.rows, self.columns);
+      var stateGrid = gridUtil.initStateGrid(self.rows, self.columns);
 
       self.widgets = [];
       
@@ -30,9 +30,9 @@
         if (columns > 0 && rows > 0 && columns !== self.columns || rows !== self.rows) {
           self.columns = columns;
           self.rows = rows;
-          self.cellSize = computeCellSize(self.rows, self.columns);
+          self.cellSize = gridUtil.computeCellSize(self.rows, self.columns);
           
-          stateGrid = initStateGrid(self.rows, self.columns);
+          stateGrid = gridUtil.initStateGrid(self.rows, self.columns);
           positionWidgets(self.widgets, stateGrid, self.cellSize);
         }
       };
@@ -55,7 +55,7 @@
     };
      
     function positionWidgets(widgets, stateGrid, cellSize) {
-      sortWidgets(widgets);
+      widgets = gridUtil.sortWidgets(widgets);
       for (var i = 0; i < widgets.length; i++) {
         var widget = widgets[i];
         positionWidget(widget, stateGrid);
@@ -69,57 +69,7 @@
       widget.style.left = (widget.left * cellWidth).toString() + '%';
       widget.style.width = (widget.width * cellWidth).toString() + '%';
     }
-    
-    function sortWidgets(widgets) {
-      var sorted = [];
-      
-      if (!widgets.length || widgets.length < 2) {
-        return widgets;
-      }
-      
-      var curr, comp, found;
-      for (var i = 0; i < widgets.length; i++) {
-        curr = widgets[i];
-        
-        found = false;
-        for (var j = 0; j < sorted.length; j++) {
-          comp = sorted[j];
-          if (curr.top < comp.top || (curr.top === comp.top && curr.left < comp.left)) {
-            sorted.splice(j, 0, curr);
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
-          sorted.push(curr);
-        }
-      }
-      
-      widgets = sorted;
-    }
-    
-    function initStateGrid(m, n) {
-      var stateGrid = [];
-      for (var i = 0; i < m; i++) {
-        var row = [];
-        for (var j = 0; j < n; j++) {
-          row.push({
-            available: true,
-            occupant: null
-          });
-        }
-        stateGrid.push(row);
-      }
-      return stateGrid;
-    };
-          
-    function computeCellSize(rowCount, columnCount) {
-      return {
-        height: 100 / rowCount,
-        width: 100 / columnCount
-      };
-    }
-    
+
     return Grid;
-  });
+  }]);
 })();

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="../lib/angular.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
     <script src="../src/js/bootstrap.js"></script>
-    <script src="../src/js/Grid.js"></script>
+    <script src="../src/js/services/gridUtil.js"></script>
+    <script src="../src/js/factories/Grid.js"></script>
     <script src="../src/js/directives/wg-widget.js"></script>
     <script src="../src/js/directives/wg-grid.js"></script>
     <script src="basic.js"></script>
@@ -19,7 +20,7 @@
       </div>
       <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" class="demo-grid" id="demo-grid">
         <wg-widget ng-repeat="widget in demo.widgets" position="widget.position">
-          <div style="background-color: {{widget.color}}; height: 100%; width: 100%; position: absolute;">
+          <div class="wg-widget-content" style="background-color: {{widget.color}};">
             <h1>Hi</h1>
           </div>
         </wg-widget>
