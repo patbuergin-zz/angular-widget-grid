@@ -25,7 +25,11 @@ describe('GridRendering', function () {
       medGrid.add(w1);
       medGrid.add(w2);
       
-      var rendering = new GridRendering(medGrid, [ p1, p2 ]);
+      var render = {};
+      render[w1.id] = p1;
+      render[w2.id] = p2;
+      
+      var rendering = new GridRendering(medGrid, render);
       
       expect(rendering.getWidgetAt(0, 0)).toEqual(w1);
       expect(rendering.getWidgetAt(3, 4)).toEqual(w1);
@@ -48,7 +52,10 @@ describe('GridRendering', function () {
       var w1 = new Widget(p1);
       medGrid.add(w1);
       
-      var rendering = new GridRendering(medGrid, [ p1Rendered ]);
+      var render = {};
+      render[w1.id] = p1Rendered;
+      
+      var rendering = new GridRendering(medGrid, render);
       
       expect(rendering.getWidgetAt(0, 0)).toBeNull;
       expect(rendering.getWidgetAt(3, 4)).toBeNull;
@@ -61,10 +68,16 @@ describe('GridRendering', function () {
     it('returns true when the coords hit a widget, else false', function () {
       var p1 = { top: 0, height: 4, left: 0, width: 5 };
       var p2 = { top: 4, height: 4, left: 5, width: 7 };
-      medGrid.add(new Widget(p1));
-      medGrid.add(new Widget(p2));
+      var w1 = new Widget(p1);
+      var w2 = new Widget(p2);
+      medGrid.add(w1);
+      medGrid.add(w2);
       
-      var rendering = new GridRendering(medGrid, [ p1, p2 ]);
+      var render = {};
+      render[w1.id] = p1;
+      render[w2.id] = p2;
+      
+      var rendering = new GridRendering(medGrid, render);
       expect(rendering.isObstructed(0, 0)).toBeTruthy;
       expect(rendering.isObstructed(3, 4)).toBeTruthy;
       expect(rendering.isObstructed(4, 5)).toBeTruthy;
@@ -76,12 +89,12 @@ describe('GridRendering', function () {
       expect(rendering.isObstructed(4, 4)).toBeFalsy;
       expect(rendering.isObstructed(6, 2)).toBeFalsy;
       
-      rendering = new GridRendering(minGrid, []);
+      rendering = new GridRendering(minGrid, {});
       expect(rendering.isObstructed(0, 0)).toBeFalsy;
     });
     
     it('returns true when coords are not within the bounds of the grid', function () {
-      var rendering = new GridRendering(medGrid, []);
+      var rendering = new GridRendering(medGrid, {});
       expect(rendering.isObstructed(8, 4)).toBeTruthy;
       expect(rendering.isObstructed(3, 12)).toBeTruthy;
       expect(rendering.isObstructed(-1, 4)).toBeTruthy;
