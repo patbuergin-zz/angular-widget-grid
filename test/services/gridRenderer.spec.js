@@ -37,18 +37,16 @@ describe('gridRenderer', function () {
     });
     
     it('adopts the original positioning if there are no conflicts', function () {
-      var originalPositioning = {};
-      originalPositioning[w1.id] = p1;
-      originalPositioning[w2.id] = p2;
-      originalPositioning[w3.id] = p3;
-      originalPositioning[w4.id] = p4;
-      
       mdGrid.add(w1);
       mdGrid.add(w2);
       mdGrid.add(w3);
       mdGrid.add(w4);
       
-      expect(gridRenderer.render(mdGrid).positions).toEqual(originalPositioning);
+      var positions = gridRenderer.render(mdGrid).positions;
+      expect(positions[w1.id]).toEqual(p1);
+      expect(positions[w2.id]).toEqual(p2);
+      expect(positions[w3.id]).toEqual(p3);
+      expect(positions[w4.id]).toEqual(p4);
     });
     
     it('moves overlapping widgets left-to-right, top-to-bottom', function () {
@@ -83,6 +81,27 @@ describe('gridRenderer', function () {
       var positions = gridRenderer.render(xsGrid).positions;
       // (height 4, width 7) + container width 5 => (height 3, width 5)
       expect(positions[w2.id]).toEqual({ top: 0, height: 3, left: 0, width: 5 });
+    });
+    
+    it('considers the current row when searching for a free slot', function () {
+      mdGrid.add(w1);
+      mdGrid.add(w4);
+      var positions = gridRenderer.render(mdGrid).positions;
+      expect(positions[w4.id]).toEqual({ top: 0, height: 2, left: 5, width: 3 });
+    });
+    
+    it('prioritizes elements top-to-bottom, left-to-right', function () {
+      xsGrid.add(w1);
+      xsGrid.add(w2);
+      xsGrid.add(w3);
+      xsGrid.add(w4);
+      
+      // expected rendering order: w1 (0,0), w4 (0,6), w2 (4,5), w3 (7,2)
+      var positions = gridRenderer.render(xsGrid).positions;
+      expect(positions[w1.id]).toEqual({ top: 0, height: 5, left: 0, width: 5 });
+      expect(positions[w4.id]).toEqual({ top: 4, height: 2, left: 0, width: 3 });
+      expect(positions[w2.id]).toEqual({ top: 6, height: 3, left: 0, width: 5 });
+      expect(positions[w3.id]).toEqual({ top: 9, height: 1, left: 0, width: 3 });
     });
     
     xit('does not change the passed grid object', function () {
