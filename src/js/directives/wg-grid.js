@@ -1,5 +1,5 @@
 (function () {
-  var GridController = function ($attrs, Grid) {
+  var GridController = ['$attrs', 'Grid', 'gridRenderer', function ($attrs, Grid, gridRenderer) {
     var self = this;
     
     var gridOptions = {
@@ -7,21 +7,32 @@
       rows: $attrs.rows
     }
     var grid = new Grid(gridOptions);
+    var rendering;
     
     self.addWidget = addWidget;
-    self.resizeGrid = resizeGrid;
+    self.updateGrid = updateGrid;
+    self.updateRendering = updateRendering;
     
     function addWidget(widget) {
       grid.add(widget);
-      grid.applyStyle(widget);
     }
     
-    function resizeGrid() {
+    function updateGrid() {
       var columns = $attrs.columns;
       var rows = $attrs.rows;
       grid.resize(rows, columns);
+      updateRendering();
     }
-  };
+    
+    function updateRendering() {
+       rendering = gridRenderer.render(grid);
+       
+       for (var i = 0; i < grid.widgets.length; i++) {
+         var widget = grid.widgets[i];
+         widget.style = rendering.getWidgetStyle(i);
+       }
+    }
+  }];
   
   angular.module('widgetGrid').controller('wgGridController', GridController);
   
@@ -38,8 +49,8 @@
       link: function (scope, element, attrs) {
         var ctrl = scope.grid;
         
-        attrs.$observe('columns', ctrl.resizeGrid);
-        attrs.$observe('rows', ctrl.resizeGrid);
+        attrs.$observe('columns', ctrl.updateGrid);
+        attrs.$observe('rows', ctrl.updateGrid);
       }
     };
   }

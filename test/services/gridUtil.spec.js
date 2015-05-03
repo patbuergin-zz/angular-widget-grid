@@ -1,5 +1,6 @@
 /// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 /* global inject */
+
 describe('gridUtil', function () {
   beforeEach(module('widgetGrid'));
   
@@ -45,6 +46,14 @@ describe('gridUtil', function () {
     it('rounds to one decimal place when applicable', function () {
       expect(gridUtil.computeCellSize(3, 7)).toEqual({ height: 33.3, width: 14.3 });
       expect(gridUtil.computeCellSize(11, 33)).toEqual({ height: 9.1, width: 3 });
+    });
+  });
+  
+  describe('#getUID', function () {
+    it('returns increasing integers, starting from 1', function () {
+      expect(gridUtil.getUID()).toEqual(1);
+      expect(gridUtil.getUID()).toEqual(2);
+      expect(gridUtil.getUID()).toEqual(3);
     });
   });
 });

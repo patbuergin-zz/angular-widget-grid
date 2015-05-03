@@ -7,7 +7,7 @@
       },
       restrict: 'A',
       require: '^wgGrid',
-      template: ''
+      template: '' // TODO
     }
   }
 })();

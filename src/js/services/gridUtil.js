@@ -1,6 +1,12 @@
 (function () {
   angular.module('widgetGrid').service('gridUtil', function () {
+    var nextId = 1;
+    
     return {
+      getUID: function () {
+        return nextId++;
+      },
+      
       sortWidgets: function (widgets) {
         var sorted = [];
         
@@ -50,6 +56,6 @@
         }
         return stateGrid;
       }
-    }
+    };
   });
 })();
