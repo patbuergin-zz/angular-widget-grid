@@ -1,20 +1,16 @@
 (function () {
-  var DEFAULT_WIDTH = 1,
-      DEFAULT_HEIGHT = 1,
-      DEFAULT_TOP = 0,
-      DEFAULT_LEFT = 0;
-  
-  angular.module('widgetGrid').controller('wgWidgetController', function($scope) {
+  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', 'Widget', function($scope, Widget) {
     var self = this;
     
-    self.width = parseInt($scope.position.width) || DEFAULT_WIDTH;
-    self.height = parseInt($scope.position.height) || DEFAULT_HEIGHT;
+    var widgetOptions = {
+      width: $scope.options.width,
+      height: $scope.options.height,
+      top: $scope.options.top,
+      left: $scope.options.left
+    };
     
-    self.top = parseInt($scope.position.top) || DEFAULT_TOP;
-    self.left = parseInt($scope.position.left) || DEFAULT_LEFT;
-    
-    self.style = {};
-  });
+    self.widget = new Widget(widgetOptions);
+  }]);
   
   angular.module('widgetGrid').directive('wgWidget', widgetDirective);
   function widgetDirective() {
