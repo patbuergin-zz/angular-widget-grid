@@ -4,7 +4,7 @@
       render: function (grid) {
         // TODO
         
-        var renderedPositions = [];
+        var renderedPositions = {};
         
         return new GridRendering(grid, renderedPositions);
       }

@@ -41,6 +41,20 @@ describe('GridRendering', function () {
       rendering = new GridRendering(minGrid, []);
       expect(rendering.getWidgetAt(0, 0)).toBeNull;
     });
+    
+    it('considers the renderedPositions, if they differ from the original ones', function () {
+      var p1 = { top: 0, height: 4, left: 0, width: 5 };
+      var p1Rendered = { top: 4, height: 4, left: 5, width: 7 };
+      var w1 = new Widget(p1);
+      medGrid.add(w1);
+      
+      var rendering = new GridRendering(medGrid, [ p1Rendered ]);
+      
+      expect(rendering.getWidgetAt(0, 0)).toBeNull;
+      expect(rendering.getWidgetAt(3, 4)).toBeNull;
+      expect(rendering.getWidgetAt(4, 5)).toEqual(w1);
+      expect(rendering.getWidgetAt(7, 11)).toEqual(w1);    
+    });
   });
   
   describe('#isObstructed', function () {

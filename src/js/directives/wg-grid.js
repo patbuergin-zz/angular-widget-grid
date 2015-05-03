@@ -29,7 +29,7 @@
        
        for (var i = 0; i < grid.widgets.length; i++) {
          var widget = grid.widgets[i];
-         widget.style = rendering.getWidgetStyle(i);
+         widget.style = rendering.getStyle(widget.id);
        }
     }
   }];

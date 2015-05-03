@@ -1,14 +1,14 @@
 (function () {
   angular.module('widgetGrid').factory('GridRendering', [function () {
-    var GridRendering = function GridRendering(grid, renderedPositions) {
+    var GridRendering = function GridRendering(grid, positions) {
       var self = this;
       
       var _grid = grid || { widgets: [] };
-      var _renderedPositions = renderedPositions || [];
+      self.positions = positions || {};
             
       self.getWidgetAt = function (i, j) {
-        for (var idx = 0; idx < _renderedPositions.length; idx++) {
-          var pos = _renderedPositions[idx];
+        for (var idx = 0; idx < self.positions.length; idx++) {
+          var pos = self.positions[idx];
           
           if (pos.top <= i && i <= (pos.top + pos.height - 1) &&
               pos.left <= j && i <= (pos.left + pos.width - 1)) {
@@ -25,8 +25,8 @@
         return self.getWidgetAt(i, j) !== null;
       };
       
-      self.getWidgetStyle = function (idx) {
-        var render = _renderedPositions[idx];
+      self.getStyle = function (widgetId) {
+        var render = self.positions[widgetId];
         
         if (!render) {
           return { display: 'none' };
