@@ -2,7 +2,7 @@
   angular.module('widgetGrid').controller('wgWidgetController', ['$scope', 'Widget', function($scope, Widget) {
     var self = this;
     
-    var widgetOptions = { position: $scope.position };
+    var widgetOptions = $scope.position;
     
     self.widget = new Widget(widgetOptions);
   }]);
@@ -15,14 +15,14 @@
       },
       restrict: 'E',
       controller: 'wgWidgetController',
-      controllerAs: 'widget',
+      controllerAs: 'widgetCtrl',
       require: '^wgGrid',
       transclude: true,
       replace: true,
       link: function (scope, element, attrs, gridCtrl) {
-        gridCtrl.addWidget(scope.widget);
+        gridCtrl.addWidget(scope.widgetCtrl.widget);
       },
-      template: '<div class="wg-widget" ng-style="widget.style" ng-transclude></div>'
+      template: '<div class="wg-widget" ng-style="widgetCtrl.widget.style" ng-transclude></div>'
     };
   }
 })();

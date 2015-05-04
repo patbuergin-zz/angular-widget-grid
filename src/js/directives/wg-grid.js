@@ -15,6 +15,7 @@
     
     function addWidget(widget) {
       grid.add(widget);
+      updateGrid();
     }
     
     function updateGrid() {
@@ -26,7 +27,7 @@
     
     function updateRendering() {
        rendering = gridRenderer.render(grid);
-       
+
        for (var i = 0; i < grid.widgets.length; i++) {
          var widget = grid.widgets[i];
          widget.style = rendering.getStyle(widget.id);
@@ -49,8 +50,21 @@
       link: function (scope, element, attrs) {
         var ctrl = scope.grid;
         
-        attrs.$observe('columns', ctrl.updateGrid);
-        attrs.$observe('rows', ctrl.updateGrid);
+        var firstColumnChange = true, firstRowChange = true;
+        attrs.$observe('columns', function () {
+          if (firstColumnChange) {
+            firstColumnChange = false;
+          } else {
+            ctrl.updateGrid();
+          }
+        });
+        attrs.$observe('rows', function () {
+          if (firstRowChange) {
+            firstRowChange = false;
+          } else {
+            ctrl.updateGrid();
+          }
+        });
       }
     };
   }

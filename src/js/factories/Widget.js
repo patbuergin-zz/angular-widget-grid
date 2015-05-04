@@ -12,6 +12,8 @@
       
       self.id = gridUtil.getUID();
       
+      options = options || {};
+      
       self.width = parseInt(options.width) || DEFAULT_WIDTH;
       self.height = parseInt(options.height) || DEFAULT_HEIGHT;
       
