@@ -48,7 +48,7 @@
       controllerAs: 'grid',
       transclude: true,
       replace: true,
-      template: '<div ng-app="widgetGrid" ng-strict-di class="wg-grid"><div class="wg-grid-overlay"></div><div class="wg-grid-widgets" ng-transclude></div></div>',
+      templateUrl: 'wg-grid',
       link: function (scope, element, attrs) {
         var ctrl = scope.grid;
         

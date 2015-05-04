@@ -22,7 +22,7 @@
       link: function (scope, element, attrs, gridCtrl) {
         gridCtrl.addWidget(scope.widgetCtrl.widget);
       },
-      template: '<div class="wg-widget" ng-style="widgetCtrl.widget.style" ng-transclude></div>'
+      templateUrl: 'wg-widget'
     };
   }
 })();

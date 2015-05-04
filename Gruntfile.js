@@ -6,7 +6,29 @@ module.exports = function(grunt) {
       ' * (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
       ' * License: <%= pkg.license %>\n' +
       ' * <%= pkg.homepage %>\n */\n',
-
+    ngtemplates: {
+      app: {
+        src: 'src/templates/**/*.html',
+        dest: 'build/templates.js',
+        options: {
+          htmlmin: {
+            collapseBooleanAttributes: true,
+            collapseWhitespace: true,
+            removeAttributeQuotes: true,
+            removeComments: true,
+            removeEmptyAttributes: true,
+            removeRedundantAttributes: true,
+            removeScriptTypeAttributes: true,
+            removeStyleLinkTypeAttributes: true
+          },
+          module: 'widgetGrid',
+          url: function (url) {
+            url = url.replace(/^src\/templates\//, '');
+            return url.replace('.html', '');
+          }
+        }
+      }
+    },
     concat: {
       options: {
         banner: '<%= banner %>',
@@ -15,13 +37,14 @@ module.exports = function(grunt) {
         sourceMap: true
       },
       dist: {
-        src: ['src/js/**/*.js'],
+        src: ['src/js/**/*.js', '<%= ngtemplates.app.dest %>'],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
     uglify: {
       options: {
-        banner: '<%= banner %>'
+        banner: '<%= banner %>',
+        sourceMap: true
       },
       dist: {
         src: '<%= concat.dist.dest %>',
@@ -73,15 +96,18 @@ module.exports = function(grunt) {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'karma']
       }
-    }
+    },
+    clean: ['build']
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-karma');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'karma', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'karma', 'ngtemplates', 'concat', 'uglify', 'clean']);
 };

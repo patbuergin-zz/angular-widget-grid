@@ -7,7 +7,7 @@
       },
       restrict: 'A',
       require: '^wgGrid',
-      template: '' // TODO
+      templateUrl: 'wg-resizable'
     };
   }
 })();
