@@ -27,6 +27,7 @@ build/Release
 node_modules
 
 bower_components
+dist
 
 # VS Code
 typings
