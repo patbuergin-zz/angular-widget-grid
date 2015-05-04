@@ -8,6 +8,6 @@
       restrict: 'A',
       require: '^wgGrid',
       template: '' // TODO
-    }
+    };
   }
 })();

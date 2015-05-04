@@ -1,3 +1,5 @@
+/// <reference path="../../../typings/angularjs/angular.d.ts"/>
+
 (function () {
   var GridController = ['$attrs', 'Grid', 'gridRenderer', function ($attrs, Grid, gridRenderer) {
     var self = this;
@@ -5,7 +7,7 @@
     var gridOptions = {
       columns: $attrs.columns,
       rows: $attrs.rows
-    }
+    };
     var grid = new Grid(gridOptions);
     var rendering;
     

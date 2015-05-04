@@ -38,7 +38,7 @@
           height: (render.height * _grid.cellSize.height).toString() + '%',
           left: (render.left * _grid.cellSize.width).toString() + '%',
           width: (render.width * _grid.cellSize.width).toString() + '%'
-        }
+        };
       };
     };
     

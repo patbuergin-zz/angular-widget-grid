@@ -26,12 +26,13 @@
           // check for conflicts
           var needsRepositioning = false;
           
+          var i, j;
           if (rendering.isObstructed(widget.top, widget.left) ||
               rendering.isObstructed(widget.top + position.height - 1, widget.left + position.width - 1)) {
             needsRepositioning = true;
           } else {
-            for (var i = widget.top; i < position.height; i++) {
-              for (var j = widget.left; j < position.width; j++) {
+            for (i = widget.top; i < position.height; i++) {
+              for (j = widget.left; j < position.width; j++) {
                 if (rendering.isObstructed(i, j)) {
                   needsRepositioning = true;
                   break;
