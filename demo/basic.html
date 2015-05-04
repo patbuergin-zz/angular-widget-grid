@@ -23,8 +23,8 @@
       </div>
       <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" class="demo-grid" id="demo-grid">
         <wg-widget ng-repeat="widget in demo.widgets" position="widget.position">
-          <div class="wg-widget-content" style="background-color: {{widget.color}};">
-            <h1>Hi</h1>
+          <div class="wg-widget-content" ng-style="widget.style">
+            <h1 class="demo-widget-title">Hi</h1>
           </div>
         </wg-widget>
       </wg-grid>

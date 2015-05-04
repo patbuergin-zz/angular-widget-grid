@@ -37,8 +37,8 @@
       
       computeCellSize: function (rowCount, columnCount) {
         return {
-          height: rowCount >= 1 ? (Math.round((100 / rowCount) * 10) / 10) : 0,
-          width: columnCount >= 1 ? (Math.round((100 / columnCount) * 10) / 10) : 0
+          height: rowCount >= 1 ? (Math.round((100 / rowCount) * 100) / 100) : 0,
+          width: columnCount >= 1 ? (Math.round((100 / columnCount) * 100) / 100) : 0
         };
       }
     };

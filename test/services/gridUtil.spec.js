@@ -43,9 +43,9 @@ describe('gridUtil', function () {
       expect(gridUtil.computeCellSize(50, 100)).toEqual({ height: 2, width: 1 });
     });
     
-    it('rounds to one decimal place when applicable', function () {
-      expect(gridUtil.computeCellSize(3, 7)).toEqual({ height: 33.3, width: 14.3 });
-      expect(gridUtil.computeCellSize(11, 33)).toEqual({ height: 9.1, width: 3 });
+    it('rounds to two decimal places when applicable', function () {
+      expect(gridUtil.computeCellSize(3, 7)).toEqual({ height: 33.33, width: 14.29 });
+      expect(gridUtil.computeCellSize(11, 33)).toEqual({ height: 9.09, width: 3.03 });
     });
   });
   

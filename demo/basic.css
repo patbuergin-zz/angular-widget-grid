@@ -134,3 +134,8 @@ body {
   padding: 6px;
   position: relative;
 }
+
+.demo-widget-title {
+  color: white;
+  margin-left: 20px;
+}
