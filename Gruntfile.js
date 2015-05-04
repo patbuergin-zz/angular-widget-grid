@@ -10,7 +10,8 @@ module.exports = function(grunt) {
     concat: {
       options: {
         banner: '<%= banner %>',
-        stripBanners: true,
+        // remove tsd and jshint annotations
+        stripBanners: { block: true, line: true },
         sourceMap: true
       },
       dist: {
