@@ -102,9 +102,19 @@ describe('GridRendering', function () {
     });
   });
   
-  describe('#getWidgetStyle', function () {
-    xit('returns sane percentage values when passed sane data', function () {
+  describe('#getStyle', function () {
+    it('returns sane percentage values when passed sane data', function () {
+      var grid = new Grid({ columns: 4, rows: 6 });
+      var pos = { top: 1, left: 2, height: 4, width: 2 };
+      var widget = new Widget(pos);
+      grid.add(widget);
       
+      var renderedPositions = {};
+      renderedPositions[widget.id] = pos;
+      var rendering = new GridRendering(grid, renderedPositions);
+      
+      var style = rendering.getStyle(widget.id);
+      expect(style).toEqual({ top: '16.67%', height: '66.68%',  left: '50%', width: '50%' });
     });
   });
 });
