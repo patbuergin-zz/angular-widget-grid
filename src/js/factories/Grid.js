@@ -6,6 +6,8 @@
     var Grid = function Grid(options) {
       var self = this;
       
+      options = options || {};
+      
       self.columns = parseInt(options.columns) || DEFAULT_COLUMNS;
       self.rows = parseInt(options.rows) || DEFAULT_ROWS;
       self.cellSize = gridUtil.computeCellSize(self.rows, self.columns);

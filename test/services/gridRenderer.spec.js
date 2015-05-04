@@ -1,3 +1,4 @@
+/// <reference path="../../typings/lodash/lodash.d.ts"/>
 /// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 /* global inject */
 
@@ -112,8 +113,17 @@ describe('gridRenderer', function () {
       expect(positions[w3.id]).toEqual({ top: 9, height: 1, left: 0, width: 3 });
     });
     
-    xit('does not change the passed grid object', function () {
+    it('does not change the passed grid object', function () {
+      mdGrid.add(w1);
+      mdGrid.add(w2);
+      mdGrid.add(w3);
       
-    });    
+      expect(_).toBeDefined();
+      var gridClone = _.cloneDeep(mdGrid);
+      
+      var rendering = gridRenderer.render(mdGrid);
+      expect(rendering).toBeDefined();
+      expect(JSON.stringify(mdGrid)).toEqual(JSON.stringify(gridClone));
+    }); 
   });
 });
