@@ -78,27 +78,27 @@ describe('GridRendering', function () {
       render[w2.id] = p2;
       
       var rendering = new GridRendering(medGrid, render);
-      expect(rendering.isObstructed(0, 0)).toBeTruthy;
-      expect(rendering.isObstructed(3, 4)).toBeTruthy;
-      expect(rendering.isObstructed(4, 5)).toBeTruthy;
-      expect(rendering.isObstructed(5, 7)).toBeTruthy;
-      expect(rendering.isObstructed(7, 11)).toBeTruthy;
+      expect(rendering.isObstructed(0, 0)).toEqual(true);
+      expect(rendering.isObstructed(3, 4)).toEqual(true);
+      expect(rendering.isObstructed(4, 5)).toEqual(true);
+      expect(rendering.isObstructed(5, 7)).toEqual(true);
+      expect(rendering.isObstructed(7, 11)).toEqual(true);
       
-      expect(rendering.isObstructed(3, 5)).toBeFalsy;
-      expect(rendering.isObstructed(3, 11)).toBeFalsy;
-      expect(rendering.isObstructed(4, 4)).toBeFalsy;
-      expect(rendering.isObstructed(6, 2)).toBeFalsy;
+      expect(rendering.isObstructed(3, 5)).toEqual(false);
+      expect(rendering.isObstructed(3, 11)).toEqual(false);
+      expect(rendering.isObstructed(4, 4)).toEqual(false);
+      expect(rendering.isObstructed(6, 2)).toEqual(false);
       
       rendering = new GridRendering(minGrid, {});
-      expect(rendering.isObstructed(0, 0)).toBeFalsy;
+      expect(rendering.isObstructed(0, 0)).toEqual(false);
     });
     
-    it('returns true when coords are not within the bounds of the grid', function () {
+    it('returns true when coords are not within the left, top, and/or right bounds of the grid', function () {
       var rendering = new GridRendering(medGrid, {});
-      expect(rendering.isObstructed(8, 4)).toBeTruthy;
-      expect(rendering.isObstructed(3, 12)).toBeTruthy;
-      expect(rendering.isObstructed(-1, 4)).toBeTruthy;
-      expect(rendering.isObstructed(4, -1)).toBeTruthy;
+      expect(rendering.isObstructed(8, 4)).toEqual(false);
+      expect(rendering.isObstructed(3, 12)).toEqual(true);
+      expect(rendering.isObstructed(-1, 4)).toEqual(true);
+      expect(rendering.isObstructed(4, -1)).toEqual(true);
     });
   });
   

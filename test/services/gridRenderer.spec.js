@@ -84,9 +84,9 @@ describe('gridRenderer', function () {
     });
     
     it('considers the current row when searching for a free slot', function () {
-      mdGrid.add(w1);
-      mdGrid.add(w4);
-      var positions = gridRenderer.render(mdGrid).positions;
+      smGrid.add(w1);
+      smGrid.add(w4);
+      var positions = gridRenderer.render(smGrid).positions;
       expect(positions[w4.id]).toEqual({ top: 0, height: 2, left: 5, width: 3 });
     });
     
@@ -98,7 +98,7 @@ describe('gridRenderer', function () {
       
       // expected rendering order: w1 (0,0), w4 (0,6), w2 (4,5), w3 (7,2)
       var positions = gridRenderer.render(xsGrid).positions;
-      expect(positions[w1.id]).toEqual({ top: 0, height: 5, left: 0, width: 5 });
+      expect(positions[w1.id]).toEqual({ top: 0, height: 4, left: 0, width: 5 });
       expect(positions[w4.id]).toEqual({ top: 4, height: 2, left: 0, width: 3 });
       expect(positions[w2.id]).toEqual({ top: 6, height: 3, left: 0, width: 5 });
       expect(positions[w3.id]).toEqual({ top: 9, height: 1, left: 0, width: 3 });

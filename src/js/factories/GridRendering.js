@@ -11,7 +11,7 @@
           var pos = self.positions[widgetId];
           
           if (pos.top <= i && i <= (pos.top + pos.height - 1) &&
-              pos.left <= j && i <= (pos.left + pos.width - 1)) {
+              pos.left <= j && j <= (pos.left + pos.width - 1)) {
             return widgetId;
           }
         }
@@ -20,7 +20,7 @@
       };
       
       self.isObstructed = function (i, j) {
-        if (i < 0 || j < 0 || i >= _grid.cellSize.height || j >= _grid.cellSize.width) {
+        if (i < 0 || j < 0 || j >= _grid.columns) {
           return true;
         }
         return self.getWidgetIdAt(i, j) !== null;
