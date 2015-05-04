@@ -64,7 +64,7 @@ describe('gridRenderer', function () {
       expect(positions[ov3.id]).toEqual({ top: 1, height: 1, left: 0, width: 1 });
     });
     
-    xit('extends the effective grid vertically, if necessary', function () {
+    it('extends the effective grid vertically, if necessary', function () {
       var minGrid = new Grid({ columns: 2, rows: 1 });
       var ov1 = new Widget({ top: 0, height: 1, left: 0, width: 2 });
       var ov2 = new Widget({ top: 0, height: 1, left: 0, width: 1 });
@@ -81,6 +81,14 @@ describe('gridRenderer', function () {
       var positions = gridRenderer.render(xsGrid).positions;
       // (height 4, width 7) + container width 5 => (height 3, width 5)
       expect(positions[w2.id]).toEqual({ top: 0, height: 3, left: 0, width: 5 });
+    });
+    
+    it('considers a minimum height of 1 when scaling widgets', function () {
+      var minGrid = new Grid({ columns: 1, rows: 1 });
+      var widget = new Widget({ top: 42, left: 777, width: 9001, height: 1 });
+      minGrid.add(widget);
+      var positions = gridRenderer.render(minGrid).positions;
+      expect(positions[widget.id]).toEqual({ top: 0, height: 1, left: 0, width: 1 });
     });
     
     it('considers the current row when searching for a free slot', function () {

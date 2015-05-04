@@ -17,7 +17,7 @@
           // scale evenly to fit the width of the grid
           if (widget.width >= grid.columns) {
             position.width = grid.columns;
-            position.height = Math.round((position.width / widget.width) * widget.height);
+            position.height = Math.max(Math.round((position.width / widget.width) * widget.height), 1);
           } else {
             position.width = widget.width;
             position.height = widget.height;
