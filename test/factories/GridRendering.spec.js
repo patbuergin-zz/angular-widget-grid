@@ -16,7 +16,7 @@ describe('GridRendering', function () {
     medGrid = new Grid({ columns: 12, rows: 8 });
   }));
   
-  describe('#getWidgetAt', function () {
+  describe('#getWidgetIdAt', function () {
     it('returns the respective widget when the coords hit one, else null', function () {
       var p1 = { top: 0, height: 4, left: 0, width: 5 };
       var p2 = { top: 4, height: 4, left: 5, width: 7 };
@@ -31,19 +31,19 @@ describe('GridRendering', function () {
       
       var rendering = new GridRendering(medGrid, render);
       
-      expect(rendering.getWidgetAt(0, 0)).toEqual(w1);
-      expect(rendering.getWidgetAt(3, 4)).toEqual(w1);
-      expect(rendering.getWidgetAt(4, 5)).toEqual(w2);
-      expect(rendering.getWidgetAt(5, 7)).toEqual(w2);
-      expect(rendering.getWidgetAt(7, 11)).toEqual(w2);
+      expect(rendering.getWidgetIdAt(0, 0)).toEqual(w1.id);
+      expect(rendering.getWidgetIdAt(3, 4)).toEqual(w1.id);
+      expect(rendering.getWidgetIdAt(4, 5)).toEqual(w2.id);
+      expect(rendering.getWidgetIdAt(5, 7)).toEqual(w2.id);
+      expect(rendering.getWidgetIdAt(7, 11)).toEqual(w2.id);
       
-      expect(rendering.getWidgetAt(3, 5)).toBeNull;
-      expect(rendering.getWidgetAt(3, 11)).toBeNull;
-      expect(rendering.getWidgetAt(4, 4)).toBeNull;
-      expect(rendering.getWidgetAt(6, 2)).toBeNull;
+      expect(rendering.getWidgetIdAt(3, 5)).toBeNull;
+      expect(rendering.getWidgetIdAt(3, 11)).toBeNull;
+      expect(rendering.getWidgetIdAt(4, 4)).toBeNull;
+      expect(rendering.getWidgetIdAt(6, 2)).toBeNull;
       
       rendering = new GridRendering(minGrid, []);
-      expect(rendering.getWidgetAt(0, 0)).toBeNull;
+      expect(rendering.getWidgetIdAt(0, 0)).toBeNull;
     });
     
     it('considers the renderedPositions, if they differ from the original ones', function () {
@@ -57,10 +57,10 @@ describe('GridRendering', function () {
       
       var rendering = new GridRendering(medGrid, render);
       
-      expect(rendering.getWidgetAt(0, 0)).toBeNull;
-      expect(rendering.getWidgetAt(3, 4)).toBeNull;
-      expect(rendering.getWidgetAt(4, 5)).toEqual(w1);
-      expect(rendering.getWidgetAt(7, 11)).toEqual(w1);    
+      expect(rendering.getWidgetIdAt(0, 0)).toBeNull;
+      expect(rendering.getWidgetIdAt(3, 4)).toBeNull;
+      expect(rendering.getWidgetIdAt(4, 5)).toEqual(w1.id);
+      expect(rendering.getWidgetIdAt(7, 11)).toEqual(w1.id);    
     });
   });
   
