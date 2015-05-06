@@ -5,7 +5,7 @@
   angular.module('widgetGrid').factory('Grid', ['gridUtil', function (gridUtil) {
     var Grid = function Grid(options) {
       var self = this;
-      
+
       options = options || {};
       
       self.columns = parseInt(options.columns) || DEFAULT_COLUMNS;

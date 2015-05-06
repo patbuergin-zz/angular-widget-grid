@@ -15,7 +15,7 @@
           var position = {};
           
           // scale evenly to fit the width of the grid
-          if (widget.width >= grid.columns) {
+          if (widget.width > grid.columns) {
             position.width = grid.columns;
             position.height = Math.max(Math.round((position.width / widget.width) * widget.height), 1);
           } else {
@@ -27,12 +27,14 @@
           var needsRepositioning = false;
           
           var i, j;
+          // check corners
           if (rendering.isObstructed(widget.top, widget.left) ||
               rendering.isObstructed(widget.top + position.height - 1, widget.left + position.width - 1)) {
             needsRepositioning = true;
           } else {
-            for (i = widget.top; i < position.height; i++) {
-              for (j = widget.left; j < position.width; j++) {
+            // check the entire widget area
+            for (i = widget.top; i < widget.top + position.height; i++) {
+              for (j = widget.left; j < widget.left + position.width; j++) {
                 if (rendering.isObstructed(i, j)) {
                   needsRepositioning = true;
                   break;
@@ -44,10 +46,10 @@
           
           // resolve conflicts, if any
           if (needsRepositioning) {
-            i = 0;
+            i = 1;
             while (needsRepositioning) {
               var widgetFits, widgetRowFits;
-              for (j = 0; j <= grid.columns - position.width; j++) {
+              for (j = 1; j <= grid.columns - position.width + 1; j++) {
                 // check whether the widget could be placed at (i,j)
                 widgetFits = true;
                 for (var ii = i; ii < i + position.height; ii++) {

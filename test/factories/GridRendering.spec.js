@@ -16,10 +16,31 @@ describe('GridRendering', function () {
     medGrid = new Grid({ columns: 12, rows: 8 });
   }));
   
+  describe('#rasterizeCoords', function () {
+    it('returns the closest cell when passed coords within the grid container', function () {
+      var rendering = new GridRendering(minGrid, {});
+      expect(rendering.rasterizeCoords(1, 1, 1, 1)).toEqual({ i: 1, j: 1 });
+      
+      rendering = new GridRendering(new Grid({ columns: 2, rows: 2 }), {});
+      expect(rendering.rasterizeCoords(1, 1, 2, 2)).toEqual({ i: 1, j: 1 });
+      expect(rendering.rasterizeCoords(2, 1, 2, 2)).toEqual({ i: 1, j: 2 });
+      expect(rendering.rasterizeCoords(1, 2, 2, 2)).toEqual({ i: 2, j: 1 });
+      expect(rendering.rasterizeCoords(2, 2, 2, 2)).toEqual({ i: 2, j: 2 });
+    });
+    
+    it('returns the closest cell when passed a coords that exceed the width and/or the height of the container', function () {
+      var rendering = new GridRendering(medGrid, {});
+      expect(rendering.rasterizeCoords(4200, 1337, 1200, 800)).toEqual({ i: 8, j: 12 });
+      expect(rendering.rasterizeCoords(650, 1337, 1200, 800)).toEqual({ i: 8, j: 7 });
+      expect(rendering.rasterizeCoords(-1, 333, 1200, 800)).toEqual({ i: 4, j: 1 });
+      expect(rendering.rasterizeCoords(150, -1, 1200, 800)).toEqual({ i: 1, j: 2 });
+    });
+  });
+  
   describe('#getWidgetIdAt', function () {
     it('returns the respective widget when the coords hit one, else null', function () {
-      var p1 = { top: 0, height: 4, left: 0, width: 5 };
-      var p2 = { top: 4, height: 4, left: 5, width: 7 };
+      var p1 = { top: 1, height: 4, left: 1, width: 5 };
+      var p2 = { top: 5, height: 4, left: 6, width: 7 };
       var w1 = new Widget(p1);
       var w2 = new Widget(p2);
       medGrid.add(w1);
@@ -31,24 +52,24 @@ describe('GridRendering', function () {
       
       var rendering = new GridRendering(medGrid, render);
       
-      expect(rendering.getWidgetIdAt(0, 0)).toEqual(w1.id);
-      expect(rendering.getWidgetIdAt(3, 4)).toEqual(w1.id);
-      expect(rendering.getWidgetIdAt(4, 5)).toEqual(w2.id);
-      expect(rendering.getWidgetIdAt(5, 7)).toEqual(w2.id);
-      expect(rendering.getWidgetIdAt(7, 11)).toEqual(w2.id);
+      expect(rendering.getWidgetIdAt(1, 1)).toEqual(w1.id);
+      expect(rendering.getWidgetIdAt(4, 5)).toEqual(w1.id);
+      expect(rendering.getWidgetIdAt(5, 6)).toEqual(w2.id);
+      expect(rendering.getWidgetIdAt(6, 8)).toEqual(w2.id);
+      expect(rendering.getWidgetIdAt(8, 12)).toEqual(w2.id);
       
-      expect(rendering.getWidgetIdAt(3, 5)).toBeNull();
-      expect(rendering.getWidgetIdAt(3, 11)).toBeNull();
-      expect(rendering.getWidgetIdAt(4, 4)).toBeNull();
-      expect(rendering.getWidgetIdAt(6, 2)).toBeNull();
+      expect(rendering.getWidgetIdAt(4, 6)).toBeNull();
+      expect(rendering.getWidgetIdAt(4, 12)).toBeNull();
+      expect(rendering.getWidgetIdAt(5, 5)).toBeNull();
+      expect(rendering.getWidgetIdAt(7, 3)).toBeNull();
       
       rendering = new GridRendering(minGrid, []);
-      expect(rendering.getWidgetIdAt(0, 0)).toBeNull();
+      expect(rendering.getWidgetIdAt(1, 1)).toBeNull();
     });
     
     it('considers the renderedPositions, if they differ from the original ones', function () {
-      var p1 = { top: 0, height: 4, left: 0, width: 5 };
-      var p1Rendered = { top: 4, height: 4, left: 5, width: 7 };
+      var p1 = { top: 1, height: 4, left: 1, width: 5 };
+      var p1Rendered = { top: 5, height: 4, left: 6, width: 7 };
       var w1 = new Widget(p1);
       medGrid.add(w1);
       
@@ -57,17 +78,17 @@ describe('GridRendering', function () {
       
       var rendering = new GridRendering(medGrid, render);
       
-      expect(rendering.getWidgetIdAt(0, 0)).toBeNull();
-      expect(rendering.getWidgetIdAt(3, 4)).toBeNull();
-      expect(rendering.getWidgetIdAt(4, 5)).toEqual(w1.id);
-      expect(rendering.getWidgetIdAt(7, 11)).toEqual(w1.id);    
+      expect(rendering.getWidgetIdAt(1, 1)).toBeNull();
+      expect(rendering.getWidgetIdAt(4, 5)).toBeNull();
+      expect(rendering.getWidgetIdAt(5, 6)).toEqual(w1.id);
+      expect(rendering.getWidgetIdAt(8, 12)).toEqual(w1.id);    
     });
   });
   
   describe('#isObstructed', function () {
     it('returns true when the coords hit a widget, else false', function () {
-      var p1 = { top: 0, height: 4, left: 0, width: 5 };
-      var p2 = { top: 4, height: 4, left: 5, width: 7 };
+      var p1 = { top: 1, height: 4, left: 1, width: 5 };
+      var p2 = { top: 5, height: 4, left: 6, width: 7 };
       var w1 = new Widget(p1);
       var w2 = new Widget(p2);
       medGrid.add(w1);
@@ -78,34 +99,34 @@ describe('GridRendering', function () {
       render[w2.id] = p2;
       
       var rendering = new GridRendering(medGrid, render);
-      expect(rendering.isObstructed(0, 0)).toBe(true);
-      expect(rendering.isObstructed(3, 4)).toBe(true);
+      expect(rendering.isObstructed(1, 1)).toBe(true);
       expect(rendering.isObstructed(4, 5)).toBe(true);
-      expect(rendering.isObstructed(5, 7)).toBe(true);
-      expect(rendering.isObstructed(7, 11)).toBe(true);
+      expect(rendering.isObstructed(5, 6)).toBe(true);
+      expect(rendering.isObstructed(6, 8)).toBe(true);
+      expect(rendering.isObstructed(8, 12)).toBe(true);
       
-      expect(rendering.isObstructed(3, 5)).toBe(false);
-      expect(rendering.isObstructed(3, 11)).toBe(false);
-      expect(rendering.isObstructed(4, 4)).toBe(false);
-      expect(rendering.isObstructed(6, 2)).toBe(false);
+      expect(rendering.isObstructed(4, 6)).toBe(false);
+      expect(rendering.isObstructed(4, 12)).toBe(false);
+      expect(rendering.isObstructed(5, 5)).toBe(false);
+      expect(rendering.isObstructed(7, 3)).toBe(false);
       
       rendering = new GridRendering(minGrid, {});
-      expect(rendering.isObstructed(0, 0)).toBe(false);
+      expect(rendering.isObstructed(1, 1)).toBe(false);
     });
     
     it('returns true when coords are not within the left, top, and/or right bounds of the grid', function () {
       var rendering = new GridRendering(medGrid, {});
-      expect(rendering.isObstructed(8, 4)).toBe(false);
-      expect(rendering.isObstructed(3, 12)).toBe(true);
-      expect(rendering.isObstructed(-1, 4)).toBe(true);
-      expect(rendering.isObstructed(4, -1)).toBe(true);
+      expect(rendering.isObstructed(9, 5)).toBe(false);
+      expect(rendering.isObstructed(4, 13)).toBe(true);
+      expect(rendering.isObstructed(0, 5)).toBe(true);
+      expect(rendering.isObstructed(5, 0)).toBe(true);
     });
   });
   
   describe('#getStyle', function () {
     it('returns sane percentage values when passed sane data', function () {
       var grid = new Grid({ columns: 4, rows: 6 });
-      var pos = { top: 1, left: 2, height: 4, width: 2 };
+      var pos = { top: 2, left: 3, height: 4, width: 2 };
       var widget = new Widget(pos);
       grid.add(widget);
       

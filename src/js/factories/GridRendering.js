@@ -5,8 +5,23 @@
       
       var _grid = grid || { widgets: [] };
       self.positions = positions || {};
-            
-      self.getWidgetIdAt = function (i, j) {
+      
+      self.rasterizeCoords = rasterizeCoords;
+      
+      self.getWidgetIdAt = getWidgetAt;
+      self.isObstructed = isObstructed;
+    
+      function rasterizeCoords(x, y, gridWidth, gridHeight) {
+        x = Math.min(Math.max(x, 1), gridWidth);
+        y = Math.min(Math.max(y, 1), gridHeight);
+
+        return {
+          i: Math.ceil((y / gridHeight) * (_grid.rows)),
+          j: Math.ceil((x / gridWidth) * (_grid.columns))
+        };
+      }
+      
+      function getWidgetAt(i, j) {
         for (var widgetId in self.positions) {
           var pos = self.positions[widgetId];
           
@@ -17,14 +32,14 @@
         }
 
         return null;
-      };
-      
-      self.isObstructed = function (i, j) {
-        if (i < 0 || j < 0 || j >= _grid.columns) {
+      }
+    
+      function isObstructed(i, j) {
+        if (i < 1 || j < 1 || j > _grid.columns) {
           return true;
         }
         return self.getWidgetIdAt(i, j) !== null;
-      };
+      }
       
       self.getStyle = function (widgetId) {
         var render = self.positions[widgetId];
@@ -34,9 +49,9 @@
         }
         
         return {
-          top: (render.top * _grid.cellSize.height).toString() + '%',
+          top: ((render.top - 1) * _grid.cellSize.height).toString() + '%',
           height: (render.height * _grid.cellSize.height).toString() + '%',
-          left: (render.left * _grid.cellSize.width).toString() + '%',
+          left: ((render.left - 1) * _grid.cellSize.width).toString() + '%',
           width: (render.width * _grid.cellSize.width).toString() + '%'
         };
       };
