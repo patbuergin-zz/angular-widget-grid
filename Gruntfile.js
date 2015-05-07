@@ -71,7 +71,8 @@ module.exports = function(grunt) {
           console: false,
           module: false,
           _: false
-        }
+        },
+        force: true
       },
       gruntfile: {
         src: 'Gruntfile.js'
@@ -93,8 +94,9 @@ module.exports = function(grunt) {
         tasks: ['jshint:gruntfile']
       },
       lib_test: {
-        files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:lib_test', 'karma']
+        files: ['src/**/*.html', 'src/**/*.css', 'src/**/*.js', 'test/**/*.js', 'demo/*'],
+        tasks: ['jshint:lib_test', 'test', 'build'],
+        options: { livereload: true }
       }
     },
     clean: ['build']
@@ -108,6 +110,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-karma');
 
-  // Default task.
-  grunt.registerTask('default', ['jshint', 'karma', 'ngtemplates', 'concat', 'uglify', 'clean']);
+  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('build', ['ngtemplates', 'concat', 'uglify', 'clean']);
+  grunt.registerTask('default', ['jshint', 'test', 'build']);
 };
