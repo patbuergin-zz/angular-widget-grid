@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="http://localhost:35729/livereload.js"></script>
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../dist/angular-widget-grid.min.js"></script>
     <script src="basic.js"></script>
@@ -8,20 +9,25 @@
   </head>
   <body ng-app="widgetGridDemo">
     <div ng-controller="DemoController as demo">
-      <div class="demo-config">
-        <label for="columns">Columns</label>
-        <input type="number" id="columns" min="1" ng-model="demo.columns">
-        <label for="rows">Rows</label>
-        <input type="number" id="rows" min="1" ng-model="demo.rows">
+      <div class="demo-header">
+        <div class="demo-title">angular-widget-grid</div>
+        <div class="demo-config">
+          <label for="columns">Columns</label>
+          <input type="number" id="columns" min="1" ng-model="demo.columns">
+          <label for="rows">Rows</label>
+          <input type="number" id="rows" min="1" ng-model="demo.rows">
+          <label for="editable">Editable</label>
+          <input type="checkbox" id="editable" ng-model="demo.editable">
+        </div>
       </div>
+
       <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" class="demo-grid" id="demo-grid">
-        <wg-widget ng-repeat="widget in demo.widgets" position="widget.position">
-          <div class="wg-widget-content" ng-style="widget.style">
-            <h1 class="demo-widget-title">Hi</h1>
-          </div>
+        <wg-widget wg-resizable editable="{{demo.editable}}" position="widget.position" ng-repeat="widget in demo.widgets">
+          <div ng-bind-html="widget.inner"></div>
         </wg-widget>
       </wg-grid>
-      <div class="demo-grid-dimensions">{{demo.gridWidth}} x {{demo.gridHeight}}</div>
+
+      <div ng-hide="demo.editable" class="demo-grid-dimensions">{{demo.gridWidth}} x {{demo.gridHeight}}</div>
     </div>
   </body>
 </html>
