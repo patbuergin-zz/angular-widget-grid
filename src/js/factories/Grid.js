@@ -4,32 +4,30 @@
   
   angular.module('widgetGrid').factory('Grid', ['gridUtil', function (gridUtil) {
     var Grid = function Grid(options) {
-      var self = this;
-
       options = options || {};
       
-      self.columns = parseInt(options.columns) || DEFAULT_COLUMNS;
-      self.rows = parseInt(options.rows) || DEFAULT_ROWS;
-      self.cellSize = gridUtil.computeCellSize(self.rows, self.columns);
+      this.columns = parseInt(options.columns) || DEFAULT_COLUMNS;
+      this.rows = parseInt(options.rows) || DEFAULT_ROWS;
+      this.cellSize = gridUtil.computeCellSize(this.rows, this.columns);
 
-      self.widgets = [];
-      
-      self.add = function (widget) {
-        self.widgets.push(widget);
-      };
-
-      self.resize = function (rows, columns) {
-        columns = parseInt(columns) || 0;
-        rows = parseInt(rows) || 0;
-        
-        if (columns > 0 && rows > 0 && columns !== self.columns || rows !== self.rows) {
-          self.columns = columns;
-          self.rows = rows;
-          self.cellSize = gridUtil.computeCellSize(self.rows, self.columns);
-        }
-      };
+      this.widgets = [];
     };
 
+    Grid.prototype.add = function (widget) {
+      this.widgets.push(widget);
+    };
+
+    Grid.prototype.resize = function (rows, columns) {
+      columns = parseInt(columns) || 0;
+      rows = parseInt(rows) || 0;
+      
+      if (columns > 0 && rows > 0 && columns !== this.columns || rows !== this.rows) {
+        this.columns = columns;
+        this.rows = rows;
+        this.cellSize = gridUtil.computeCellSize(this.rows, this.columns);
+      }
+    };
+    
     return Grid;
   }]);
 })();

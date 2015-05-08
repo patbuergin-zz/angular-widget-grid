@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
-(function () {
-  var GridController = ['$attrs', 'Grid', 'gridRenderer', function ($attrs, Grid, gridRenderer) {
+(function () {  
+  angular.module('widgetGrid').controller('wgGridController', ['$attrs', 'Grid', 'gridRenderer', function ($attrs, Grid, gridRenderer) {
     var self = this;
     
     var gridOptions = {
@@ -55,9 +55,7 @@
         width: rootElement[0].clientWidth
       };
     }
-  }];
-  
-  angular.module('widgetGrid').controller('wgGridController', GridController);
+  }]);
   
   angular.module('widgetGrid').directive('wgGrid', gridDirective);
   function gridDirective() {

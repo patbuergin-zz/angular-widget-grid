@@ -8,19 +8,17 @@
   
   angular.module('widgetGrid').factory('Widget', ['gridUtil', function (gridUtil) {
     var Widget = function Widget(options) {
-      var self = this;
-      
-      self.id = gridUtil.getUID();
+      this.id = gridUtil.getUID();
       
       options = options || {};
       
-      self.width = parseInt(options.width) || DEFAULT_WIDTH;
-      self.height = parseInt(options.height) || DEFAULT_HEIGHT;
+      this.width = parseInt(options.width) || DEFAULT_WIDTH;
+      this.height = parseInt(options.height) || DEFAULT_HEIGHT;
       
-      self.top = parseInt(options.top) || DEFAULT_TOP;
-      self.left = parseInt(options.left) || DEFAULT_LEFT;
+      this.top = parseInt(options.top) || DEFAULT_TOP;
+      this.left = parseInt(options.left) || DEFAULT_LEFT;
       
-      self.style = {};
+      this.style = {};
     };
     
     return Widget;

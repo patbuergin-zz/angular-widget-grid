@@ -104,7 +104,7 @@
                 var newRight = Math.min(rightDelta, startWidth - minWidth);
                 containerElement.css({ right: newRight + 'px' });
               }
-            };
+            }
             
             function onUp(event) {
               event.preventDefault();
@@ -114,7 +114,7 @@
               // reset style
               dragger.element.removeClass('dragging');
               containerElement.removeAttr('style');
-            };
+            }
             
             $document.on('mousemove', onMove);
             $document.on('mouseup', onUp);

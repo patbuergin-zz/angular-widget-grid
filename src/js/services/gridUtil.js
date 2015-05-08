@@ -1,5 +1,5 @@
 (function () {
-  angular.module('widgetGrid').service('gridUtil', ['$templateCache', '$interpolate', function ($templateCache, $interpolate) {
+  angular.module('widgetGrid').service('gridUtil', ['$templateCache', function ($templateCache) {
     var nextId = 1;
     
     return {
