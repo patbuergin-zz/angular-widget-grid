@@ -1,7 +1,9 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {
-  angular.module('widgetGrid').controller('wgResizableCtrl', ['$scope', function () {
+  angular.module('widgetGrid').controller('wgResizableCtrl', ['$scope', function ($scope) {
+    var self = this;
+    console.log('wgResizableCtrl scope', $scope);
 
   }]);
 
@@ -9,9 +11,13 @@
     return {
       restrict: 'A',
       controller: 'wgResizableCtrl',
+      controllerAs: 'resizableCtrl',
       require: 'wgWidget',
       link: {
         pre: function (scope, element, attrs, widgetCtrl) {
+          var ctrl = scope.resizableCtrl;
+          
+          // init template
           var templateContent = gridUtil.getTemplate('wg-resizable');
           if (templateContent) {
             var template = angular.element(templateContent);
@@ -37,7 +43,7 @@
       restrict: 'A',
       require: ['^wgResizable', '^wgGrid'],
       link: function (scope, element, attrs, ctrls) {
-        var wgResizableCtrl = ctrls[0],
+        var resizableCtrl = ctrls[0],
             gridCtrl = ctrls[1];
         
         var draggerElements = element.children();
@@ -62,19 +68,30 @@
           
           function onDown(event) {
             event.preventDefault();
-            
+
             dragger.element.addClass('dragging');
             
             var container = containerElement[0],
                 widgetContainer = container.parentElement;
             
-            var startHeight = container.clientHeight,
-                startWidth = container.clientWidth,
-                startTop = widgetContainer.offsetTop,
-                startLeft = widgetContainer.offsetLeft,
-                startBottom = startTop + startHeight,
-                startRight = startLeft + startWidth;
-                
+            var startPos = {
+              top: widgetContainer.offsetTop,
+              left: widgetContainer.offsetLeft,
+              height: container.offsetHeight,
+              width: container.offsetWidth
+            };
+            startPos.bottom = startPos.top + startPos.height - 1;
+            startPos.right = startPos.left + startPos.width - 1;
+            
+            var delta = { top: 0, right: 0, bottom: 0, left: 0 };
+            
+            var draggerOffset = {
+              top: event.offsetY,
+              left: event.offsetX,
+              bottom: event.offsetY - dragger.element[0].offsetHeight,
+              right: event.offsetX - dragger.element[0].offsetWidth
+            };
+            
             var gridPositions = gridCtrl.getPositions();
 
             // TODO: make this depend on window & grid size
@@ -84,7 +101,6 @@
             $document.on('mouseup touchend touchcancel', onUp);
             
             function onMove(event) {
-              console.log(event);
               event.preventDefault();
               
               if (event.touches) {
@@ -93,34 +109,43 @@
               }
               
               // normalize the drag position
-              var dragPositionX = Math.min(Math.max(event.clientX - gridPositions.left, 0), gridPositions.width),
-                  dragPositionY = Math.min(Math.max(event.clientY - gridPositions.top, 0), gridPositions.height);
-
+              var dragPositionX = event.clientX - gridPositions.left,
+                  dragPositionY = event.clientY - gridPositions.top;
+              
               if (dragger.up) {
-                var topDelta = dragPositionY - startTop;
-                var newTop = Math.min(topDelta, startHeight - minHeight);
-                containerElement.css({ top: newTop + 'px' });
+                delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height - 1) - startPos.top;
+                delta.top = Math.min(delta.top, startPos.height - minHeight);
               } else if (dragger.down) {
-                var bottomDelta = startBottom - dragPositionY;
-                var newBottom = Math.min(bottomDelta, startHeight - minHeight);
-                containerElement.css({ bottom: newBottom + 'px' });
+                delta.bottom = startPos.bottom - Math.min(Math.max(dragPositionY - draggerOffset.bottom, 0), gridPositions.height - 1);
+                delta.bottom = Math.min(delta.bottom, startPos.height - minHeight);
               }
               
               if (dragger.left) {
-                var leftDelta = dragPositionX - startLeft; 
-                var newLeft = Math.min(leftDelta, startWidth - minWidth);
-                containerElement.css({ left: newLeft + 'px' });
+                delta.left = Math.min(Math.max(dragPositionX - draggerOffset.left, 0), gridPositions.width - 1) - startPos.left; 
+                delta.left = Math.min(delta.left, startPos.width - minWidth);
               } else if (dragger.right) {
-                var rightDelta = startRight - dragPositionX; 
-                var newRight = Math.min(rightDelta, startWidth - minWidth);
-                containerElement.css({ right: newRight + 'px' });
+                delta.right = startPos.right - Math.min(Math.max(dragPositionX - draggerOffset.right, 0), gridPositions.width - 1); 
+                delta.right = Math.min(delta.right, startPos.width - minWidth);
               }
+              
+              containerElement.css({
+                top: delta.top + 'px',
+                left: delta.left + 'px',
+                bottom: delta.bottom + 'px',
+                right: delta.right + 'px'
+              });
             }
             
             function onUp(event) {
               event.preventDefault();
               $document.off('mousemove touchmove', onMove);
               $document.off('mouseup touchend touchcancel', onUp);
+              
+              var start = gridCtrl.rasterizeCoords(startPos.left + delta.left, startPos.top + delta.top),
+                  end = gridCtrl.rasterizeCoords(startPos.right - delta.right, startPos.bottom - delta.bottom),
+                  height = end.i - start.i + 1,
+                  width = end.j - start.j + 1;
+              console.debug(start, end, height, width);
               
               // reset style
               dragger.element.removeClass('dragging');

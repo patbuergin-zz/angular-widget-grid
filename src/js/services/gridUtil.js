@@ -35,10 +35,14 @@
         return sorted;
       },
       
+      roundDecimal: function (decimal) {
+        return Math.round(decimal * 10000) / 10000;
+      },
+      
       computeCellSize: function (rowCount, columnCount) {
         return {
-          height: rowCount >= 1 ? (Math.round((100 / rowCount) * 100) / 100) : 0,
-          width: columnCount >= 1 ? (Math.round((100 / columnCount) * 100) / 100) : 0
+          height: rowCount >= 1 ? this.roundDecimal(100 / rowCount) : 0,
+          width: columnCount >= 1 ? this.roundDecimal(100 / columnCount) : 0
         };
       },
       

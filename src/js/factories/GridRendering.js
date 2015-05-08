@@ -1,17 +1,18 @@
 (function () {
-  angular.module('widgetGrid').factory('GridRendering', [function () {
+  angular.module('widgetGrid').factory('GridRendering', ['gridUtil', function (gridUtil) {
     var GridRendering = function GridRendering(grid, positions) {
       this.grid = grid || { widgets: [] };
       this.positions = positions || {};
     };
     
     GridRendering.prototype.rasterizeCoords = function (x, y, gridWidth, gridHeight) {
-      x = Math.min(Math.max(x, 1), gridWidth);
-      y = Math.min(Math.max(y, 1), gridHeight);
+      x = Math.min(Math.max(x + 0, 0), gridWidth - 1);
+      y = Math.min(Math.max(y + 0, 0), gridHeight - 1);
+      console.log(x, y, 'coords', (x / gridWidth), (y / gridHeight), 'final i', Math.max(Math.floor(gridUtil.roundDecimal(y / gridHeight) * this.grid.rows) + 1, 1), 'j', Math.ceil(gridUtil.roundDecimal(x / gridWidth) * this.grid.columns));
 
       return {
-        i: Math.ceil((y / gridHeight) * (this.grid.rows)),
-        j: Math.ceil((x / gridWidth) * (this.grid.columns))
+        i: Math.floor(gridUtil.roundDecimal(this.grid.rows / gridHeight) * y) + 1,
+        j: Math.floor(gridUtil.roundDecimal(this.grid.columns / gridWidth) * x) + 1
       };
     };
     

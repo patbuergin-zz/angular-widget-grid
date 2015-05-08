@@ -19,13 +19,21 @@ describe('GridRendering', function () {
   describe('#rasterizeCoords', function () {
     it('returns the closest cell when passed coords within the grid container', function () {
       var rendering = new GridRendering(minGrid, {});
-      expect(rendering.rasterizeCoords(1, 1, 1, 1)).toEqual({ i: 1, j: 1 });
+      expect(rendering.rasterizeCoords(0, 0, 1, 1)).toEqual({ i: 1, j: 1 });
       
       rendering = new GridRendering(new Grid({ columns: 2, rows: 2 }), {});
-      expect(rendering.rasterizeCoords(1, 1, 2, 2)).toEqual({ i: 1, j: 1 });
-      expect(rendering.rasterizeCoords(2, 1, 2, 2)).toEqual({ i: 1, j: 2 });
-      expect(rendering.rasterizeCoords(1, 2, 2, 2)).toEqual({ i: 2, j: 1 });
-      expect(rendering.rasterizeCoords(2, 2, 2, 2)).toEqual({ i: 2, j: 2 });
+      expect(rendering.rasterizeCoords(0, 0, 2, 2)).toEqual({ i: 1, j: 1 });
+      expect(rendering.rasterizeCoords(1, 0, 2, 2)).toEqual({ i: 1, j: 2 });
+      expect(rendering.rasterizeCoords(0, 1, 2, 2)).toEqual({ i: 2, j: 1 });
+      expect(rendering.rasterizeCoords(1, 1, 2, 2)).toEqual({ i: 2, j: 2 });
+      
+      rendering = new GridRendering(new Grid({ columns: 3, rows: 3 }), {});
+      expect(rendering.rasterizeCoords(2, 3, 6, 6)).toEqual({ i: 2, j: 2 });
+      expect(rendering.rasterizeCoords(200, 300, 600, 600)).toEqual({ i: 2, j: 2 });
+      
+      rendering = new GridRendering(medGrid, {});
+      expect(rendering.rasterizeCoords(499, 399, 1200, 800)).toEqual({ i: 4, j: 5 });
+      expect(rendering.rasterizeCoords(500, 400, 1200, 800)).toEqual({ i: 5, j: 6 });
     });
     
     it('returns the closest cell when passed a coords that exceed the width and/or the height of the container', function () {
@@ -135,7 +143,7 @@ describe('GridRendering', function () {
       var rendering = new GridRendering(grid, renderedPositions);
       
       var style = rendering.getStyle(widget.id);
-      expect(style).toEqual({ top: '16.67%', height: '66.68%',  left: '50%', width: '50%' });
+      expect(style).toEqual({ top: '16.6667%', height: '66.6668%',  left: '50%', width: '50%' });
     });
   });
 });

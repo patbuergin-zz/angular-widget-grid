@@ -17,6 +17,7 @@
     self.updateRendering = updateRendering;
     self.setRootElement = setRootElement;
     self.getPositions = getPositions;
+    self.rasterizeCoords = rasterizeCoords;
     
     function addWidget(widget) {
       grid.add(widget);
@@ -55,6 +56,10 @@
         width: rootElement[0].clientWidth
       };
     }
+    
+    function rasterizeCoords(x, y) {
+      return rendering.rasterizeCoords(x, y, rootElement[0].clientWidth, rootElement[0].clientHeight);
+    }
   }]);
   
   angular.module('widgetGrid').directive('wgGrid', gridDirective);
@@ -63,12 +68,12 @@
       scope: true,
       restrict: 'E',
       controller: 'wgGridController',
-      controllerAs: 'grid',
+      controllerAs: 'gridCtrl',
       transclude: true,
       replace: true,
       templateUrl: 'wg-grid',
       link: function (scope, element, attrs) {
-        var ctrl = scope.grid;
+        var ctrl = scope.gridCtrl;
         
         ctrl.setRootElement(element);
         
