@@ -58,7 +58,9 @@
         }
          
         function registerDragHandler(dragger, containerElement) {
-          dragger.element.on('mousedown', function (event) {
+          dragger.element.on('mousedown touchstart', onDown);
+          
+          function onDown(event) {
             event.preventDefault();
             
             dragger.element.addClass('dragging');
@@ -78,8 +80,17 @@
             // TODO: make this depend on window & grid size
             var minHeight = 42, minWidth = 42;
             
+            $document.on('mousemove touchmove', onMove);
+            $document.on('mouseup touchend touchcancel', onUp);
+            
             function onMove(event) {
+              console.log(event);
               event.preventDefault();
+              
+              if (event.touches) {
+                event.clientX = event.touches[0].clientX;
+                event.clientY = event.touches[0].clientY;
+              }
               
               // normalize the drag position
               var dragPositionX = Math.min(Math.max(event.clientX - gridPositions.left, 0), gridPositions.width),
@@ -108,17 +119,14 @@
             
             function onUp(event) {
               event.preventDefault();
-              $document.off('mousemove', onMove);
-              $document.off('mouseup', onUp);
+              $document.off('mousemove touchmove', onMove);
+              $document.off('mouseup touchend touchcancel', onUp);
               
               // reset style
               dragger.element.removeClass('dragging');
               containerElement.removeAttr('style');
             }
-            
-            $document.on('mousemove', onMove);
-            $document.on('mouseup', onUp);
-          });
+          }
         }
       }
     };
