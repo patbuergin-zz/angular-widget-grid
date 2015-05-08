@@ -1,5 +1,5 @@
 (function () {
-  angular.module('widgetGrid').service('gridUtil', function () {
+  angular.module('widgetGrid').service('gridUtil', ['$templateCache', '$interpolate', function ($templateCache, $interpolate) {
     var nextId = 1;
     
     return {
@@ -40,7 +40,12 @@
           height: rowCount >= 1 ? (Math.round((100 / rowCount) * 100) / 100) : 0,
           width: columnCount >= 1 ? (Math.round((100 / columnCount) * 100) / 100) : 0
         };
+      },
+      
+      getTemplate: function (templateName) {
+        var template = $templateCache.get(templateName);
+        return template ? template : null;
       }
     };
-  });
+  }]);
 })();

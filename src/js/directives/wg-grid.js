@@ -10,10 +10,13 @@
     };
     var grid = new Grid(gridOptions);
     var rendering;
+    var rootElement;
     
     self.addWidget = addWidget;
     self.updateGrid = updateGrid;
     self.updateRendering = updateRendering;
+    self.setRootElement = setRootElement;
+    self.getPositions = getPositions;
     
     function addWidget(widget) {
       grid.add(widget);
@@ -35,6 +38,23 @@
          widget.style = rendering.getStyle(widget.id);
        }
     }
+    
+    function setRootElement(element) {
+      rootElement = element;
+    }
+    
+    function getPositions() {
+      if (!rootElement) {
+        return {};
+      }
+      
+      return {
+        top: rootElement[0].offsetTop,
+        left: rootElement[0].offsetLeft,
+        height: rootElement[0].clientHeight,
+        width: rootElement[0].clientWidth
+      };
+    }
   }];
   
   angular.module('widgetGrid').controller('wgGridController', GridController);
@@ -51,6 +71,8 @@
       templateUrl: 'wg-grid',
       link: function (scope, element, attrs) {
         var ctrl = scope.grid;
+        
+        ctrl.setRootElement(element);
         
         var firstColumnChange = true, firstRowChange = true;
         attrs.$observe('columns', function () {

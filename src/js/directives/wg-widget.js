@@ -1,10 +1,14 @@
 (function () {
-  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', 'Widget', function($scope, Widget) {
+  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', 'Widget', function($scope, $compile, Widget) {
     var self = this;
-    
     var widgetOptions = $scope.position;
     
+    self.editable = false;
     self.widget = new Widget(widgetOptions);
+    
+    self.innerCompile = function (element) {
+      $compile(element)($scope);
+    };
   }]);
   
   angular.module('widgetGrid').directive('wgWidget', widgetDirective);
@@ -19,10 +23,15 @@
       require: '^wgGrid',
       transclude: true,
       replace: true,
-      link: function (scope, element, attrs, gridCtrl) {
-        gridCtrl.addWidget(scope.widgetCtrl.widget);
-      },
-      templateUrl: 'wg-widget'
+      templateUrl: 'wg-widget',
+      link: {
+        post: function (scope, element, attrs, gridCtrl) {
+          gridCtrl.addWidget(scope.widgetCtrl.widget);
+          attrs.$observe('editable', function (newVal) {
+            scope.widgetCtrl.editable = newVal === 'true';
+          });
+        }
+      }
     };
   }
 })();
