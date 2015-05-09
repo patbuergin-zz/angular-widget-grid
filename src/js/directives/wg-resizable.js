@@ -3,8 +3,6 @@
 (function () {
   angular.module('widgetGrid').controller('wgResizableCtrl', ['$scope', function ($scope) {
     var self = this;
-    console.log('wgResizableCtrl scope', $scope);
-
   }]);
 
   angular.module('widgetGrid').directive('wgResizable', ['gridUtil', function(gridUtil) {
@@ -80,16 +78,17 @@
               height: container.offsetHeight,
               width: container.offsetWidth
             };
-            startPos.bottom = startPos.top + startPos.height - 1;
-            startPos.right = startPos.left + startPos.width - 1;
+            startPos.bottom = startPos.top + startPos.height;
+            startPos.right = startPos.left + startPos.width;
             
-            var delta = { top: 0, right: 0, bottom: 0, left: 0 };
+            // add a 1px offset to avoid ambiguity when faced w/ odd widths and/or heights
+            var delta = { top: 1, right: 1, bottom: 1, left: 1 };
             
             var draggerOffset = {
-              top: event.offsetY,
-              left: event.offsetX,
-              bottom: event.offsetY - dragger.element[0].offsetHeight,
-              right: event.offsetX - dragger.element[0].offsetWidth
+              top: event.offsetY + 1,
+              left: event.offsetX + 1,
+              bottom: event.offsetY - dragger.element[0].offsetHeight + 1,
+              right: event.offsetX - dragger.element[0].offsetWidth + 1
             };
             
             var gridPositions = gridCtrl.getPositions();
@@ -134,6 +133,8 @@
                 bottom: delta.bottom + 'px',
                 right: delta.right + 'px'
               });
+              
+              // TODO: preview
             }
             
             function onUp(event) {
@@ -145,6 +146,8 @@
                   end = gridCtrl.rasterizeCoords(startPos.right - delta.right, startPos.bottom - delta.bottom),
                   height = end.i - start.i + 1,
                   width = end.j - start.j + 1;
+              
+              // TODO: apply changes
               console.debug(start, end, height, width);
               
               // reset style
