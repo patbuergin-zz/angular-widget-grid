@@ -1,14 +1,14 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {  
-  angular.module('widgetGrid').controller('wgGridController', ['$attrs', 'Grid', 'gridRenderer', function ($attrs, Grid, gridRenderer) {
+  angular.module('widgetGrid').controller('wgGridController', ['$attrs', '$timeout', 'Grid', 'gridRenderer', function ($attrs, $timeout, Grid, gridRenderer) {
     var self = this;
     
     var gridOptions = {
       columns: $attrs.columns,
       rows: $attrs.rows
     };
-    var grid = new Grid(gridOptions);
+    self.grid = new Grid(gridOptions);
     var rendering;
     var rootElement;
     
@@ -20,24 +20,26 @@
     self.rasterizeCoords = rasterizeCoords;
     
     function addWidget(widget) {
-      grid.add(widget);
+      self.grid.add(widget);
       updateGrid();
     }
     
     function updateGrid() {
       var columns = $attrs.columns;
       var rows = $attrs.rows;
-      grid.resize(rows, columns);
+      self.grid.resize(rows, columns);
       updateRendering();
     }
     
     function updateRendering() {
-       rendering = gridRenderer.render(grid);
+       rendering = gridRenderer.render(self.grid);
 
-       for (var i = 0; i < grid.widgets.length; i++) {
-         var widget = grid.widgets[i];
-         widget.style = rendering.getStyle(widget.id);
-       }
+       $timeout(function () {
+         for (var i = 0; i < self.grid.widgets.length; i++) {
+           var widget = self.grid.widgets[i];
+           widget.style = rendering.getStyle(widget.id);
+         }
+       });
     }
     
     function setRootElement(element) {

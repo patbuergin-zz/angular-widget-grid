@@ -35,13 +35,15 @@
       INDEX_DRAGGER_NE = 5,
       INDEX_DRAGGER_SE = 6,
       INDEX_DRAGGER_SW = 7;
+  var MIN_HEIGHT = 42,
+      MIN_WIDTH = 42;
   
   angular.module('widgetGrid').directive('wgResizer', ['$document', function ($document) {
     return {
       restrict: 'A',
-      require: ['^wgResizable', '^wgGrid'],
+      require: ['^wgWidget', '^wgGrid'],
       link: function (scope, element, attrs, ctrls) {
-        var resizableCtrl = ctrls[0],
+        var widgetCtrl = ctrls[0],
             gridCtrl = ctrls[1];
         
         var draggerElements = element.children();
@@ -92,9 +94,6 @@
             };
             
             var gridPositions = gridCtrl.getPositions();
-
-            // TODO: make this depend on window & grid size
-            var minHeight = 42, minWidth = 42;
             
             $document.on('mousemove touchmove', onMove);
             $document.on('mouseup touchend touchcancel', onUp);
@@ -113,18 +112,18 @@
               
               if (dragger.up) {
                 delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height - 1) - startPos.top;
-                delta.top = Math.min(delta.top, startPos.height - minHeight);
+                delta.top = Math.min(delta.top, startPos.height - MIN_HEIGHT);
               } else if (dragger.down) {
                 delta.bottom = startPos.bottom - Math.min(Math.max(dragPositionY - draggerOffset.bottom, 0), gridPositions.height - 1);
-                delta.bottom = Math.min(delta.bottom, startPos.height - minHeight);
+                delta.bottom = Math.min(delta.bottom, startPos.height - MIN_HEIGHT);
               }
               
               if (dragger.left) {
                 delta.left = Math.min(Math.max(dragPositionX - draggerOffset.left, 0), gridPositions.width - 1) - startPos.left; 
-                delta.left = Math.min(delta.left, startPos.width - minWidth);
+                delta.left = Math.min(delta.left, startPos.width - MIN_WIDTH);
               } else if (dragger.right) {
                 delta.right = startPos.right - Math.min(Math.max(dragPositionX - draggerOffset.right, 0), gridPositions.width - 1); 
-                delta.right = Math.min(delta.right, startPos.width - minWidth);
+                delta.right = Math.min(delta.right, startPos.width - MIN_WIDTH);
               }
               
               containerElement.css({
@@ -147,8 +146,16 @@
                   height = end.i - start.i + 1,
                   width = end.j - start.j + 1;
               
-              // TODO: apply changes
+              // TODO: sanitize 
               console.debug(start, end, height, width);
+              
+              widgetCtrl.setPosition({
+                top: start.i,
+                left: start.j,
+                width: width,
+                height: height
+              });
+              
               
               // reset style
               dragger.element.removeClass('dragging');
