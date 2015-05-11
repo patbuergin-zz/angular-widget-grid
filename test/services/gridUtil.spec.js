@@ -56,4 +56,91 @@ describe('gridUtil', function () {
       expect(gridUtil.getUID()).toEqual("3");
     });
   });
+  
+  describe('#getPathIterator', function () {
+    describe('iterator', function () {
+      it('yields exactly one value if startPos equals endPos', function () {
+        var endPos = { top: 4, left: 9 };
+        var startPos = { top: 4, left: 9 };
+        var iter = gridUtil.getPathIterator(endPos, startPos);
+        
+        expect(iter.hasNext()).toBe(true);
+        var next = iter.next();
+        expect(next).toEqual(endPos);
+        expect(iter.hasNext()).toBe(false);
+        next = iter.next();
+        expect(next).toBeNull();
+      });
+      
+      it('yields a linear path from startPos to endPos when passed positions that share a coordinate', function () {
+        var endPos = { top: 4, left: 9 };
+        var startPos = { top: 4, left: 12 };
+        var iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.hasNext()).toBe(true);
+        expect(iter.next()).toEqual({ top: 4, left: 12 });
+        expect(iter.next()).toEqual({ top: 4, left: 11 });
+        expect(iter.next()).toEqual({ top: 4, left: 10 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+
+        startPos = { top: 4, left: 8 };
+        iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.next()).toEqual({ top: 4, left: 8 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+
+        startPos = { top: 6, left: 9 };
+        iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.next()).toEqual({ top: 6, left: 9 });
+        expect(iter.next()).toEqual({ top: 5, left: 9 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+        
+        startPos = { top: 2, left: 9 };
+        iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.next()).toEqual({ top: 2, left: 9 });
+        expect(iter.next()).toEqual({ top: 3, left: 9 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+      });
+      
+      it('yields diagonal paths if necessary', function () {
+        var endPos = { top: 4, left: 9 };
+        var startPos = { top: 7, left: 12 };
+        var iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.hasNext()).toBe(true);
+        expect(iter.next()).toEqual({ top: 7, left: 12 });
+        expect(iter.next()).toEqual({ top: 6, left: 11 });
+        expect(iter.next()).toEqual({ top: 5, left: 10 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+
+        startPos = { top: 9, left: 8 };
+        iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.next()).toEqual({ top: 9, left: 8 });
+        expect(iter.next()).toEqual({ top: 8, left: 8 });
+        expect(iter.next()).toEqual({ top: 7, left: 8 });
+        expect(iter.next()).toEqual({ top: 6, left: 9 });
+        expect(iter.next()).toEqual({ top: 5, left: 9 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+
+        startPos = { top: 3, left: 6 };
+        iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.next()).toEqual({ top: 3, left: 6 });
+        expect(iter.next()).toEqual({ top: 3, left: 7 });
+        expect(iter.next()).toEqual({ top: 4, left: 8 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+        
+        startPos = { top: 1, left: 10 };
+        iter = gridUtil.getPathIterator(endPos, startPos);
+        expect(iter.next()).toEqual({ top: 1, left: 10 });
+        expect(iter.next()).toEqual({ top: 2, left: 10 });
+        expect(iter.next()).toEqual({ top: 3, left: 9 });
+        expect(iter.next()).toEqual({ top: 4, left: 9 });
+        expect(iter.next()).toBeNull();
+      });
+    });
+  });
 });

@@ -49,6 +49,38 @@
       getTemplate: function (templateName) {
         var template = $templateCache.get(templateName);
         return template ? template : null;
+      },
+      
+      getPathIterator: function (endPos, startPos) {
+        var topDelta = endPos.top - startPos.top;
+        var leftDelta = endPos.left - startPos.left;        
+        var steps = Math.max(Math.abs(topDelta), Math.abs(leftDelta));
+        var currStep = 0;
+        var currPos = null;
+        var nextPos = { top: startPos.top, left: startPos.left };
+        
+        return {
+          hasNext: function () {
+            return nextPos !== null;
+          },
+          next: function () {
+            currPos = nextPos;
+            
+            if (currStep < steps) {
+              currStep++;              
+              var currTopDelta = Math.round((currStep/steps) * topDelta);
+              var currLeftDelta = Math.round((currStep/steps) * leftDelta);
+              nextPos = {
+                top: startPos.top + currTopDelta,
+                left: startPos.left + currLeftDelta
+              };
+            } else {
+              nextPos = null;
+            }
+
+            return currPos;
+          }
+        };
       }
     };
   }]);
