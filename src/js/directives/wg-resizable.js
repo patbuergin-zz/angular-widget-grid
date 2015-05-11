@@ -89,6 +89,9 @@
             startRender.bottom = startRender.top + startRender.height;
             startRender.right = startRender.left + startRender.width;
             
+            event.offsetX = event.offsetX || event.layerX;
+            event.offsetY = event.offsetY || event.layerY;
+            
             // add an offset to avoid ambiguity when faced w/ odd widths and/or heights
             var delta = { top: ADD_OFFSET, right: ADD_OFFSET, bottom: ADD_OFFSET, left: ADD_OFFSET };
             
