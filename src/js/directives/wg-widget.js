@@ -18,10 +18,8 @@
     self.setPosition = function (position) {
       self.widget.top = position.top || self.widget.top;
       self.widget.left = position.left || self.widget.left;
-      self.widget.height = position.height || self.widget.height;
-      self.widget.width = position.width || self.widget.width;
-      
-      console.log('set widget position', self.widget, position);
+      self.widget.height = position.bottom - position.top + 1 || position.height || self.widget.height;
+      self.widget.width = position.right - position.left + 1 || position.width || self.widget.width;
       
       gridCtrl.updateRendering();
     };

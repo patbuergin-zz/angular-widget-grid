@@ -17,6 +17,7 @@
     self.updateRendering = updateRendering;
     self.setRootElement = setRootElement;
     self.getPositions = getPositions;
+    self.isPositionObstructed = isPositionObstructed;
     self.rasterizeCoords = rasterizeCoords;
     
     function addWidget(widget) {
@@ -61,6 +62,16 @@
     
     function rasterizeCoords(x, y) {
       return rendering.rasterizeCoords(x, y, rootElement[0].clientWidth, rootElement[0].clientHeight);
+    }
+    
+    function isPositionObstructed(i, j, excludedPos) {
+      // pass if (i, j) is within the excluded area, if any
+      if (excludedPos && excludedPos.top <= i && i <= excludedPos.bottom &&
+          excludedPos.left <= j && j <= excludedPos.right) {
+        return false;
+      }
+      
+      return rendering ? rendering.isObstructed(i, j) : true;
     }
   }]);
   

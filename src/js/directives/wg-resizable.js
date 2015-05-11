@@ -37,6 +37,7 @@
       INDEX_DRAGGER_SW = 7;
   var MIN_HEIGHT = 42,
       MIN_WIDTH = 42;
+  var ADD_OFFSET = 1;
   
   angular.module('widgetGrid').directive('wgResizer', ['$document', function ($document) {
     return {
@@ -74,23 +75,28 @@
             var container = containerElement[0],
                 widgetContainer = container.parentElement;
             
-            var startPos = {
-              top: widgetContainer.offsetTop,
-              left: widgetContainer.offsetLeft,
-              height: container.offsetHeight,
-              width: container.offsetWidth
-            };
-            startPos.bottom = startPos.top + startPos.height;
-            startPos.right = startPos.left + startPos.width;
+            var startPos = {}; // grid positions
+            startPos.top = widgetCtrl.widget.top;
+            startPos.left = widgetCtrl.widget.left;
+            startPos.bottom = startPos.top + widgetCtrl.widget.height - 1;
+            startPos.right = startPos.left + widgetCtrl.widget.width - 1;
             
-            // add a 1px offset to avoid ambiguity when faced w/ odd widths and/or heights
-            var delta = { top: 1, right: 1, bottom: 1, left: 1 };
+            var startRender = {}; // pixel values
+            startRender.top = widgetContainer.offsetTop;
+            startRender.left = widgetContainer.offsetLeft;
+            startRender.height = container.offsetHeight;
+            startRender.width = container.offsetWidth;
+            startRender.bottom = startRender.top + startRender.height;
+            startRender.right = startRender.left + startRender.width;
+            
+            // add an offset to avoid ambiguity when faced w/ odd widths and/or heights
+            var delta = { top: ADD_OFFSET, right: ADD_OFFSET, bottom: ADD_OFFSET, left: ADD_OFFSET };
             
             var draggerOffset = {
-              top: event.offsetY + 1,
-              left: event.offsetX + 1,
-              bottom: event.offsetY - dragger.element[0].offsetHeight + 1,
-              right: event.offsetX - dragger.element[0].offsetWidth + 1
+              top: event.offsetY + ADD_OFFSET,
+              left: event.offsetX + ADD_OFFSET,
+              bottom: event.offsetY - dragger.element[0].offsetHeight + ADD_OFFSET,
+              right: event.offsetX - dragger.element[0].offsetWidth + ADD_OFFSET
             };
             
             var gridPositions = gridCtrl.getPositions();
@@ -111,19 +117,19 @@
                   dragPositionY = event.clientY - gridPositions.top;
               
               if (dragger.up) {
-                delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height - 1) - startPos.top;
-                delta.top = Math.min(delta.top, startPos.height - MIN_HEIGHT);
+                delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height - 1) - startRender.top;
+                delta.top = Math.min(delta.top, startRender.height - MIN_HEIGHT);
               } else if (dragger.down) {
-                delta.bottom = startPos.bottom - Math.min(Math.max(dragPositionY - draggerOffset.bottom, 0), gridPositions.height - 1);
-                delta.bottom = Math.min(delta.bottom, startPos.height - MIN_HEIGHT);
+                delta.bottom = startRender.bottom - Math.min(Math.max(dragPositionY - draggerOffset.bottom, 0), gridPositions.height - 1);
+                delta.bottom = Math.min(delta.bottom, startRender.height - MIN_HEIGHT);
               }
               
               if (dragger.left) {
-                delta.left = Math.min(Math.max(dragPositionX - draggerOffset.left, 0), gridPositions.width - 1) - startPos.left; 
-                delta.left = Math.min(delta.left, startPos.width - MIN_WIDTH);
+                delta.left = Math.min(Math.max(dragPositionX - draggerOffset.left, 0), gridPositions.width - 1) - startRender.left; 
+                delta.left = Math.min(delta.left, startRender.width - MIN_WIDTH);
               } else if (dragger.right) {
-                delta.right = startPos.right - Math.min(Math.max(dragPositionX - draggerOffset.right, 0), gridPositions.width - 1); 
-                delta.right = Math.min(delta.right, startPos.width - MIN_WIDTH);
+                delta.right = startRender.right - Math.min(Math.max(dragPositionX - draggerOffset.right, 0), gridPositions.width - 1); 
+                delta.right = Math.min(delta.right, startRender.width - MIN_WIDTH);
               }
               
               containerElement.css({
@@ -141,21 +147,94 @@
               $document.off('mousemove touchmove', onMove);
               $document.off('mouseup touchend touchcancel', onUp);
               
-              var start = gridCtrl.rasterizeCoords(startPos.left + delta.left, startPos.top + delta.top),
-                  end = gridCtrl.rasterizeCoords(startPos.right - delta.right, startPos.bottom - delta.bottom),
-                  height = end.i - start.i + 1,
-                  width = end.j - start.j + 1;
+              var requestedStartPoint = gridCtrl.rasterizeCoords(startRender.left + delta.left, startRender.top + delta.top),
+                  requestedEndPoint = gridCtrl.rasterizeCoords(startRender.right - delta.right, startRender.bottom - delta.bottom);
+
+              var requestedPos = {
+                top: requestedStartPoint.i,
+                right: requestedEndPoint.j,
+                bottom: requestedEndPoint.i,
+                left: requestedStartPoint.j
+              };
               
-              // TODO: sanitize 
-              console.debug(start, end, height, width);
+              var finalPos = {};
               
-              widgetCtrl.setPosition({
-                top: start.i,
-                left: start.j,
-                width: width,
-                height: height
-              });
               
+              // determine a suitable final position (one that is not obstructed)
+              var foundCollision, i, j;
+              if (dragger.up && requestedPos.top < startPos.top) {
+                finalPos.top = startPos.top;
+                
+                while (finalPos.top > requestedPos.top) {
+                  // check whether adding another row would cause any conflict
+                  foundCollision = false;
+                  for (j = Math.max(startPos.left, requestedPos.left); j <= Math.min(startPos.right, requestedPos.right); j++) {
+                    if (gridCtrl.isPositionObstructed(finalPos.top - 1, j)) {
+                      foundCollision = true;
+                      break;
+                    }
+                  }
+                  if (foundCollision) { break; }
+                  
+                  finalPos.top--; // add row
+                }
+              } else if (dragger.down && requestedPos.bottom > startPos.bottom) {
+                finalPos.bottom = startPos.bottom;
+                
+                while (finalPos.bottom < requestedPos.bottom) {
+                  foundCollision = false;
+                  for (j = Math.max(startPos.left, requestedPos.left); j <= Math.min(startPos.right, requestedPos.right); j++) {
+                    if (gridCtrl.isPositionObstructed(finalPos.bottom + 1, j)) {
+                      foundCollision = true;
+                      break;
+                    }
+                  }
+                  if (foundCollision) { break; }
+                  
+                  finalPos.bottom++;
+                }
+              }
+              
+              finalPos.top = finalPos.top || requestedPos.top;
+              finalPos.bottom = finalPos.bottom || requestedPos.bottom;
+              
+              if (dragger.left && requestedPos.left < startPos.left) {
+                finalPos.left = startPos.left;
+                
+                while (finalPos.left > requestedPos.left) {
+                  // check whether adding another column would cause any conflict
+                  foundCollision = false;
+                  for (i = finalPos.top; i <= finalPos.bottom; i++) {
+                    if (gridCtrl.isPositionObstructed(i, finalPos.left - 1)) {
+                      foundCollision = true;
+                      break;
+                    }
+                  }
+                  if (foundCollision) { break; }
+                  
+                  finalPos.left--; // add column
+                }
+              } else if (dragger.right && requestedPos.right > startPos.right) {
+                finalPos.right = startPos.right;
+                
+                while (finalPos.right < requestedPos.right) {
+                  foundCollision = false;
+                  for (i = finalPos.top; i <= finalPos.bottom; i++) {
+                    if (gridCtrl.isPositionObstructed(i, finalPos.right + 1)) {
+                      foundCollision = true;
+                      break;
+                    }
+                  }
+                  if (foundCollision) { break; }
+                  
+                  finalPos.right++;
+                }
+              }
+
+              finalPos.right = finalPos.right || requestedPos.right;
+              finalPos.left = finalPos.left || requestedPos.left;
+
+              widgetCtrl.setPosition(finalPos);
               
               // reset style
               dragger.element.removeClass('dragging');
