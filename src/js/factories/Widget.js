@@ -21,6 +21,13 @@
       this.style = {};
     };
     
+    Widget.prototype.setPosition = function (position) {
+      this.top = position.top || this.top;
+      this.left = position.left || this.left;
+      this.height = position.bottom - position.top + 1 || position.height || this.height;
+      this.width = position.right - position.left + 1 || position.width || this.width;
+    };
+    
     return Widget;
   }]);
 })();

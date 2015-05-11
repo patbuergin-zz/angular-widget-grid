@@ -1,111 +1,92 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {  
-  angular.module('widgetGrid').controller('wgGridController', ['$attrs', '$timeout', 'Grid', 'gridRenderer', function ($attrs, $timeout, Grid, gridRenderer) {
+  angular.module('widgetGrid').controller('wgGridController', ['$attrs', '$element', '$scope', 'Grid', 'gridRenderer', function ($attrs, $element, $scope, Grid, gridRenderer) {
     var self = this;
     
     var gridOptions = {
-      columns: $attrs.columns,
-      rows: $attrs.rows
+      columns: $scope.columns,
+      rows: $scope.rows
     };
     self.grid = new Grid(gridOptions);
-    var rendering;
-    var rootElement;
+    
+    var rendering = null;
     
     self.addWidget = addWidget;
-    self.updateGrid = updateGrid;
+    self.updateGridSize = updateGridSize;
     self.updateRendering = updateRendering;
-    self.setRootElement = setRootElement;
     self.getPositions = getPositions;
-    self.isPositionObstructed = isPositionObstructed;
     self.rasterizeCoords = rasterizeCoords;
+    self.updateWidget = updateWidget;
+    self.getWidgetStyle = getWidgetStyle;
+    self.isPositionObstructed = isObstructed;
+    self.isAreaObstructed = isAreaObstructed;
+    
+    $scope.$watch('columns', updateGridSize);
+    $scope.$watch('rows', updateGridSize);
     
     function addWidget(widget) {
       self.grid.add(widget);
-      updateGrid();
-    }
-    
-    function updateGrid() {
-      var columns = $attrs.columns;
-      var rows = $attrs.rows;
-      self.grid.resize(rows, columns);
       updateRendering();
     }
     
-    function updateRendering() {
-       rendering = gridRenderer.render(self.grid);
-
-       $timeout(function () {
-         for (var i = 0; i < self.grid.widgets.length; i++) {
-           var widget = self.grid.widgets[i];
-           widget.style = rendering.getStyle(widget.id);
-         }
-       });
+    function updateGridSize() {
+      var columns = parseInt($scope.columns);
+      var rows = parseInt($scope.rows);
+      if (self.grid.columns !== columns || self.grid.rows !== rows) {
+        self.grid.resize(rows, columns);
+        updateRendering();
+      }
     }
     
-    function setRootElement(element) {
-      rootElement = element;
+    function updateRendering() {
+      rendering = gridRenderer.render(self.grid);
+      $scope.$broadcast('rendering-finished');
+    }
+    
+    function updateWidget(widget) {
+        rendering.updateWidget(widget);
+    }
+    
+    function getWidgetStyle(widget) {
+      return rendering.getStyle(widget.id);
     }
     
     function getPositions() {
-      if (!rootElement) {
-        return {};
-      }
-      
       return {
-        top: rootElement[0].offsetTop,
-        left: rootElement[0].offsetLeft,
-        height: rootElement[0].clientHeight,
-        width: rootElement[0].clientWidth
+        top: $element[0].offsetTop,
+        left: $element[0].offsetLeft,
+        height: $element[0].clientHeight,
+        width: $element[0].clientWidth
       };
     }
     
-    function rasterizeCoords(x, y) {
-      return rendering.rasterizeCoords(x, y, rootElement[0].clientWidth, rootElement[0].clientHeight);
+    function isObstructed(i, j, excludedArea) {
+      return rendering ? rendering.isObstructed(i, j, excludedArea) : true;
     }
     
-    function isPositionObstructed(i, j, excludedPos) {
-      // pass if (i, j) is within the excluded area, if any
-      if (excludedPos && excludedPos.top <= i && i <= excludedPos.bottom &&
-          excludedPos.left <= j && j <= excludedPos.right) {
-        return false;
-      }
-      
-      return rendering ? rendering.isObstructed(i, j) : true;
+    function isAreaObstructed(area, excludedArea, fromBottom, fromRight) {
+      return rendering ? rendering.isAreaObstructed(area, excludedArea, fromBottom, fromRight) : true;
+    }
+    
+    function rasterizeCoords(x, y) {
+      return rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
     }
   }]);
   
   angular.module('widgetGrid').directive('wgGrid', gridDirective);
   function gridDirective() {
     return {
-      scope: true,
+      scope: {
+        'columns': '@',
+        'rows': '@'
+      },
       restrict: 'E',
       controller: 'wgGridController',
       controllerAs: 'gridCtrl',
       transclude: true,
       replace: true,
-      templateUrl: 'wg-grid',
-      link: function (scope, element, attrs) {
-        var ctrl = scope.gridCtrl;
-        
-        ctrl.setRootElement(element);
-        
-        var firstColumnChange = true, firstRowChange = true;
-        attrs.$observe('columns', function () {
-          if (firstColumnChange) {
-            firstColumnChange = false;
-          } else {
-            ctrl.updateGrid();
-          }
-        });
-        attrs.$observe('rows', function () {
-          if (firstRowChange) {
-            firstRowChange = false;
-          } else {
-            ctrl.updateGrid();
-          }
-        });
-      }
+      templateUrl: 'wg-grid'
     };
   }
 })();

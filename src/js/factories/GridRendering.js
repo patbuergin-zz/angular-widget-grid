@@ -18,24 +18,60 @@
     GridRendering.prototype.getWidgetIdAt = function (i, j) {
       for (var widgetId in this.positions) {
         var pos = this.positions[widgetId];
-        
+
         if (pos.top <= i && i <= (pos.top + pos.height - 1) &&
             pos.left <= j && j <= (pos.left + pos.width - 1)) {
           return widgetId;
         }
       }
-
       return null;
     };
+    
+    GridRendering.prototype.updateWidget = function (widget) {
+      var position = this.positions[widget.id];
+      position.top = widget.top || position.top;
+      position.left = widget.left || position.left;
+      position.height = widget.height || position.height;
+      position.width = widget.width || position.width;
+    };
   
-    GridRendering.prototype.isObstructed = function (i, j) {
+    GridRendering.prototype.isObstructed = function (i, j, excludedArea) {
+      // fail if (i, j) exceeds the grid's non-expanding boundaries
       if (i < 1 || j < 1 || j > this.grid.columns) {
         return true;
+      }
+      // pass if (i, j) is within the excluded area, if any
+      if (excludedArea && excludedArea.top <= i && i <= excludedArea.bottom &&
+          excludedArea.left <= j && j <= excludedArea.right) {
+        return false;
       }
       return this.getWidgetIdAt(i, j) !== null;
     };
     
+    GridRendering.prototype.isAreaObstructed = function (area, excludedArea, fromBottom, fromRight) {
+      var top = area.top,
+          left = area.left,
+          bottom = area.bottom || area.top + area.height - 1,
+          right = area.right || area.left + area.width - 1;
+      var verticalStart = fromBottom ? bottom : top,
+          verticalStep = fromBottom ? -1 : 1,
+          verticalEnd = (fromBottom ? top : bottom) + verticalStep;
+      var horizontalStart = fromRight ? right : left,
+          horizontalStep = fromRight ? -1 : 1,
+          horizontalEnd = (fromRight ? left: right) + horizontalStep;
+      
+      for (var i = verticalStart; i !== verticalEnd; i += verticalStep) {
+        for (var j = horizontalStart; j !== horizontalEnd; j += horizontalStep) {
+          if (this.isObstructed(i, j, excludedArea)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    
     GridRendering.prototype.getStyle = function (widgetId) {
+      widgetId = widgetId.id || widgetId;
       var render = this.positions[widgetId];
       
       if (!render) {

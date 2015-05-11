@@ -24,62 +24,32 @@
           }
           
           // check for conflicts
-          var needsRepositioning = false;
-          
-          var i, j;
-          // check corners
-          if (rendering.isObstructed(widget.top, widget.left) ||
-              rendering.isObstructed(widget.top + position.height - 1, widget.left + position.width - 1)) {
-            needsRepositioning = true;
-          } else {
-            // check the entire widget area
-            for (i = widget.top; i < widget.top + position.height; i++) {
-              for (j = widget.left; j < widget.left + position.width; j++) {
-                if (rendering.isObstructed(i, j)) {
-                  needsRepositioning = true;
-                  break;
-                }
-              }
-              if (needsRepositioning) { break; }
-            }
-          }
+          var needsRepositioning = rendering.isAreaObstructed({
+            top: widget.top,
+            left: widget.left,
+            height: position.height,
+            width: position.width
+          });
           
           // resolve conflicts, if any
           if (needsRepositioning) {
-            i = 1;
+            var i = 1;
             while (needsRepositioning) {
-              var widgetFits, widgetRowFits;
-              for (j = 1; j <= grid.columns - position.width + 1; j++) {
-                // check whether the widget could be placed at (i,j)
-                widgetFits = true;
-                for (var ii = i; ii < i + position.height; ii++) {
-                  widgetRowFits = true;
-                  for (var jj = j; jj < j + position.width; jj++) {
-                    if (rendering.isObstructed(ii, jj)) {
-                      widgetRowFits = false;
-                      break;
-                    }
-                  }
-                  if (!widgetRowFits) {
-                    widgetFits = false;
-                    break;
-                  }
-                }
+              for (var j = 1; j <= grid.columns - position.width + 1; j++) {
+                needsRepositioning = rendering.isAreaObstructed({
+                  top: i,
+                  left: j,
+                  height: position.height,
+                  width: position.width
+                });
                 
-                if (widgetFits) {
+                if (!needsRepositioning) {
                   position.top = i;
                   position.left = j;
-                  needsRepositioning = false;
                   break;
                 }
               }
               i++;
-              
-              if (i === 1337) {
-                console.trace();
-                console.debug('endless loop', widget, position, rendering.positions);
-                break;
-              }
             }
           } else {
             position.top = widget.top;

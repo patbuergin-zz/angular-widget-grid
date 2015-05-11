@@ -30,12 +30,41 @@
   z-index: 20;
 }
 
+.wg-widget-edit-move {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  z-index: 200;
+  cursor: move;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.wg-moving {
+  z-index: 9999;
+}
+
+.wg-moving .wg-widget-edit-move {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(0, 113, 188, 0.12);
+  cursor: move;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
 .wg-widget-edit-resize {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  z-index: 100;
 }
 
 .wg-resize {

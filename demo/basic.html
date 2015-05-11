@@ -22,7 +22,7 @@
       </div>
 
       <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" class="demo-grid" id="demo-grid">
-        <wg-widget wg-resizable editable="{{demo.editable}}" position="widget.position" ng-repeat="widget in demo.widgets">
+        <wg-widget wg-resizable wg-movable editable="demo.editable" position="widget.position" ng-repeat="widget in demo.widgets">
           <div ng-bind-html="widget.inner"></div>
         </wg-widget>
       </wg-grid>

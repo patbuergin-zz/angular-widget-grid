@@ -1,55 +1,41 @@
 (function () {
-  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', 'Widget', function($scope, $compile, Widget) {
-    var self = this;
-    var widgetOptions = $scope.position;
-    var gridCtrl;
-    
-    self.editable = false;
-    self.widget = new Widget(widgetOptions);
-    
-    self.setGridCtrl = function (ctrl) {
-      gridCtrl = ctrl;
-    };
-    
-    self.innerCompile = function (element) {
+  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', 'Widget', function($scope, $compile) {    
+    this.innerCompile = function (element) {
       $compile(element)($scope);
-    };
-    
-    self.setPosition = function (position) {
-      self.widget.top = position.top || self.widget.top;
-      self.widget.left = position.left || self.widget.left;
-      self.widget.height = position.bottom - position.top + 1 || position.height || self.widget.height;
-      self.widget.width = position.right - position.left + 1 || position.width || self.widget.width;
-      
-      gridCtrl.updateRendering();
     };
   }]);
   
-  angular.module('widgetGrid').directive('wgWidget', widgetDirective);
-  function widgetDirective() {
+  angular.module('widgetGrid').directive('wgWidget', ['$compile', 'Widget', function ($compile, Widget) {
     return {
       scope: {
-        position: '=position'
+        position: '=',
+        editable: '=?'
       },
       restrict: 'E',
       controller: 'wgWidgetController',
-      controllerAs: 'widgetCtrl',
       require: '^wgGrid',
       transclude: true,
       replace: true,
       templateUrl: 'wg-widget',
-      link: {
-        post: function (scope, element, attrs, gridCtrl) {
-          var widgetCtrl = scope.widgetCtrl;
-          
-          gridCtrl.addWidget(scope.widgetCtrl.widget);
-          widgetCtrl.setGridCtrl(gridCtrl);
-          
-          attrs.$observe('editable', function (newVal) {
-            scope.widgetCtrl.editable = newVal === 'true';
-          });
-        }
+      link: function (scope, element, attrs, gridCtrl) {
+        var widgetOptions = scope.position;
+        var widget = new Widget(widgetOptions);
+        
+        scope.editable = false;
+        scope.widget = widget;
+        
+        scope.setWidgetPosition = function (position) {
+          widget.setPosition(position);
+          gridCtrl.updateWidget(widget);
+          element.css(gridCtrl.getWidgetStyle(widget));
+        };
+        
+        scope.$on('rendering-finished', function () {
+          element.css(gridCtrl.getWidgetStyle(widget));
+        });
+        
+        gridCtrl.addWidget(widget);
       }
     };
-  }
+  }]);
 })();

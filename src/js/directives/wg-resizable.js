@@ -1,21 +1,13 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {
-  angular.module('widgetGrid').controller('wgResizableCtrl', ['$scope', function ($scope) {
-    var self = this;
-  }]);
-
   angular.module('widgetGrid').directive('wgResizable', ['gridUtil', function(gridUtil) {
     return {
       restrict: 'A',
-      controller: 'wgResizableCtrl',
-      controllerAs: 'resizableCtrl',
       require: 'wgWidget',
       link: {
         pre: function (scope, element, attrs, widgetCtrl) {
-          var ctrl = scope.resizableCtrl;
-          
-          // init template
+          // init & append template
           var templateContent = gridUtil.getTemplate('wg-resizable');
           if (templateContent) {
             var template = angular.element(templateContent);
@@ -42,11 +34,8 @@
   angular.module('widgetGrid').directive('wgResizer', ['$document', function ($document) {
     return {
       restrict: 'A',
-      require: ['^wgWidget', '^wgGrid'],
-      link: function (scope, element, attrs, ctrls) {
-        var widgetCtrl = ctrls[0],
-            gridCtrl = ctrls[1];
-        
+      require: '^wgGrid',
+      link: function (scope, element, attrs, gridCtrl) {        
         var draggerElements = element.children();
         
         var draggers = [
@@ -76,10 +65,10 @@
                 widgetContainer = container.parentElement;
             
             var startPos = {}; // grid positions
-            startPos.top = widgetCtrl.widget.top;
-            startPos.left = widgetCtrl.widget.left;
-            startPos.bottom = startPos.top + widgetCtrl.widget.height - 1;
-            startPos.right = startPos.left + widgetCtrl.widget.width - 1;
+            startPos.top = scope.widget.top;
+            startPos.left = scope.widget.left;
+            startPos.bottom = startPos.top + scope.widget.height - 1;
+            startPos.right = startPos.left + scope.widget.width - 1;
             
             var startRender = {}; // pixel values
             startRender.top = widgetContainer.offsetTop;
@@ -237,7 +226,7 @@
               finalPos.right = finalPos.right || requestedPos.right;
               finalPos.left = finalPos.left || requestedPos.left;
 
-              widgetCtrl.setPosition(finalPos);
+              scope.setWidgetPosition(finalPos);
               
               // reset style
               dragger.element.removeClass('dragging');
