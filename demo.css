@@ -1,0 +1,273 @@
+.wg-grid {
+  position: absolute;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.wg-widget {
+  position: absolute;
+/*  overflow: visible;*/
+}
+
+.wg-widget-content,
+.wg-widget-overlay,
+.wg-widget-content > * {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.wg-widget-content {
+  overflow: hidden;
+}
+
+.wg-widget.editable::before {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  
+  background-color: rgba(255, 255, 255, 0.8);
+  content: '';
+}
+
+/*.wg-widget-menu {
+  float: right;
+  margin-top: 20px;
+  margin-right: 20px;
+  z-index: 30;
+  position: relative;
+}
+
+.wg-widget-menu-item {
+  background-color: rgb(0, 113, 188);
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  text-transform: uppercase;
+}
+
+.wg-widget-menu-item:hover {
+  background-color: rgb(0, 138, 229);
+}
+
+.wg.widget-menu-item:active,
+.wg-widget-menu-item:focus {
+  background-color: rgb(0, 174, 239);
+}
+
+.wg-widget-menu-item + .wg-widget-menu-item {
+  margin-left: 10px;
+}*/
+
+.wg-widget-edit {
+  position: relative;
+  z-index: 20;
+}
+
+.wg-widget-edit-move {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  z-index: 20;
+  cursor: move;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.wg-moving {
+  z-index: 9999;
+}
+
+.wg-moving .wg-widget-edit-move {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(0, 113, 188, 0.12);
+  cursor: move;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.wg-widget-edit-resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 15;
+}
+
+.wg-resize {
+  position: absolute;
+}
+
+.wg-resize-diag {
+  border-color: rgb(0, 113, 188);
+  border-style: solid;
+  width: 12px;
+  height: 12px;
+}
+
+.wg-resize-diag:hover {
+  border-color: rgb(0, 138, 229);
+}
+
+.wg-resize-diag.dragging {
+  border-color: rgb(0, 174, 239);
+}
+
+.wg-resize-axis {
+  background-color: rgba(0, 113, 188, 0.12);
+}
+
+.wg-resize-axis.dragging {
+  background-color: rgba(0, 174, 239, 0.24);
+}
+
+.wg-resize-nw {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+  border-width:  10px 0 0  10px;
+}
+
+.wg-resize-ne {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+  border-width:  10px  10px 0 0;
+}
+
+.wg-resize-se {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  border-width: 0  10px  10px 0;
+}
+
+.wg-resize-sw {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+  border-width: 0 0  10px  10px;
+}
+
+.wg-resize-n {
+  top: 0;
+  right: 0;
+  left: 0;
+  height:  10px;
+  cursor: n-resize;
+}
+
+.wg-resize-e {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width:  10px;
+  cursor: e-resize;
+}
+
+.wg-resize-s {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height:  10px;
+  cursor: s-resize;
+}
+
+.wg-resize-w {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width:  10px;
+  cursor: w-resize;
+}
+
+/* Demo Stuff */
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+.demo-header {
+  background-color: #333;
+  height: 22px;
+  padding: 10px 20px;
+}
+
+.demo-title {
+  color: #999;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.demo-config {
+  float: right;
+}
+
+.demo-config input[type="checkbox"] {
+  height: 16px;
+  width: 16px;
+  margin: 0;
+  position: relative;
+  top: 4px;
+  left: 4px;
+}
+
+.demo-config input[type="number"] {
+  background-color: #555;
+  border: none;
+  color: white;
+  padding: 3px 6px;
+  margin-left: 5px;
+  max-width: 42px;
+}
+
+.demo-config label {
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.demo-config input+label {
+  margin-left: 12px;
+}
+
+.demo-grid {
+  background-color: #eee;
+  top: 42px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.demo-grid-dimensions {
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  color: #E0E0E0;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 15;
+}
+
+.demo-greeting {
+  color: #eee;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 20px;
+}

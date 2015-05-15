@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="lib/angular-widget-grid.min.js"></script>
+    <script src="demo.js"></script>
+    <link rel="stylesheet" href="demo.css"></link>
+  </head>
+  <body ng-app="widgetGridDemo">
+    <div ng-controller="DemoController as demo">
+      <div class="demo-header">
+        <div class="demo-title">angular-widget-grid</div>
+        <div class="demo-config">
+          <label for="columns">Columns</label>
+          <input type="number" id="columns" min="1" ng-model="demo.columns">
+          <label for="rows">Rows</label>
+          <input type="number" id="rows" min="1" ng-model="demo.rows">
+          <label for="editable">Editable</label>
+          <input type="checkbox" id="editable" ng-model="demo.editable">
+        </div>
+      </div>
+
+      <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" class="demo-grid" id="demo-grid">
+        <wg-widget wg-resizable wg-movable editable="demo.editable" ng-repeat="widget in demo.greetingWidgets" position="widget.position">
+          <div random-bg-color>
+            <p class="demo-greeting">{{widget.text}}</p>
+          </div>
+        </wg-widget>
+        <wg-widget wg-resizable wg-movable editable="demo.editable" position="{ top: 19, left: 1, width: 16, height: 9 }">
+          <youtube id="V9tmsIbi4Kw"/>
+        </wg-widget>
+      </wg-grid>
+
+      <div ng-hide="demo.editable" class="demo-grid-dimensions">{{demo.gridWidth}} x {{demo.gridHeight}}</div>
+    </div>
+  </body>
+</html>
