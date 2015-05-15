@@ -1,0 +1,78 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+.demo-header {
+  background-color: #333;
+  height: 22px;
+  padding: 10px 20px;
+}
+
+.demo-title {
+  color: #999;
+  float: left;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.demo-config {
+  float: right;
+}
+
+.demo-config input[type="checkbox"] {
+  height: 16px;
+  width: 16px;
+  margin: 0;
+  position: relative;
+  top: 4px;
+  left: 4px;
+}
+
+.demo-config input[type="number"] {
+  background-color: #555;
+  border: none;
+  color: white;
+  padding: 3px 6px;
+  margin-left: 5px;
+  max-width: 42px;
+}
+
+.demo-config label {
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.demo-config input+label {
+  margin-left: 12px;
+}
+
+.demo-grid {
+  background-color: #eee;
+  top: 42px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.demo-grid-dimensions {
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  color: #E0E0E0;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 15;
+}
+
+.demo-greeting {
+  color: #eee;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 20px;
+}

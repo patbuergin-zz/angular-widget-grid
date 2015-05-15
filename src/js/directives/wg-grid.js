@@ -4,15 +4,15 @@
   angular.module('widgetGrid').controller('wgGridController', ['$attrs', '$element', '$scope', 'Grid', 'gridRenderer', function ($attrs, $element, $scope, Grid, gridRenderer) {
     var self = this;
     
+    var rendering = null;
     var gridOptions = {
       columns: $scope.columns,
       rows: $scope.rows
     };
     self.grid = new Grid(gridOptions);
     
-    var rendering = null;
-    
     self.addWidget = addWidget;
+    self.removeWidget = removeWidget;
     self.updateGridSize = updateGridSize;
     self.updateRendering = updateRendering;
     self.getPositions = getPositions;
@@ -27,6 +27,11 @@
     
     function addWidget(widget) {
       self.grid.add(widget);
+      updateRendering();
+    }
+    
+    function removeWidget(widget) {
+      self.grid.remove(widget);
       updateRendering();
     }
     
@@ -81,7 +86,7 @@
         'columns': '@',
         'rows': '@'
       },
-      restrict: 'E',
+      restrict: 'AE',
       controller: 'wgGridController',
       controllerAs: 'gridCtrl',
       transclude: true,

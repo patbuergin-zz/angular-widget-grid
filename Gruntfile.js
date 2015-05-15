@@ -99,18 +99,38 @@ module.exports = function(grunt) {
         options: { livereload: true }
       }
     },
-    clean: ['build']
+    copy:{
+      main: {
+        files: [
+          { cwd: 'src/css', expand: true, src: ['*'], dest: 'dist/' }
+        ]
+      },
+      demo: {
+        files: [
+          { cwd: 'dist', expand: true, src: ['*.min.js', '*.css'], dest: 'demo/lib/' }
+        ]
+      }
+    },
+    clean: ['build'],
+    'gh-pages': {
+      options: {
+        base: 'demo'
+      },
+      src: ['**']
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-angular-templates');
+  grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-karma');
 
   grunt.registerTask('test', ['karma']);
-  grunt.registerTask('build', ['ngtemplates', 'concat', 'uglify', 'clean']);
+  grunt.registerTask('build', ['ngtemplates', 'concat', 'uglify', 'clean', 'copy']);
   grunt.registerTask('default', ['jshint', 'test', 'build']);
 };

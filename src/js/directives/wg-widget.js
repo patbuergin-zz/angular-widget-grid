@@ -11,18 +11,24 @@
         position: '=',
         editable: '=?'
       },
-      restrict: 'E',
+      restrict: 'AE',
       controller: 'wgWidgetController',
       require: '^wgGrid',
       transclude: true,
-      replace: true,
       templateUrl: 'wg-widget',
+      replace: true,
       link: function (scope, element, attrs, gridCtrl) {
         var widgetOptions = scope.position;
         var widget = new Widget(widgetOptions);
         
         scope.editable = false;
         scope.widget = widget;
+        
+        scope.getNodeIndex = function () {
+          var index = 0, elem = element[0];
+          while ((elem = elem.previousElementSibling) !== null) { ++index; }
+          return index;
+        };
         
         scope.setWidgetPosition = function (position) {
           widget.setPosition(position);
@@ -32,6 +38,10 @@
         
         scope.$on('rendering-finished', function () {
           element.css(gridCtrl.getWidgetStyle(widget));
+        });
+        
+        scope.$on('$destroy', function () {
+          gridCtrl.removeWidget(widget);
         });
         
         gridCtrl.addWidget(widget);

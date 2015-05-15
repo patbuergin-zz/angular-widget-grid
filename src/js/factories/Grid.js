@@ -16,6 +16,13 @@
     Grid.prototype.add = function (widget) {
       this.widgets.push(widget);
     };
+    
+    Grid.prototype.remove = function (widget) {
+      var idx = this.widgets.indexOf(widget);
+      if (idx >= 0) {
+        this.widgets.splice(idx, 1);
+      }
+    };
 
     Grid.prototype.resize = function (rows, columns) {
       columns = parseInt(columns) || 0;
