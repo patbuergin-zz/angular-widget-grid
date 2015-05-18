@@ -6,8 +6,10 @@
 
 .wg-widget {
   position: absolute;
+  z-index: 5;
 }
 
+.wg-grid-overlay,
 .wg-widget-content,
 .wg-widget-overlay,
 .wg-widget-content > * {

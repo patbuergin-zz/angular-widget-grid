@@ -21,7 +21,7 @@
         </div>
       </div>
 
-      <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" class="demo-grid" id="demo-grid">
+      <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" show-grid="demo.editable" class="demo-grid" id="demo-grid">
         <wg-widget wg-resizable wg-movable editable="demo.editable" ng-repeat="widget in demo.greetingWidgets" position="widget.position">
           <div random-bg-color>
             <p class="demo-greeting">{{widget.text}}</p>
