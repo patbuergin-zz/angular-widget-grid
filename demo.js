@@ -2,22 +2,22 @@ angular.module('widgetGridDemo', ["widgetGrid"])
 .controller('DemoController', function($timeout) {
   var vm = this;
   
-  vm.columns = 60;
-  vm.rows = 40;
+  vm.columns = 30;
+  vm.rows = 20;
   
   vm.editable = false;
   
   vm.greetingWidgets = [{
-    position: { top: 1, height: 18, left: 1, width: 25 },
+    position: { top: 1, height: 9, left: 1, width: 12 },
     text: 'Hi!'
   },{
-    position: { top: 16, height: 25, left: 28, width: 29 },
+    position: { top: 8, height: 12, left: 15, width: 13 },
     text: 'Hello!'
   },{
-    position: { top: 1, height: 12, left: 40, width: 19 },
+    position: { top: 1, height: 6, left: 21, width: 8 },
     text: 'Servus!'
   },{
-    position: { top: 20, height: 12, left: 17, width: 10 },
+    position: { top: 11, height: 6, left: 9, width: 5 },
     text: 'Salut!'
   }];
   
@@ -35,9 +35,9 @@ angular.module('widgetGridDemo', ["widgetGrid"])
 .directive('randomBgColor', function () {
   return {
     link: function (scope, element) {
-      var r = Math.floor(Math.random() * 100) + 80,
-          g = Math.floor(Math.random() * 100) + 80,
-          b = Math.floor(Math.random() * 100) + 80;
+      var r = Math.floor(Math.random() * 60) + 130,
+          g = Math.floor(Math.random() * 60) + 130,
+          b = Math.floor(Math.random() * 60) + 130;
       var bgColor = 'rgb(' + r + ',' + g + ',' + b + ')'; 
       element.css('background-color', bgColor);
     }
