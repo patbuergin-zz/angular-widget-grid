@@ -45,18 +45,24 @@
           var startRender = {}; // pixel values
           startRender.top = widgetContainer.offsetTop;
           startRender.left = widgetContainer.offsetLeft;
+          startRender.height = widgetContainer.clientHeight;
+          startRender.width = widgetContainer.clientWidth;
+          
           
           event.offsetX = event.offsetX || event.layerX;
           event.offsetY = event.offsetY || event.layerY;
           
-          var requestedPos = { top: 0, left: 0 };
+          var requestedRender = { top: startRender.top, left: startRender.left };
           
           var moverOffset = {
-            top: event.offsetY,
-            left: event.offsetX
+            top: event.offsetY + element[0].offsetTop,
+            left: event.offsetX + element[0].offsetLeft
           };
           
           var gridPositions = gridCtrl.getPositions();
+          
+          var cellHeight = (gridCtrl.grid.cellSize.height / 100) * gridPositions.height,
+              cellWidth = (gridCtrl.grid.cellSize.width / 100) * gridPositions.width;
           
           $document.on('mousemove touchmove', onMove);
           $document.on('mouseup touchend touchcancel', onUp);
@@ -73,12 +79,12 @@
             var dragPositionX = event.clientX - gridPositions.left,
                 dragPositionY = event.clientY - gridPositions.top;
             
-            requestedPos.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - 1);
-            requestedPos.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - 1); 
+            requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - 1);
+            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - 1); 
 
             widgetElement.css({
-              top: requestedPos.top + 'px',
-              left: requestedPos.left + 'px'
+              top: requestedRender.top + 'px',
+              left: requestedRender.left + 'px'
             });
             // TODO: preview
           }
@@ -88,33 +94,47 @@
             $document.off('mousemove touchmove', onMove);
             $document.off('mouseup touchend touchcancel', onUp);
 
-            // find a suitable final position
-            var requestedStartPoint = gridCtrl.rasterizeCoords(requestedPos.left, requestedPos.top);
-            var finalPosRequest = { top: requestedStartPoint.i, left: requestedStartPoint.j },
-                finalPos;
-            var movedDown = finalPosRequest.top >= startPos.top,
-                movedRight = finalPosRequest.left >= startPos.left;
-            var path = gridUtil.getPathIterator(startPos, finalPosRequest);
-            
-            while (path.hasNext()) {
-              var currPos = path.next();
-              
-              var targetArea = {
-                top: currPos.top,
-                left: currPos.left,
-                height: startPos.height,
-                width: startPos.width
-              };
-              
-              var areaObstructed = gridCtrl.isAreaObstructed(targetArea, startPos, movedDown, movedRight);
-              if (!areaObstructed) {
-                finalPos = currPos;
-                break;
-              }
+            if ((requestedRender.top % cellHeight) > cellHeight / 2) {
+              requestedRender.top += Math.floor(cellHeight);
             }
+            
+            if ((requestedRender.left % cellWidth) > cellWidth / 2) {
+              requestedRender.left += Math.floor(cellWidth);
+            }
+            
+            var finalPos = determineFinalPos(startPos, startRender, requestedRender);
 
             widgetElement.removeClass('wg-moving');
             scope.setWidgetPosition(finalPos);
+          }
+        }
+        
+        function determineFinalPos(startPos, startRender, requestedRender) {
+          if (startRender.top === requestedRender.top && startRender.left === requestedRender.left) {
+            return startPos;
+          }
+          
+          var movedDown = requestedRender.top >= startRender.top,
+              movedRight = requestedRender.left >= startRender.left;
+          
+          var finalPosRequest = gridCtrl.rasterizeCoords(requestedRender.left, requestedRender.top);
+          
+          var path = gridUtil.getPathIterator(startPos, { top: finalPosRequest.i, left: finalPosRequest.j });
+          
+          while (path.hasNext()) {
+            var currPos = path.next();
+            
+            var targetArea = {
+              top: currPos.top,
+              left: currPos.left,
+              height: startPos.height,
+              width: startPos.width
+            };
+            
+            var areaObstructed = gridCtrl.isAreaObstructed(targetArea, startPos, movedDown, movedRight);
+            if (!areaObstructed) {
+              return currPos;
+            }
           }
         }
       }
