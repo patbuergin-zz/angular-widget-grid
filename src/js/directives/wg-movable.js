@@ -80,13 +80,15 @@
                 dragPositionY = event.clientY - gridPositions.top;
             
             requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - 1);
-            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - 1); 
+            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - 1);
+            
+            var currentFinalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
+            gridCtrl.highlightArea(currentFinalPos);
 
             widgetElement.css({
               top: requestedRender.top + 'px',
               left: requestedRender.left + 'px'
             });
-            // TODO: preview
           }
           
           function onUp(event) {
@@ -94,30 +96,36 @@
             $document.off('mousemove touchmove', onMove);
             $document.off('mouseup touchend touchcancel', onUp);
 
-            if ((requestedRender.top % cellHeight) > cellHeight / 2) {
-              requestedRender.top += Math.floor(cellHeight);
-            }
-            
-            if ((requestedRender.left % cellWidth) > cellWidth / 2) {
-              requestedRender.left += Math.floor(cellWidth);
-            }
-            
-            var finalPos = determineFinalPos(startPos, startRender, requestedRender);
+            var finalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
+            gridCtrl.resetHighlights();
 
             widgetElement.removeClass('wg-moving');
             scope.setWidgetPosition(finalPos);
           }
         }
         
-        function determineFinalPos(startPos, startRender, requestedRender) {
+        function determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth) {
           if (startRender.top === requestedRender.top && startRender.left === requestedRender.left) {
             return startPos;
           }
           
-          var movedDown = requestedRender.top >= startRender.top,
-              movedRight = requestedRender.left >= startRender.left;
+          var anchorTop, anchorLeft;
+          if ((requestedRender.top % cellHeight) > cellHeight / 2) {
+            anchorTop = requestedRender.top + Math.floor(cellHeight);
+          } else {
+            anchorTop = requestedRender.top;
+          }
           
-          var finalPosRequest = gridCtrl.rasterizeCoords(requestedRender.left, requestedRender.top);
+          if ((requestedRender.left % cellWidth) > cellWidth / 2) {
+            anchorLeft = requestedRender.left + Math.floor(cellWidth);
+          } else {
+            anchorLeft = requestedRender.left;
+          }
+          
+          var movedDown = anchorTop >= startRender.top,
+              movedRight = anchorLeft >= startRender.left;
+          
+          var finalPosRequest = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           
           var path = gridUtil.getPathIterator(startPos, { top: finalPosRequest.i, left: finalPosRequest.j });
           
@@ -133,7 +141,7 @@
             
             var areaObstructed = gridCtrl.isAreaObstructed(targetArea, startPos, movedDown, movedRight);
             if (!areaObstructed) {
-              return currPos;
+              return targetArea;
             }
           }
         }

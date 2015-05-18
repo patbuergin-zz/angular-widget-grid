@@ -62,7 +62,10 @@
             dragger.element.addClass('dragging');
             
             var container = containerElement[0],
-                widgetContainer = container.parentElement;
+                widgetContainer = container.parentElement,
+                widgetElement = angular.element(widgetContainer);
+            
+            widgetElement.addClass('wg-resizing');
             
             var startPos = {}; // grid positions
             startPos.top = scope.widget.top;
@@ -124,20 +127,35 @@
                 delta.right = Math.min(delta.right, startRender.width - MIN_WIDTH);
               }
               
+              var currentFinalPos = determineFinalPos();
+              gridCtrl.highlightArea(currentFinalPos);
+              
               containerElement.css({
                 top: delta.top + 'px',
                 left: delta.left + 'px',
                 bottom: delta.bottom + 'px',
                 right: delta.right + 'px'
               });
-              
-              // TODO: preview
             }
             
             function onUp(event) {
               event.preventDefault();
               $document.off('mousemove touchmove', onMove);
               $document.off('mouseup touchend touchcancel', onUp);
+              
+
+              var finalPos = determineFinalPos();
+              scope.setWidgetPosition(finalPos);
+              gridCtrl.resetHighlights();
+              
+              // reset style
+              widgetElement.removeClass('wg-resizing');
+              dragger.element.removeClass('dragging');
+              containerElement.removeAttr('style');
+            }
+            
+            function determineFinalPos() {
+              var finalPos = {};
               
               var requestedStartPoint = gridCtrl.rasterizeCoords(startRender.left + delta.left, startRender.top + delta.top),
                   requestedEndPoint = gridCtrl.rasterizeCoords(startRender.right - delta.right, startRender.bottom - delta.bottom);
@@ -148,9 +166,6 @@
                 bottom: requestedEndPoint.i,
                 left: requestedStartPoint.j
               };
-              
-              var finalPos = {};
-              
               
               // determine a suitable final position (one that is not obstructed)
               var foundCollision, i, j;
@@ -225,12 +240,10 @@
 
               finalPos.right = finalPos.right || requestedPos.right;
               finalPos.left = finalPos.left || requestedPos.left;
-
-              scope.setWidgetPosition(finalPos);
+              finalPos.height = finalPos.bottom - finalPos.top + 1;
+              finalPos.width = finalPos.right - finalPos.left + 1;
               
-              // reset style
-              dragger.element.removeClass('dragging');
-              containerElement.removeAttr('style');
+              return finalPos;
             }
           }
         }
