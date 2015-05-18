@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {  
-  angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', 'Grid', 'gridRenderer', function ($element, $scope, Grid, gridRenderer) {
+  angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var self = this;
     
     var gridOptions = {
@@ -10,6 +10,7 @@
     };
     self.grid = new Grid(gridOptions);
     self.rendering = null;
+    self.highlight = null;
     
     self.addWidget = addWidget;
     self.removeWidget = removeWidget;
@@ -21,6 +22,8 @@
     self.getWidgetStyle = getWidgetStyle;
     self.isPositionObstructed = isObstructed;
     self.isAreaObstructed = isAreaObstructed;
+    self.highlightArea = highlightArea;
+    self.resetHighlights = resetHighlights;
     
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
@@ -41,6 +44,7 @@
       if (self.grid.columns !== columns || self.grid.rows !== rows) {
         self.grid.resize(rows, columns);
         updateRendering();
+        resetHighlights();
       }
     }
     
@@ -76,6 +80,20 @@
     
     function rasterizeCoords(x, y) {
       return self.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
+    }
+    
+    function highlightArea(area) {
+      if (area.top && area.left && area.height && area.width) {
+        $timeout(function () {
+          self.highlight = area;
+        });
+      }
+    }
+    
+    function resetHighlights() {
+      $timeout(function () {
+        self.highlight = null;
+      });
     }
   }]);
   
