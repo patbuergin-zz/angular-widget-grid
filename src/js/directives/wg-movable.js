@@ -23,8 +23,19 @@
     return {
       restrict: 'A',
       require: '^wgGrid',
-      link: function (scope, element, attrs, gridCtrl) {         
-        element.on('mousedown touchstart', onDown);
+      link: function (scope, element, attrs, gridCtrl) {
+        var eventDown, eventMove, eventUp;
+        if (window.navigator.pointerEnabled) {
+          eventDown = 'pointerdown';
+          eventMove = 'pointermove';
+          eventUp = 'pointerup';
+        } else {
+          eventDown = 'mousedown touchstart';
+          eventMove = 'mousemove touchmove';
+          eventUp = 'mouseup touchend touchcancel';
+        }
+        
+        element.on(eventDown, onDown);
         
         function onDown(event) {
           event.preventDefault();
@@ -64,8 +75,8 @@
           var cellHeight = (gridCtrl.grid.cellSize.height / 100) * gridPositions.height,
               cellWidth = (gridCtrl.grid.cellSize.width / 100) * gridPositions.width;
           
-          $document.on('mousemove touchmove', onMove);
-          $document.on('mouseup touchend touchcancel', onUp);
+          $document.on(eventMove, onMove);
+          $document.on(eventUp, onUp);
           
           function onMove(event) {
             event.preventDefault();
@@ -93,8 +104,8 @@
           
           function onUp(event) {
             event.preventDefault();
-            $document.off('mousemove touchmove', onMove);
-            $document.off('mouseup touchend touchcancel', onUp);
+            $document.off(eventMove, onMove);
+            $document.off(eventUp, onUp);
 
             var finalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
             gridCtrl.resetHighlights();

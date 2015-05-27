@@ -49,12 +49,23 @@
           { up: false, right: false, down: true, left: true, element: angular.element(draggerElements[INDEX_DRAGGER_SW]) }
         ];
         
+        var eventDown, eventMove, eventUp;
+        if (window.navigator.pointerEnabled) {
+          eventDown = 'pointerdown';
+          eventMove = 'pointermove';
+          eventUp = 'pointerup';
+        } else {
+          eventDown = 'mousedown touchstart';
+          eventMove = 'mousemove touchmove';
+          eventUp = 'mouseup touchend touchcancel';
+        }
+         
         for (var i = 0; i < draggers.length; i++) {
           registerDragHandler(draggers[i], element);
         }
-         
+        
         function registerDragHandler(dragger, containerElement) {
-          dragger.element.on('mousedown touchstart', onDown);
+          dragger.element.on(eventDown, onDown);
           
           function onDown(event) {
             event.preventDefault();
@@ -96,8 +107,8 @@
             
             var gridPositions = gridCtrl.getPositions();
             
-            $document.on('mousemove touchmove', onMove);
-            $document.on('mouseup touchend touchcancel', onUp);
+            $document.on(eventMove, onMove);
+            $document.on(eventUp, onUp);
             
             function onMove(event) {
               event.preventDefault();
@@ -140,8 +151,8 @@
             
             function onUp(event) {
               event.preventDefault();
-              $document.off('mousemove touchmove', onMove);
-              $document.off('mouseup touchend touchcancel', onUp);
+              $document.off(eventMove, onMove);
+              $document.off(eventUp, onUp);
               
 
               var finalPos = determineFinalPos();

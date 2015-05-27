@@ -34,6 +34,7 @@
   bottom: 10px;
   left: 10px;
   z-index: 20;
+  touch-action: none;
   cursor: move;
   cursor: -moz-grab;
   cursor: -webkit-grab;
@@ -63,6 +64,7 @@
 
 .wg-widget-edit-resize {
   position: absolute;
+  touch-action: none;
   top: 0;
   right: 0;
   bottom: 0;

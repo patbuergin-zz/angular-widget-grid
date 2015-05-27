@@ -6,6 +6,7 @@
     <script src="demo.js"></script>
     <link rel="stylesheet" href="lib/angular-widget-grid.css"></link>
     <link rel="stylesheet" href="demo.css"></link>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   </head>
   <body ng-app="widgetGridDemo">
     <div ng-controller="DemoController as demo">
@@ -16,8 +17,9 @@
           <input type="number" id="columns" min="1" ng-model="demo.columns">
           <label for="rows">Rows</label>
           <input type="number" id="rows" min="1" ng-model="demo.rows">
-          <label for="editable">Editable</label>
-          <input type="checkbox" id="editable" ng-model="demo.editable">
+          <button ng-click="demo.editable = !demo.editable" class="demo-edit-btn" ng-class="{ editing: demo.editable }">
+            {{ demo.editable ? "Done" : "Edit" }}
+          </button>
         </div>
       </div>
 
