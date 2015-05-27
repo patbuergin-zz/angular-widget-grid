@@ -11,43 +11,44 @@ body {
 
 .demo-header {
   background-color: #333;
-  height: 34px;
-  padding: 8px 20px 0;
+  padding: 0 20px;
 }
 
 .demo-title {
   color: #999;
-  float: left;
+  display:inline-block;
   font-weight: bold;
   font-size: 13px;
-  padding: 4px 0;
+  line-height: 42px;
 }
 
 .demo-config {
   float: right;
+  padding-top: 7px;
+  padding-bottom: 7px;
 }
 
 .demo-edit-btn {
-  border: 1px solid rgb(59, 100, 127);
+  background-color: rgb(59, 100, 127);
+  border: none;
   border-radius: 2px;
   color: #f0f0f0;
-  background-color: #555;
+  font-family: inherit;
   font-size: 12px;
   font-weight: bold;
+  line-height: 26px;
   margin-left: 24px;
-  padding: 5px 6px;
   text-transform: uppercase;
-  width: 54px;
+  width: 66px;
 }
 
 .demo-edit-btn:hover {
-  background-color: rgb(59, 100, 127);
+  background-color: rgb(22, 97, 146);
   cursor: pointer;
 }
 
 .demo-edit-btn.editing {
   background-color: rgb(20, 103, 157);
-  border-color: rgb(20, 103, 157);
 }
 
 .demo-config input[type="number"] {
@@ -98,10 +99,13 @@ body {
 }
 
 @media (max-width: 699px) {
-  input#columns,
+/*  input#columns,
   label[for="columns"],
   input#rows,
   label[for="rows"] {
+    display: none;
+  }*/
+  .hidden-xs {
     display: none;
   }
 }
