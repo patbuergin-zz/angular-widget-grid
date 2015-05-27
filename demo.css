@@ -1,12 +1,18 @@
+@-ms-viewport {
+  width: device-width;
+}
+
 body {
   font-family: sans-serif;
   margin: 0;
+  -ms-content-zooming: none;
+  touch-action: none;
 }
 
 .demo-header {
   background-color: #333;
-  height: 22px;
-  padding: 10px 20px;
+  height: 34px;
+  padding: 8px 20px 0;
 }
 
 .demo-title {
@@ -21,13 +27,27 @@ body {
   float: right;
 }
 
-.demo-config input[type="checkbox"] {
-  height: 16px;
-  width: 16px;
-  margin: 0;
-  position: relative;
-  top: 4px;
-  left: 4px;
+.demo-edit-btn {
+  border: 1px solid rgb(59, 100, 127);
+  border-radius: 2px;
+  color: #f0f0f0;
+  background-color: #555;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 24px;
+  padding: 5px 6px;
+  text-transform: uppercase;
+  width: 54px;
+}
+
+.demo-edit-btn:hover {
+  background-color: rgb(59, 100, 127);
+  cursor: pointer;
+}
+
+.demo-edit-btn.editing {
+  background-color: rgb(20, 103, 157);
+  border-color: rgb(20, 103, 157);
 }
 
 .demo-config input[type="number"] {
@@ -75,4 +95,13 @@ body {
   font-size: 16px;
   font-weight: 700;
   margin: 20px;
+}
+
+@media (max-width: 699px) {
+  input#columns,
+  label[for="columns"],
+  input#rows,
+  label[for="rows"] {
+    display: none;
+  }
 }
