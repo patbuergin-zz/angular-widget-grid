@@ -112,7 +112,7 @@ describe('GridRendering', function () {
       expect(rendering.isObstructed(5, 6)).toBe(true);
       expect(rendering.isObstructed(6, 8)).toBe(true);
       expect(rendering.isObstructed(8, 12)).toBe(true);
-      
+      console.debug(rendering.positions);
       expect(rendering.isObstructed(4, 6)).toBe(false);
       expect(rendering.isObstructed(4, 12)).toBe(false);
       expect(rendering.isObstructed(5, 5)).toBe(false);
@@ -122,9 +122,12 @@ describe('GridRendering', function () {
       expect(rendering.isObstructed(1, 1)).toBe(false);
     });
     
-    it('returns true when coords are not within the left, top, and/or right bounds of the grid', function () {
+    it('returns true when coords are not the bounds of the grid (unless param expanding is truthy)', function () {
       var rendering = new GridRendering(medGrid, {});
-      expect(rendering.isObstructed(9, 5)).toBe(false);
+      expect(rendering.isObstructed(9, 5)).toBe(true);
+      // w/ param expanding
+      expect(rendering.isObstructed(9, 5, null, true)).toBe(false);
+      
       expect(rendering.isObstructed(4, 13)).toBe(true);
       expect(rendering.isObstructed(0, 5)).toBe(true);
       expect(rendering.isObstructed(5, 0)).toBe(true);

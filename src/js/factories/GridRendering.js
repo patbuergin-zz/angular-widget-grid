@@ -35,11 +35,16 @@
       position.width = widget.width || position.width;
     };
   
-    GridRendering.prototype.isObstructed = function (i, j, excludedArea) {
+    GridRendering.prototype.isObstructed = function (i, j, excludedArea, expanding) {
       // fail if (i, j) exceeds the grid's non-expanding boundaries
       if (i < 1 || j < 1 || j > this.grid.columns) {
         return true;
       }
+      
+      if (!expanding && i > this.grid.rows) {
+        return true;
+      }
+      
       // pass if (i, j) is within the excluded area, if any
       if (excludedArea && excludedArea.top <= i && i <= excludedArea.bottom &&
           excludedArea.left <= j && j <= excludedArea.right) {
@@ -48,7 +53,7 @@
       return this.getWidgetIdAt(i, j) !== null;
     };
     
-    GridRendering.prototype.isAreaObstructed = function (area, excludedArea, fromBottom, fromRight) {
+    GridRendering.prototype.isAreaObstructed = function (area, excludedArea, fromBottom, fromRight, expanding) {
       var top = area.top,
           left = area.left,
           bottom = area.bottom || area.top + area.height - 1,
@@ -62,7 +67,7 @@
       
       for (var i = verticalStart; i !== verticalEnd; i += verticalStep) {
         for (var j = horizontalStart; j !== horizontalEnd; j += horizontalStep) {
-          if (this.isObstructed(i, j, excludedArea)) {
+          if (this.isObstructed(i, j, excludedArea, expanding)) {
             return true;
           }
         }

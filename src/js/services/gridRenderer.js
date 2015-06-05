@@ -29,7 +29,7 @@
             left: widget.left,
             height: position.height,
             width: position.width
-          });
+          }, null, null, null, true);
           
           // resolve conflicts, if any
           if (needsRepositioning) {
@@ -41,7 +41,7 @@
                   left: j,
                   height: position.height,
                   width: position.width
-                });
+                }, null, null, null, true);
                 
                 if (!needsRepositioning) {
                   position.top = i;

@@ -90,8 +90,8 @@
             var dragPositionX = event.clientX - gridPositions.left,
                 dragPositionY = event.clientY - gridPositions.top;
             
-            requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - 1);
-            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - 1);
+            requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
+            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
             
             var currentFinalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
             gridCtrl.highlightArea(currentFinalPos);
