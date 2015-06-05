@@ -18,7 +18,6 @@ A flexible grid layout for responsive dashboards
 </wg-widget>
 ```
 ![Minimal Example](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-1.png)
-Please refer to `/demo` for a maximal example.
 
 ### Adding Traits
 #### Widgets
