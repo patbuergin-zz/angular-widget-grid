@@ -61,7 +61,10 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['PhantomJS'],
-
+    
+    // fix phantom binding issues
+    usePolling: true,
+    transports: ['xhr-polling', 'jsonp-polling'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
