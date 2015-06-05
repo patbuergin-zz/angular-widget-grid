@@ -3,12 +3,27 @@ A flexible grid layout for responsive dashboards
 
 #### Demo: http://patbuergin.github.io/angular-widget-grid/
 
-# Installation
-1. `$ bower install angular-widget-grid`
-2. include `bower_components/angular-widget-grid/angular-widget-grid.js` or `[...].min.js`
-3. include `[...]/angular-widget-grid.css`
+## Installation
+Install with [Bower](http://bower.io/):
 
-# Usage
+```sh
+$ bower install angular-widget-grid
+```
+
+Add `<script>` and `<link>` tags to your `index.html`:
+
+```html
+<link rel="stylesheet" href="bower_components/angular-widget-grid/angular-widget-grid.css">
+<script src="bower_components/angular-widget-grid/angular-widget-grid.min.js"></script>
+```
+
+Add the angular-widget-grid module as a dependency to your application module:
+
+```javascript
+angular.module('myApp', ['widgetGrid']);
+```
+
+## Usage
 #### Minimal Example
 ```html
 <wg-grid columns="20" rows="15" style="width: 400px; height: 300px;">
