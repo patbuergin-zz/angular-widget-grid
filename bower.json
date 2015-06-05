@@ -1,6 +1,6 @@
 {
   "name": "angular-widget-grid",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "angular-widget-grid.js",
   "homepage": "https://github.com/patbuergin/angular-widget-grid",
   "authors": [
@@ -21,6 +21,7 @@
     "bower_components",
     "src",
     "test",
+    "doc",
     "karma.conf.js",
     "typings",
     "demo",
