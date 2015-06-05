@@ -103,7 +103,7 @@
       scope: {
         'columns': '@',
         'rows': '@',
-        'showGrid': '=?'
+        'showGrid': '@?'
       },
       restrict: 'AE',
       controller: 'wgGridController',

@@ -1,6 +1,7 @@
 {
   "name": "angular-widget-grid",
   "version": "0.1.0",
+  "main": "angular-widget-grid.js",
   "homepage": "https://github.com/patbuergin/angular-widget-grid",
   "authors": [
     "Patrick Buergin <hi@patrickbuergin.com>"
@@ -22,7 +23,9 @@
     "test",
     "karma.conf.js",
     "typings",
-    "demo"
+    "demo",
+    "package.json",
+    "Gruntfile.js"
   ],
   "devDependencies": {
     "angular-mocks": "~1.3.15",

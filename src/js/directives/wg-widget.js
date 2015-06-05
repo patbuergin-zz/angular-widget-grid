@@ -9,7 +9,7 @@
     return {
       scope: {
         position: '=',
-        editable: '=?'
+        editable: '@?'
       },
       restrict: 'AE',
       controller: 'wgWidgetController',
@@ -21,7 +21,7 @@
         var widgetOptions = scope.position;
         var widget = new Widget(widgetOptions);
         
-        scope.editable = false;
+        scope.editable = 'false';
         scope.widget = widget;
         
         scope.getNodeIndex = function () {

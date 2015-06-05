@@ -38,7 +38,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['src/js/**/*.js', '<%= ngtemplates.app.dest %>'],
-        dest: 'dist/<%= pkg.name %>.js'
+        dest: '<%= pkg.name %>.js'
       }
     },
     uglify: {
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: '<%= concat.dist.dest %>',
-        dest: 'dist/<%= pkg.name %>.min.js'
+        dest: '<%= pkg.name %>.min.js'
       }
     },
     jshint: {
@@ -102,12 +102,12 @@ module.exports = function(grunt) {
     copy:{
       main: {
         files: [
-          { cwd: 'src/css', expand: true, src: ['*'], dest: 'dist/' }
+          { cwd: 'src/css', expand: true, src: ['*'], dest: '.' }
         ]
       },
       demo: {
         files: [
-          { cwd: 'dist', expand: true, src: ['*.min.js', '*.css'], dest: 'demo/lib/' }
+          { cwd: '.', expand: true, src: ['*.min.js', '*.css'], dest: 'demo/lib/' }
         ]
       }
     },

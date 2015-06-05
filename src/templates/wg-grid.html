@@ -1,4 +1,4 @@
 <div ng-app="widgetGrid" ng-strict-di class="wg-grid">
   <div class="wg-grid-widgets" ng-transclude></div>
-  <wg-grid-preview ng-if="showGrid" rendering="gridCtrl.rendering" highlight="gridCtrl.highlight" />
+  <wg-grid-preview ng-if="showGrid === 'true'" rendering="gridCtrl.rendering" highlight="gridCtrl.highlight" />
 </div>
