@@ -62,12 +62,21 @@
     }
     
     function getPositions() {
-      return {
-        top: $element[0].offsetTop,
-        left: $element[0].offsetLeft,
-        height: $element[0].clientHeight,
-        width: $element[0].clientWidth
-      };
+      var gridContainer = $element[0];
+
+      // c.f. jQuery#offset: https://github.com/jquery/jquery/blob/2d715940b9b6fdeed005cd006c8bf63951cf7fb2/src/offset.js#L93-105
+      var rect = gridContainer.getBoundingClientRect();
+      if (rect.width || rect.height || gridContainer.getClientRects().length) {
+        var doc = gridContainer.ownerDocument;
+        var docElem = doc.documentElement;
+        return {
+          top: rect.top + window.pageYOffset - docElem.clientTop,
+          left: rect.left + window.pageXOffset - docElem.clientLeft,
+          height: rect.height,
+          width: rect.width
+        };
+      }
+      return { top: 0, left: 0, height: 0, width: 0 };
     }
     
     function isObstructed(i, j, excludedArea) {
