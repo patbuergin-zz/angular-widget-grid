@@ -66,8 +66,8 @@
           var requestedRender = { top: startRender.top, left: startRender.left };
           
           var moverOffset = {
-            top: event.offsetY + element[0].offsetTop,
-            left: event.offsetX + element[0].offsetLeft
+            top: event.offsetY + element[0].offsetTop || 0,
+            left: event.offsetX + element[0].offsetLeft || 0
           };
           
           var gridPositions = gridCtrl.getPositions();
