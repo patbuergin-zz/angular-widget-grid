@@ -69,6 +69,10 @@
           
           function onDown(event) {
             event.preventDefault();
+            
+            if (angular.isObject(event.originalEvent)) {
+              event = event.originalEvent;
+            }
 
             dragger.element.addClass('dragging');
             
@@ -118,9 +122,14 @@
                 event.clientY = event.touches[0].clientY;
               }
               
+                        
+              if (angular.isObject(event.originalEvent)) {
+                event = event.originalEvent;
+              }
+              
               // normalize the drag position
-              var dragPositionX = event.clientX - gridPositions.left,
-                  dragPositionY = event.clientY - gridPositions.top;
+              var dragPositionX = Math.round(event.clientX) - gridPositions.left,
+                  dragPositionY = Math.round(event.clientY) - gridPositions.top;
               
               if (dragger.up) {
                 delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height - 1) - startRender.top;

@@ -39,6 +39,10 @@
         
         function onDown(event) {
           event.preventDefault();
+          
+          if (angular.isObject(event.originalEvent)) {
+            event = event.originalEvent;
+          }
          
           var widgetContainer = element[0].parentElement,
               widgetElement = angular.element(widgetContainer);
@@ -80,6 +84,10 @@
           
           function onMove(event) {
             event.preventDefault();
+                      
+            if (angular.isObject(event.originalEvent)) {
+              event = event.originalEvent;
+            }
             
             if (event.touches) {
               event.clientX = event.touches[0].clientX;
@@ -87,8 +95,8 @@
             }
             
             // normalize the drag position
-            var dragPositionX = event.clientX - gridPositions.left,
-                dragPositionY = event.clientY - gridPositions.top;
+            var dragPositionX = Math.round(event.clientX) - gridPositions.left,
+                dragPositionY = Math.round(event.clientY) - gridPositions.top;
             
             requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
             requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
