@@ -28,6 +28,8 @@
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
     
+    updateRendering();
+    
     function addWidget(widget) {
       self.grid.add(widget);
       updateRendering();

@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.1.4
+ * @license angular-widget-grid v0.1.5
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -20,8 +20,8 @@
       template: '<svg xmlns="http://www.w3.org/2000/svg" class="wg-grid-overlay"></svg>',
       link: function (scope, element) {
         var XMLNS = 'http://www.w3.org/2000/svg',
-            COLOR_DEFAULT = 'rgb(234, 234, 234)',
-            COLOR_HIGHLIGHT = 'rgba(0, 113, 188, 0.25)',
+            COLOR_DEFAULT = 'rgb(242, 242, 242)',
+            COLOR_HIGHLIGHT = 'rgba(0, 113, 188, 0.2)',
             COLOR_STROKE = 'rgba(255, 255, 255, 1)';
         var highlightedCells = [];
         
@@ -126,6 +126,8 @@
     
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
+    
+    updateRendering();
     
     function addWidget(widget) {
       self.grid.add(widget);
