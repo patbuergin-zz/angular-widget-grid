@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.1.5
+ * @license angular-widget-grid v0.1.6
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -510,15 +510,14 @@
             
             function onMove(event) {
               event.preventDefault();
+                        
+              if (angular.isObject(event.originalEvent)) {
+                event = event.originalEvent;
+              }
               
               if (event.touches) {
                 event.clientX = event.touches[0].clientX;
                 event.clientY = event.touches[0].clientY;
-              }
-              
-                        
-              if (angular.isObject(event.originalEvent)) {
-                event = event.originalEvent;
               }
               
               // normalize the drag position
@@ -700,6 +699,7 @@
         
         scope.setWidgetPosition = function (position) {
           widget.setPosition(position);
+          scope.position = widget.getPosition();
           gridCtrl.updateWidget(widget);
           element.css(gridCtrl.getWidgetStyle(widget));
         };
@@ -882,6 +882,15 @@
       this.left = position.left || this.left;
       this.height = position.bottom - position.top + 1 || position.height || this.height;
       this.width = position.right - position.left + 1 || position.width || this.width;
+    };
+    
+    Widget.prototype.getPosition = function () {
+      return {
+        top: this.top,
+        left: this.left,
+        bottom: this.top + this.height - 1,
+        right: this.left + this.width - 1
+      };
     };
     
     return Widget;

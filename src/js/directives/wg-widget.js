@@ -32,6 +32,7 @@
         
         scope.setWidgetPosition = function (position) {
           widget.setPosition(position);
+          scope.position = widget.getPosition();
           gridCtrl.updateWidget(widget);
           element.css(gridCtrl.getWidgetStyle(widget));
         };

@@ -116,15 +116,14 @@
             
             function onMove(event) {
               event.preventDefault();
+                        
+              if (angular.isObject(event.originalEvent)) {
+                event = event.originalEvent;
+              }
               
               if (event.touches) {
                 event.clientX = event.touches[0].clientX;
                 event.clientY = event.touches[0].clientY;
-              }
-              
-                        
-              if (angular.isObject(event.originalEvent)) {
-                event = event.originalEvent;
               }
               
               // normalize the drag position

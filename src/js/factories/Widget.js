@@ -28,6 +28,15 @@
       this.width = position.right - position.left + 1 || position.width || this.width;
     };
     
+    Widget.prototype.getPosition = function () {
+      return {
+        top: this.top,
+        left: this.left,
+        bottom: this.top + this.height - 1,
+        right: this.left + this.width - 1
+      };
+    };
+    
     return Widget;
   }]);
 })();
