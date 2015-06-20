@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.1.6
+ * @license angular-widget-grid v0.1.7
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -888,8 +888,8 @@
       return {
         top: this.top,
         left: this.left,
-        bottom: this.top + this.height - 1,
-        right: this.left + this.width - 1
+        height: this.height,
+        width: this.width
       };
     };
     

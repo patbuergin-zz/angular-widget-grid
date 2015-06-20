@@ -32,8 +32,8 @@
       return {
         top: this.top,
         left: this.left,
-        bottom: this.top + this.height - 1,
-        right: this.left + this.width - 1
+        height: this.height,
+        width: this.width
       };
     };
     
