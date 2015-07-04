@@ -126,7 +126,7 @@ describe('GridRendering', function () {
       var rendering = new GridRendering(medGrid, {});
       expect(rendering.isObstructed(9, 5)).toBe(true);
       // w/ param expanding
-      expect(rendering.isObstructed(9, 5, null, true)).toBe(false);
+      expect(rendering.isObstructed(9, 5, { expanding: true })).toBe(false);
       
       expect(rendering.isObstructed(4, 13)).toBe(true);
       expect(rendering.isObstructed(0, 5)).toBe(true);

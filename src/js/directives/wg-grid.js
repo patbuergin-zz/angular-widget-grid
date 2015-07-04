@@ -2,28 +2,28 @@
 
 (function () {  
   angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
-    var self = this;
+    var vm = this;
     
     var gridOptions = {
       columns: $scope.columns,
       rows: $scope.rows
     };
-    self.grid = new Grid(gridOptions);
-    self.rendering = null;
-    self.highlight = null;
+    vm.grid = new Grid(gridOptions);
+    vm.rendering = null;
+    vm.highlight = null;
     
-    self.addWidget = addWidget;
-    self.removeWidget = removeWidget;
-    self.updateGridSize = updateGridSize;
-    self.updateRendering = updateRendering;
-    self.getPositions = getPositions;
-    self.rasterizeCoords = rasterizeCoords;
-    self.updateWidget = updateWidget;
-    self.getWidgetStyle = getWidgetStyle;
-    self.isPositionObstructed = isObstructed;
-    self.isAreaObstructed = isAreaObstructed;
-    self.highlightArea = highlightArea;
-    self.resetHighlights = resetHighlights;
+    vm.addWidget = addWidget;
+    vm.removeWidget = removeWidget;
+    vm.updateGridSize = updateGridSize;
+    vm.updateRendering = updateRendering;
+    vm.getPositions = getPositions;
+    vm.rasterizeCoords = rasterizeCoords;
+    vm.updateWidget = updateWidget;
+    vm.getWidgetStyle = getWidgetStyle;
+    vm.isPositionObstructed = isObstructed;
+    vm.isAreaObstructed = isAreaObstructed;
+    vm.highlightArea = highlightArea;
+    vm.resetHighlights = resetHighlights;
     
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
@@ -31,36 +31,36 @@
     updateRendering();
     
     function addWidget(widget) {
-      self.grid.add(widget);
+      vm.grid.add(widget);
       updateRendering();
     }
     
     function removeWidget(widget) {
-      self.grid.remove(widget);
+      vm.grid.remove(widget);
       updateRendering();
     }
     
     function updateGridSize() {
       var columns = parseInt($scope.columns);
       var rows = parseInt($scope.rows);
-      if (self.grid.columns !== columns || self.grid.rows !== rows) {
-        self.grid.resize(rows, columns);
+      if (vm.grid.columns !== columns || vm.grid.rows !== rows) {
+        vm.grid.resize(rows, columns);
         updateRendering();
         resetHighlights();
       }
     }
     
     function updateRendering() {
-      self.rendering = gridRenderer.render(self.grid);
+      vm.rendering = gridRenderer.render(vm.grid);
       $scope.$broadcast('rendering-finished');
     }
     
     function updateWidget(widget) {
-        self.rendering.updateWidget(widget);
+        vm.rendering.updateWidget(widget);
     }
     
     function getWidgetStyle(widget) {
-      return self.rendering.getStyle(widget.id);
+      return vm.rendering.getStyle(widget.id);
     }
     
     function getPositions() {
@@ -82,28 +82,28 @@
     }
     
     function isObstructed(i, j, excludedArea) {
-      return self.rendering ? self.rendering.isObstructed(i, j, excludedArea) : true;
+      return vm.rendering ? vm.rendering.isObstructed(i, j, excludedArea) : true;
     }
     
     function isAreaObstructed(area, excludedArea, fromBottom, fromRight) {
-      return self.rendering ? self.rendering.isAreaObstructed(area, excludedArea, fromBottom, fromRight) : true;
+      return vm.rendering ? vm.rendering.isAreaObstructed(area, excludedArea, fromBottom, fromRight) : true;
     }
     
     function rasterizeCoords(x, y) {
-      return self.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
+      return vm.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
     }
     
     function highlightArea(area) {
       if (area.top && area.left && area.height && area.width) {
         $timeout(function () {
-          self.highlight = area;
+          vm.highlight = area;
         });
       }
     }
     
     function resetHighlights() {
       $timeout(function () {
-        self.highlight = null;
+        vm.highlight = null;
       });
     }
   }]);

@@ -35,39 +35,46 @@
       position.width = widget.width || position.width;
     };
   
-    GridRendering.prototype.isObstructed = function (i, j, excludedArea, expanding) {
-      // fail if (i, j) exceeds the grid's non-expanding boundaries
+    // options: excludedArea, expanding
+    GridRendering.prototype.isObstructed = function (i, j, options) {
+      options = angular.isObject(options) ? options : {};
+      
+      // obstructed if (i, j) exceeds the grid's regular non-expanding boundaries
       if (i < 1 || j < 1 || j > this.grid.columns) {
         return true;
       }
       
-      if (!expanding && i > this.grid.rows) {
+      if (!options.expanding && i > this.grid.rows) {
         return true;
       }
       
       // pass if (i, j) is within the excluded area, if any
-      if (excludedArea && excludedArea.top <= i && i <= excludedArea.bottom &&
-          excludedArea.left <= j && j <= excludedArea.right) {
+      if (options.excludedArea &&
+          options.excludedArea.top <= i && i <= options.excludedArea.bottom &&
+          options.excludedArea.left <= j && j <= options.excludedArea.right) {
         return false;
       }
       return this.getWidgetIdAt(i, j) !== null;
     };
     
-    GridRendering.prototype.isAreaObstructed = function (area, excludedArea, fromBottom, fromRight, expanding) {
+    // options: excludedArea, fromBottom, fromRight, expanding
+    GridRendering.prototype.isAreaObstructed = function (area, options) {
+      options = angular.isObject(options) ? options : {};
+      
       var top = area.top,
           left = area.left,
           bottom = area.bottom || area.top + area.height - 1,
           right = area.right || area.left + area.width - 1;
-      var verticalStart = fromBottom ? bottom : top,
-          verticalStep = fromBottom ? -1 : 1,
-          verticalEnd = (fromBottom ? top : bottom) + verticalStep;
-      var horizontalStart = fromRight ? right : left,
-          horizontalStep = fromRight ? -1 : 1,
-          horizontalEnd = (fromRight ? left: right) + horizontalStep;
+      var verticalStart = options.fromBottom ? bottom : top,
+          verticalStep = options.fromBottom ? -1 : 1,
+          verticalEnd = (options.fromBottom ? top : bottom) + verticalStep;
+      var horizontalStart = options.fromRight ? right : left,
+          horizontalStep = options.fromRight ? -1 : 1,
+          horizontalEnd = (options.fromRight ? left: right) + horizontalStep;
       
       for (var i = verticalStart; i !== verticalEnd; i += verticalStep) {
         for (var j = horizontalStart; j !== horizontalEnd; j += horizontalStep) {
-          if (this.isObstructed(i, j, excludedArea, expanding)) {
+          if (this.isObstructed(i, j, options)) {
             return true;
           }
         }

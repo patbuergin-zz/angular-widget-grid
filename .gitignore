@@ -32,3 +32,5 @@ dist
 # VS Code
 typings
 .settings
+
+demo/index_local.html
