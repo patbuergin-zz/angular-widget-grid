@@ -158,3 +158,28 @@
   width:  10px;
   cursor: w-resize;
 }
+
+.wg-grid-overlay {
+  overflow: hidden;
+}
+
+.wg-preview-item {
+  position: absolute;
+  display: inline-block;
+}
+
+.wg-preview-row {
+  width: 100%;
+  border-top: 1px dashed rgb(185, 185, 185);
+  border-bottom: 1px solid rgb(215, 215, 215);
+}
+
+.wg-preview-column {
+  height: 100%;
+  border-left: 1px dashed rgb(185, 185, 185);
+  border-right: 1px solid rgb(215, 215, 215);
+}
+
+.wg-preview-highlight {
+  background-color: rgba(0, 113, 188, 0.2);
+}

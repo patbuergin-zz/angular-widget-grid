@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.1.7
+ * @license angular-widget-grid v0.1.8
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -17,13 +17,9 @@
       },
       restrict: 'AE',
       replace: true,
-      template: '<svg xmlns="http://www.w3.org/2000/svg" class="wg-grid-overlay"></svg>',
+      template: '<div class="wg-grid-overlay"></div>',
       link: function (scope, element) {
-        var XMLNS = 'http://www.w3.org/2000/svg',
-            COLOR_DEFAULT = 'rgb(242, 242, 242)',
-            COLOR_HIGHLIGHT = 'rgba(0, 113, 188, 0.2)',
-            COLOR_STROKE = 'rgba(255, 255, 255, 1)';
-        var highlightedCells = [];
+        var highlights = [];
         
         scope.$watch('rendering', function (newVal) {
           if (newVal) {
@@ -33,8 +29,8 @@
         
         scope.$watch('highlight', function (newVal, oldVal) {
           if (!angular.equals(newVal, oldVal)) {
-            if (highlightedCells.length > 0) {
-              resetHighlights(highlightedCells);
+            if (highlights.length > 0) {
+              resetHighlights();
             }
             if (newVal) {
               highlightArea(scope.rendering, newVal);
@@ -50,49 +46,43 @@
               height = cellHeight + '%',
               width = cellWidth + '%';
           
-          for (var i = 0; i < rendering.grid.rows; i++) {
-            for (var j = 0; j < rendering.grid.columns; j++) {
-              var rect = document.createElementNS(XMLNS, 'rect');
-              var x = (j * cellWidth) + '%',
-                  y = (i * cellHeight) + '%';
-              
-              rect.setAttributeNS(null, 'x', x);
-              rect.setAttributeNS(null, 'y', y);
-              rect.setAttributeNS(null, 'width', width);
-              rect.setAttributeNS(null, 'height', height);
-              rect.setAttributeNS(null, 'fill', COLOR_DEFAULT);
-              rect.setAttributeNS(null, 'stroke', COLOR_STROKE);
-              rect.setAttributeNS(null, 'stroke-width', '1');
-              
-              element.append(rect);
-            }
+          // use an interlaced approach to reduce the number of dom elements
+          var i, x, y, bar;
+          for (i = 1; i < rendering.grid.rows; i += 2) {
+              y = (i * cellHeight) + '%';
+              bar = '<div class="wg-preview-item wg-preview-row" style="top: ' + y + '; height: calc(' + height + ' - 1px);"></div>';
+              element.append(bar);
+          }
+          
+          for (i = 1; i < rendering.grid.columns; i += 2) {
+              x = (i * cellWidth) + '%';
+              bar = '<div class="wg-preview-item wg-preview-column" style="left: ' + x + '; width: calc(' + width + ' - 1px);"></div>';
+              element.append(bar);
           }
         }
         
-        function resetHighlights(highlightedCells) {
-          var cells = element.children();
-          for (var idx = 0; idx < highlightedCells.length; idx++) {
-            var cell = cells[highlightedCells[idx]];
-            cell.setAttribute('fill', COLOR_DEFAULT);
+        function resetHighlights() {
+          for (var i = 0; i < highlights.length; i++) {
+            highlights[i].remove();
+            
           }
-          highlightedCells = [];
+          highlights = [];
         }
         
         function highlightArea(rendering, area) {
-          var cells = element.children();
-          var top = Math.max(area.top, 1),
-              bottom = Math.min(top + area.height - 1, rendering.grid.rows),
-              left = Math.max(area.left, 1),
-              right = Math.min(area.left + area.width - 1, rendering.grid.columns);
+          var cellHeight = rendering.grid.cellSize.height,
+              cellWidth = rendering.grid.cellSize.width;
           
-          for (var i = top; i <= bottom; i++) {
-            for (var j = left; j <= right; j++) {
-              var idx = (i-1) * rendering.grid.columns + (j-1);
-              var cell = cells[idx];
-              cell.setAttribute('fill', COLOR_HIGHLIGHT);
-              highlightedCells.push(idx);
-            }
-          }
+          var highlight = angular.element('<div>');
+          highlight.addClass('wg-preview-item');
+          highlight.addClass('wg-preview-highlight');
+          highlight.css('top', (area.top - 1) * cellHeight + '%');
+          highlight.css('left', (area.left - 1) * cellWidth + '%');
+          highlight.css('height', area.height * cellHeight + '%');
+          highlight.css('width', area.width * cellWidth + '%');
+          
+          element.append(highlight);
+          highlights.push(highlight);
         }
       }
     };
@@ -101,28 +91,28 @@
 
 (function () {  
   angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
-    var self = this;
+    var vm = this;
     
     var gridOptions = {
       columns: $scope.columns,
       rows: $scope.rows
     };
-    self.grid = new Grid(gridOptions);
-    self.rendering = null;
-    self.highlight = null;
+    vm.grid = new Grid(gridOptions);
+    vm.rendering = null;
+    vm.highlight = null;
     
-    self.addWidget = addWidget;
-    self.removeWidget = removeWidget;
-    self.updateGridSize = updateGridSize;
-    self.updateRendering = updateRendering;
-    self.getPositions = getPositions;
-    self.rasterizeCoords = rasterizeCoords;
-    self.updateWidget = updateWidget;
-    self.getWidgetStyle = getWidgetStyle;
-    self.isPositionObstructed = isObstructed;
-    self.isAreaObstructed = isAreaObstructed;
-    self.highlightArea = highlightArea;
-    self.resetHighlights = resetHighlights;
+    vm.addWidget = addWidget;
+    vm.removeWidget = removeWidget;
+    vm.updateGridSize = updateGridSize;
+    vm.updateRendering = updateRendering;
+    vm.getPositions = getPositions;
+    vm.rasterizeCoords = rasterizeCoords;
+    vm.updateWidget = updateWidget;
+    vm.getWidgetStyle = getWidgetStyle;
+    vm.isPositionObstructed = isObstructed;
+    vm.isAreaObstructed = isAreaObstructed;
+    vm.highlightArea = highlightArea;
+    vm.resetHighlights = resetHighlights;
     
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
@@ -130,36 +120,36 @@
     updateRendering();
     
     function addWidget(widget) {
-      self.grid.add(widget);
+      vm.grid.add(widget);
       updateRendering();
     }
     
     function removeWidget(widget) {
-      self.grid.remove(widget);
+      vm.grid.remove(widget);
       updateRendering();
     }
     
     function updateGridSize() {
       var columns = parseInt($scope.columns);
       var rows = parseInt($scope.rows);
-      if (self.grid.columns !== columns || self.grid.rows !== rows) {
-        self.grid.resize(rows, columns);
+      if (vm.grid.columns !== columns || vm.grid.rows !== rows) {
+        vm.grid.resize(rows, columns);
         updateRendering();
         resetHighlights();
       }
     }
     
     function updateRendering() {
-      self.rendering = gridRenderer.render(self.grid);
+      vm.rendering = gridRenderer.render(vm.grid);
       $scope.$broadcast('rendering-finished');
     }
     
     function updateWidget(widget) {
-        self.rendering.updateWidget(widget);
+        vm.rendering.updateWidget(widget);
     }
     
     function getWidgetStyle(widget) {
-      return self.rendering.getStyle(widget.id);
+      return vm.rendering.getStyle(widget.id);
     }
     
     function getPositions() {
@@ -181,28 +171,28 @@
     }
     
     function isObstructed(i, j, excludedArea) {
-      return self.rendering ? self.rendering.isObstructed(i, j, excludedArea) : true;
+      return vm.rendering ? vm.rendering.isObstructed(i, j, excludedArea) : true;
     }
     
     function isAreaObstructed(area, excludedArea, fromBottom, fromRight) {
-      return self.rendering ? self.rendering.isAreaObstructed(area, excludedArea, fromBottom, fromRight) : true;
+      return vm.rendering ? vm.rendering.isAreaObstructed(area, excludedArea, fromBottom, fromRight) : true;
     }
     
     function rasterizeCoords(x, y) {
-      return self.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
+      return vm.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
     }
     
     function highlightArea(area) {
       if (area.top && area.left && area.height && area.width) {
         $timeout(function () {
-          self.highlight = area;
+          vm.highlight = area;
         });
       }
     }
     
     function resetHighlights() {
       $timeout(function () {
-        self.highlight = null;
+        vm.highlight = null;
       });
     }
   }]);
@@ -383,8 +373,13 @@
               width: startPos.width
             };
             
-            var areaObstructed = gridCtrl.isAreaObstructed(targetArea, startPos, movedDown, movedRight);
-            if (!areaObstructed) {
+            var options = {
+              excludedArea: startPos,
+              fromBottom: movedDown,
+              fromRight: movedRight
+            };
+
+            if (!gridCtrl.isAreaObstructed(targetArea, options)) {
               return targetArea;
             }
           }
@@ -796,39 +791,46 @@
       position.width = widget.width || position.width;
     };
   
-    GridRendering.prototype.isObstructed = function (i, j, excludedArea, expanding) {
-      // fail if (i, j) exceeds the grid's non-expanding boundaries
+    // options: excludedArea, expanding
+    GridRendering.prototype.isObstructed = function (i, j, options) {
+      options = angular.isObject(options) ? options : {};
+      
+      // obstructed if (i, j) exceeds the grid's regular non-expanding boundaries
       if (i < 1 || j < 1 || j > this.grid.columns) {
         return true;
       }
       
-      if (!expanding && i > this.grid.rows) {
+      if (!options.expanding && i > this.grid.rows) {
         return true;
       }
       
       // pass if (i, j) is within the excluded area, if any
-      if (excludedArea && excludedArea.top <= i && i <= excludedArea.bottom &&
-          excludedArea.left <= j && j <= excludedArea.right) {
+      if (options.excludedArea &&
+          options.excludedArea.top <= i && i <= options.excludedArea.bottom &&
+          options.excludedArea.left <= j && j <= options.excludedArea.right) {
         return false;
       }
       return this.getWidgetIdAt(i, j) !== null;
     };
     
-    GridRendering.prototype.isAreaObstructed = function (area, excludedArea, fromBottom, fromRight, expanding) {
+    // options: excludedArea, fromBottom, fromRight, expanding
+    GridRendering.prototype.isAreaObstructed = function (area, options) {
+      options = angular.isObject(options) ? options : {};
+      
       var top = area.top,
           left = area.left,
           bottom = area.bottom || area.top + area.height - 1,
           right = area.right || area.left + area.width - 1;
-      var verticalStart = fromBottom ? bottom : top,
-          verticalStep = fromBottom ? -1 : 1,
-          verticalEnd = (fromBottom ? top : bottom) + verticalStep;
-      var horizontalStart = fromRight ? right : left,
-          horizontalStep = fromRight ? -1 : 1,
-          horizontalEnd = (fromRight ? left: right) + horizontalStep;
+      var verticalStart = options.fromBottom ? bottom : top,
+          verticalStep = options.fromBottom ? -1 : 1,
+          verticalEnd = (options.fromBottom ? top : bottom) + verticalStep;
+      var horizontalStart = options.fromRight ? right : left,
+          horizontalStep = options.fromRight ? -1 : 1,
+          horizontalEnd = (options.fromRight ? left: right) + horizontalStep;
       
       for (var i = verticalStart; i !== verticalEnd; i += verticalStep) {
         for (var j = horizontalStart; j !== horizontalEnd; j += horizontalStep) {
-          if (this.isObstructed(i, j, excludedArea, expanding)) {
+          if (this.isObstructed(i, j, options)) {
             return true;
           }
         }
@@ -928,7 +930,7 @@
             left: widget.left,
             height: position.height,
             width: position.width
-          }, null, null, null, true);
+          }, { expanding: true });
           
           // resolve conflicts, if any
           if (needsRepositioning) {
@@ -940,7 +942,7 @@
                   left: j,
                   height: position.height,
                   width: position.width
-                }, null, null, null, true);
+                }, { expanding: true });
                 
                 if (!needsRepositioning) {
                   position.top = i;
