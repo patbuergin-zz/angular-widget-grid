@@ -7,13 +7,9 @@
       },
       restrict: 'AE',
       replace: true,
-      template: '<svg xmlns="http://www.w3.org/2000/svg" class="wg-grid-overlay"></svg>',
+      template: '<div class="wg-grid-overlay"></div>',
       link: function (scope, element) {
-        var XMLNS = 'http://www.w3.org/2000/svg',
-            COLOR_DEFAULT = 'rgb(242, 242, 242)',
-            COLOR_HIGHLIGHT = 'rgba(0, 113, 188, 0.2)',
-            COLOR_STROKE = 'rgba(255, 255, 255, 1)';
-        var highlightedCells = [];
+        var highlights = [];
         
         scope.$watch('rendering', function (newVal) {
           if (newVal) {
@@ -23,8 +19,8 @@
         
         scope.$watch('highlight', function (newVal, oldVal) {
           if (!angular.equals(newVal, oldVal)) {
-            if (highlightedCells.length > 0) {
-              resetHighlights(highlightedCells);
+            if (highlights.length > 0) {
+              resetHighlights();
             }
             if (newVal) {
               highlightArea(scope.rendering, newVal);
@@ -40,49 +36,43 @@
               height = cellHeight + '%',
               width = cellWidth + '%';
           
-          for (var i = 0; i < rendering.grid.rows; i++) {
-            for (var j = 0; j < rendering.grid.columns; j++) {
-              var rect = document.createElementNS(XMLNS, 'rect');
-              var x = (j * cellWidth) + '%',
-                  y = (i * cellHeight) + '%';
-              
-              rect.setAttributeNS(null, 'x', x);
-              rect.setAttributeNS(null, 'y', y);
-              rect.setAttributeNS(null, 'width', width);
-              rect.setAttributeNS(null, 'height', height);
-              rect.setAttributeNS(null, 'fill', COLOR_DEFAULT);
-              rect.setAttributeNS(null, 'stroke', COLOR_STROKE);
-              rect.setAttributeNS(null, 'stroke-width', '1');
-              
-              element.append(rect);
-            }
+          // use an interlaced approach to reduce the number of dom elements
+          var i, x, y, bar;
+          for (i = 1; i < rendering.grid.rows; i += 2) {
+              y = (i * cellHeight) + '%';
+              bar = '<div class="wg-preview-item wg-preview-row" style="top: ' + y + '; height: calc(' + height + ' - 1px);"></div>';
+              element.append(bar);
+          }
+          
+          for (i = 1; i < rendering.grid.columns; i += 2) {
+              x = (i * cellWidth) + '%';
+              bar = '<div class="wg-preview-item wg-preview-column" style="left: ' + x + '; width: calc(' + width + ' - 1px);"></div>';
+              element.append(bar);
           }
         }
         
-        function resetHighlights(highlightedCells) {
-          var cells = element.children();
-          for (var idx = 0; idx < highlightedCells.length; idx++) {
-            var cell = cells[highlightedCells[idx]];
-            cell.setAttribute('fill', COLOR_DEFAULT);
+        function resetHighlights() {
+          for (var i = 0; i < highlights.length; i++) {
+            highlights[i].remove();
+            
           }
-          highlightedCells = [];
+          highlights = [];
         }
         
         function highlightArea(rendering, area) {
-          var cells = element.children();
-          var top = Math.max(area.top, 1),
-              bottom = Math.min(top + area.height - 1, rendering.grid.rows),
-              left = Math.max(area.left, 1),
-              right = Math.min(area.left + area.width - 1, rendering.grid.columns);
+          var cellHeight = rendering.grid.cellSize.height,
+              cellWidth = rendering.grid.cellSize.width;
           
-          for (var i = top; i <= bottom; i++) {
-            for (var j = left; j <= right; j++) {
-              var idx = (i-1) * rendering.grid.columns + (j-1);
-              var cell = cells[idx];
-              cell.setAttribute('fill', COLOR_HIGHLIGHT);
-              highlightedCells.push(idx);
-            }
-          }
+          var highlight = angular.element('<div>');
+          highlight.addClass('wg-preview-item');
+          highlight.addClass('wg-preview-highlight');
+          highlight.css('top', (area.top - 1) * cellHeight + '%');
+          highlight.css('left', (area.left - 1) * cellWidth + '%');
+          highlight.css('height', area.height * cellHeight + '%');
+          highlight.css('width', area.width * cellWidth + '%');
+          
+          element.append(highlight);
+          highlights.push(highlight);
         }
       }
     };
