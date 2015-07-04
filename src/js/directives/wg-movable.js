@@ -143,7 +143,7 @@
           
           var movedDown = anchorTop >= startRender.top,
               movedRight = anchorLeft >= startRender.left;
-          
+              
           var finalPosRequest = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           
           var path = gridUtil.getPathIterator(startPos, { top: finalPosRequest.i, left: finalPosRequest.j });
@@ -165,6 +165,43 @@
             };
 
             if (!gridCtrl.isAreaObstructed(targetArea, options)) {
+              // try to get closer to the desired position by leaving the original path
+              if (finalPosRequest.i < targetArea.top) {
+                while (finalPosRequest.i <= targetArea.top - 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top - 1,
+                                                    left: targetArea.left,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.top--;
+                }
+              } else if (finalPosRequest.i > targetArea.top) {
+                while (finalPosRequest.i >= targetArea.top + 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top + 1,
+                                                    left: targetArea.left,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.top++;
+                }
+              }
+              
+              if (finalPosRequest.j < targetArea.left) {
+                while (finalPosRequest.j <= targetArea.left - 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top,
+                                                    left: targetArea.left - 1,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.left--;
+                }
+              } else if (finalPosRequest.j > targetArea.left) {
+                while (finalPosRequest.j >= targetArea.left + 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top,
+                                                    left: targetArea.left + 1,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.left++;
+                }
+              }
+              
               return targetArea;
             }
           }

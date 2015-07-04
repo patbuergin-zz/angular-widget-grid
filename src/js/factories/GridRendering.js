@@ -10,8 +10,8 @@
       y = Math.min(Math.max(y, 0), gridHeight - 1);
       
       return {
-        i: Math.floor((this.grid.rows / gridHeight) * y) + 1,
-        j: Math.floor((this.grid.columns / gridWidth) * x) + 1
+        i: Math.floor(y / gridHeight * this.grid.rows) + 1,
+        j: Math.floor(x / gridWidth * this.grid.columns) + 1
       };
     };
     

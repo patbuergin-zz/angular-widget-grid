@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.1.8
+ * @license angular-widget-grid v0.1.9
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -358,7 +358,7 @@
           
           var movedDown = anchorTop >= startRender.top,
               movedRight = anchorLeft >= startRender.left;
-          
+              
           var finalPosRequest = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           
           var path = gridUtil.getPathIterator(startPos, { top: finalPosRequest.i, left: finalPosRequest.j });
@@ -380,6 +380,43 @@
             };
 
             if (!gridCtrl.isAreaObstructed(targetArea, options)) {
+              // try to get closer to the desired position by leaving the original path
+              if (finalPosRequest.i < targetArea.top) {
+                while (finalPosRequest.i <= targetArea.top - 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top - 1,
+                                                    left: targetArea.left,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.top--;
+                }
+              } else if (finalPosRequest.i > targetArea.top) {
+                while (finalPosRequest.i >= targetArea.top + 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top + 1,
+                                                    left: targetArea.left,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.top++;
+                }
+              }
+              
+              if (finalPosRequest.j < targetArea.left) {
+                while (finalPosRequest.j <= targetArea.left - 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top,
+                                                    left: targetArea.left - 1,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.left--;
+                }
+              } else if (finalPosRequest.j > targetArea.left) {
+                while (finalPosRequest.j >= targetArea.left + 1 &&
+                       !gridCtrl.isAreaObstructed({ top: targetArea.top,
+                                                    left: targetArea.left + 1,
+                                                    height: targetArea.height,
+                                                    width: targetArea.width }, options)) {
+                  targetArea.left++;
+                }
+              }
+              
               return targetArea;
             }
           }
@@ -766,8 +803,8 @@
       y = Math.min(Math.max(y, 0), gridHeight - 1);
       
       return {
-        i: Math.floor((this.grid.rows / gridHeight) * y) + 1,
-        j: Math.floor((this.grid.columns / gridWidth) * x) + 1
+        i: Math.floor(y / gridHeight * this.grid.rows) + 1,
+        j: Math.floor(x / gridWidth * this.grid.columns) + 1
       };
     };
     
