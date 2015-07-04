@@ -158,8 +158,13 @@
               width: startPos.width
             };
             
-            var areaObstructed = gridCtrl.isAreaObstructed(targetArea, startPos, movedDown, movedRight);
-            if (!areaObstructed) {
+            var options = {
+              excludedArea: startPos,
+              fromBottom: movedDown,
+              fromRight: movedRight
+            };
+
+            if (!gridCtrl.isAreaObstructed(targetArea, options)) {
               return targetArea;
             }
           }
