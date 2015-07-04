@@ -3,7 +3,7 @@
 }
 
 body {
-  font-family: sans-serif;
+  font-family: 'Open Sans', sans-serif;
   margin: 0;
   -ms-content-zooming: none;
   touch-action: none;
@@ -20,6 +20,7 @@ body {
   font-weight: bold;
   font-size: 13px;
   line-height: 42px;
+  text-decoration: none;
 }
 
 .demo-config {
@@ -38,6 +39,7 @@ body {
   line-height: 26px;
   margin-left: 24px;
   text-transform: uppercase;
+  vertical-align: middle;
   width: 66px;
 }
 
