@@ -17,8 +17,8 @@ body {
 .demo-title {
   color: #999;
   display:inline-block;
-  font-weight: bold;
-  font-size: 13px;
+  font-weight: 600;
+  font-size: 14px;
   line-height: 42px;
   text-decoration: none;
 }
@@ -35,7 +35,7 @@ body {
   color: #f0f0f0;
   font-family: inherit;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 600;
   line-height: 26px;
   margin-left: 24px;
   text-transform: uppercase;
@@ -64,7 +64,7 @@ body {
 .demo-config label {
   color: white;
   font-size: 10px;
-  font-weight: bold;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -86,7 +86,7 @@ body {
   color: #e0e0e0;
   display: inline-block;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 600;
   padding: 5px 10px;
   position: absolute;
   z-index: 15;
@@ -95,7 +95,7 @@ body {
 .demo-greeting {
   color: #f0f0f0;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 20px;
 }
 
