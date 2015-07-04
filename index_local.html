@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../angular-widget-grid.js"></script>
+    <script src="demo.js"></script>
+    <link rel="stylesheet" href="lib/angular-widget-grid.css"></link>
+    <link rel="stylesheet" href="demo.css"></link>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  </head>
+  <body ng-app="widgetGridDemo">
+    <div ng-controller="DemoController as demo">
+      <div class="demo-header">
+        <div class="demo-title">angular-widget-grid</div>
+        <div class="demo-config">
+          <label class="hidden-xs" for="columns">Columns</label>
+          <input class="hidden-xs" type="number" id="columns" min="1" ng-model="demo.columns">
+          <label class="hidden-xs" for="rows">Rows</label>
+          <input class="hidden-xs" type="number" id="rows" min="1" ng-model="demo.rows">
+          <button ng-click="demo.editable = !demo.editable" class="demo-edit-btn" ng-class="{ editing: demo.editable }">
+            {{ demo.editable ? "Done" : "Edit" }}
+          </button>
+        </div>
+      </div>
+
+      <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" show-grid="{{demo.editable}}" class="demo-grid" id="demo-grid">
+        <wg-widget wg-resizable wg-movable editable="{{demo.editable}}" ng-repeat="widget in demo.greetingWidgets" position="widget.position">
+          <div random-bg-color>
+            <p class="demo-greeting">{{widget.text}}</p>
+          </div>
+        </wg-widget>
+        <wg-widget wg-resizable wg-movable editable="{{demo.editable}}" position="{ top: 10, left: 1, width: 8, height: 5 }">
+          <youtube id="9rbRwV0T0AQ"/>
+        </wg-widget>
+      </wg-grid>
+
+      <div ng-hide="demo.editable" class="demo-grid-dimensions">{{demo.gridWidth}} x {{demo.gridHeight}}</div>
+    </div>
+  </body>
+</html>
