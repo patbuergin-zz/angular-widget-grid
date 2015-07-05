@@ -15,7 +15,7 @@ body {
 }
 
 .demo-title {
-  color: #999;
+  color: #f0f0f0;
   display:inline-block;
   font-weight: 600;
   font-size: 14px;
@@ -26,30 +26,6 @@ body {
 .demo-config {
   float: right;
   line-height: 40px;
-}
-
-.demo-edit-btn {
-  background-color: rgb(59, 100, 127);
-  border: none;
-  border-radius: 2px;
-  color: #f0f0f0;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 26px;
-  margin-left: 24px;
-  text-transform: uppercase;
-  vertical-align: middle;
-  width: 66px;
-}
-
-.demo-edit-btn:hover {
-  background-color: rgb(22, 97, 146);
-  cursor: pointer;
-}
-
-.demo-edit-btn.editing {
-  background-color: rgb(20, 103, 157);
 }
 
 .demo-config input[type="number"] {
@@ -72,6 +48,11 @@ body {
   margin-left: 12px;
 }
 
+.demo-config-grid {
+  display: inline-block;
+  margin-right: 15px;
+}
+
 .demo-grid {
   background-color: #E5E5E5;
   top: 42px;
@@ -81,15 +62,80 @@ body {
 }
 
 .demo-grid-dimensions {
-  background-color: rgba(0, 0, 0, 0.4);
+  position: absolute;
   bottom: 0;
+  z-index: 15;
+  
+  background-color: rgba(0, 0, 0, 0.4);
   color: #e0e0e0;
   display: inline-block;
   font-size: 13px;
   font-weight: 600;
   padding: 5px 10px;
-  position: absolute;
-  z-index: 15;
+}
+
+.demo-btn {
+  background-color: rgb(20, 103, 157);
+  border: none;
+  border-radius: 2px;
+  color: #DDD;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.demo-btn-edit {
+  background-color: rgb(59, 100, 127);
+  font-size: 12px;
+  line-height: 24px;
+  width: 66px;
+}
+
+.demo-btn-edit:hover {
+  background-color: rgb(22, 97, 146);
+}
+
+.demo-btn-edit.editing {
+  background-color: rgb(20, 103, 157);
+}
+
+.demo-btn-add-widget {
+  background-color: rgb(59, 100, 127);
+  font-size: 12px;
+  line-height: 24px;
+  margin-right: 5px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.demo-btn-add-widget.inactive {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.demo-btn-remove-widget {
+  position: relative;
+  height: 24px;
+  width: 24px;
+  float: right;
+  z-index: 30;
+  
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
+.demo-btn-edit.editing:hover,
+.demo-btn-add-widget:not(.inactive):hover,
+.demo-btn-remove-widget:hover {
+  background-color: rgb(0, 145, 240);
+  color: white;
 }
 
 .demo-greeting {
