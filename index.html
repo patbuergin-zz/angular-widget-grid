@@ -37,5 +37,22 @@
 
       <div ng-hide="demo.editable" class="demo-grid-dimensions">{{demo.gridWidth}} x {{demo.gridHeight}}</div>
     </div>
+    
+    <!-- get rid of iOS' "rubber band" effect -->
+    <script>
+    var firstMove;
+    
+    window.addEventListener('touchstart', function (e) {
+        firstMove = true;
+    });
+    
+    window.addEventListener('touchmove', function (e) {
+        if (firstMove) {
+            e.preventDefault();
+    
+            firstMove = false;
+        }
+    });
+    </script>
   </body>
 </html>
