@@ -9,7 +9,7 @@
           this.obstructions[i] = 0;
       }
       
-      this.nextPos = null;
+      this.cachedNextPosition = undefined;
     };
     
     GridRendering.prototype.rasterizeCoords = function (x, y, gridWidth, gridHeight) {
@@ -42,18 +42,20 @@
       var currPosition = this.positions[widgetId];
       
       if (currPosition) {
-        this.setObstructionValue(currPosition, 0);
+        this.setObstructionValues(currPosition, 0);
       }
       
       newPosition = {
-        top: newPosition.top || currPosition.top,
-        left: newPosition.left || currPosition.left,
-        height: newPosition.height || currPosition.height,
-        width: newPosition.width || currPosition.width
+        top: angular.isNumber(newPosition.top) ? newPosition.top : currPosition.top,
+        left: angular.isNumber(newPosition.left) ? newPosition.left : currPosition.left,
+        height: angular.isNumber(newPosition.height) ? newPosition.height : currPosition.height,
+        width: angular.isNumber(newPosition.width) ? newPosition.width : currPosition.width
       };
       
       this.positions[widgetId] = newPosition;
-      this.setObstructionValue(this.positions[widgetId], 1);
+      this.setObstructionValues(this.positions[widgetId], 1);
+      
+      this.cachedNextPosition = undefined; // possibly invalid now
     };
     
     GridRendering.prototype.hasSpaceLeft = function () {
@@ -67,6 +69,10 @@
     
     // returns the position of the largest non-obstructed rectangular area in the grid
     GridRendering.prototype.getNextPosition = function () {
+      if (angular.isDefined(this.cachedNextPosition)) {
+        return this.cachedNextPosition; 
+      }
+      
       if (!this.hasSpaceLeft()) {
         return null;
       }
@@ -87,7 +93,7 @@
             currMaxArea = 0;
             currMaxRight = this.grid.columns;
             for (var ii = i; ii <= this.grid.rows; ii++) {
-              for (var jj = currMaxRight; jj >= j; jj--) {
+              for (var jj = j; jj <= currMaxRight; jj++) {
                 if (!this._isObstructed(ii, jj)) {
                   currHeight = (ii - i + 1);
                   currWidth = (jj - j + 1);
@@ -102,10 +108,9 @@
                       width: currWidth
                     };
                   }
-                  break;
                 } else {
                   // column jj can be disregarded in the remaining local search
-                  currMaxRight = jj;
+                  currMaxRight = jj - 1;
                 }
               }
             }
@@ -118,11 +123,12 @@
           }
         }
         
-        if (maxArea > i+1 * this.grid.columns) {
+        if (maxArea > (this.grid.rows - i + 1) * this.grid.columns) {
           break; // area can't be larger than the current max area
         }
       }
       
+      this.cachedNextPosition = maxPosition;
       return maxPosition;
     };
   
@@ -191,7 +197,7 @@
       };
     };
     
-    GridRendering.prototype.setObstructionValue = function (area, value) {
+    GridRendering.prototype.setObstructionValues = function (area, value) {
       // positions are 1-indexed (like matrices)
       for (var i = area.top - 1; i < area.top + area.height - 1; i++) {
         for (var j = area.left - 1; j < area.left + area.width - 1; j++) {

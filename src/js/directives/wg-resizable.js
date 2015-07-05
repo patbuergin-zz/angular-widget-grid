@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {
-  angular.module('widgetGrid').directive('wgResizable', ['gridUtil', function(gridUtil) {
+  angular.module('widgetGrid').directive('wgResizable', ['gridUtil', function (gridUtil) {
     return {
       restrict: 'A',
       require: 'wgWidget',

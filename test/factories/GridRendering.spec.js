@@ -170,6 +170,26 @@ describe('GridRendering', function () {
       expect(nextPosition).toEqual({ top: 5, height: 4, left: 1, width: 5 });
     });
     
+    it('considers obstructions that are surrounded by free spots', function () {
+      var p1 = { top: 1, height: 4, left: 1, width: 5 };
+      var p2 = { top: 5, height: 4, left: 6, width: 7 };
+      var p3 = { top: 3, height: 1, left: 9, width: 1 };
+      var w1 = new Widget(p1);
+      var w2 = new Widget(p2);
+      var w3 = new Widget(p3);
+      medGrid.add(w1);
+      medGrid.add(w2);
+      medGrid.add(w3);
+      
+      var rendering = new GridRendering(medGrid);
+      rendering.setWidgetPosition(w1.id, p1);
+      rendering.setWidgetPosition(w2.id, p2);
+      rendering.setWidgetPosition(w3.id, p3);
+      
+      var nextPosition = rendering.getNextPosition();
+      expect(nextPosition).toEqual({ top: 5, height: 4, left: 1, width: 5 });
+    });
+    
     it('returns null if the grid is full', function () {
       var p1 = { top: 1, height: 8, left: 1, width: 12 };
       var w1 = new Widget(p1);

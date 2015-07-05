@@ -5,7 +5,7 @@
     };
   }]);
   
-  angular.module('widgetGrid').directive('wgWidget', ['$compile', 'Widget', function ($compile, Widget) {
+  angular.module('widgetGrid').directive('wgWidget', ['Widget', function (Widget) {
     return {
       scope: {
         position: '=',
@@ -37,7 +37,7 @@
           element.css(gridCtrl.getWidgetStyle(widget));
         };
         
-        scope.$on('rendering-finished', function () {
+        scope.$on('wg-finished-rendering', function () {
           element.css(gridCtrl.getWidgetStyle(widget));
         });
         

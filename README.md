@@ -52,10 +52,10 @@ If `editable` is true, users will be able to resize the respective widget.
 
 ![Resizing Widgets](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-3.png)
 
-#### Grid
-##### `show-grid`
+#### Grid: Options
+##### `showGrid` (default: `false`)  
 ```html
-<wg-grid columns="20" rows="15" show-grid="true">
+<wg-grid columns="20" rows="15" options="{ showGrid: true }">
 ```
 Shows the grid's structure and provides visual feedback when resizing or moving widgets.
 

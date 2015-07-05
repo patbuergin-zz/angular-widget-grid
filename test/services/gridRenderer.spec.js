@@ -14,7 +14,7 @@ describe('gridRenderer', function () {
     Widget = _Widget_;
   }));
   
-  describe('#render', function () {
+  describe('#render (classic)', function () {
     var xsGrid, smGrid, mdGrid, p1, p2, p3, p4, w1, w2, w3, w4;
     
     beforeEach(function () {
