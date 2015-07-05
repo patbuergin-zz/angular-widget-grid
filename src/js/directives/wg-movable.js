@@ -50,10 +50,7 @@
           widgetElement.addClass('wg-moving');
           
           var startPos = {}; // grid positions
-          startPos.top = scope.widget.top;
-          startPos.left = scope.widget.left;
-          startPos.height = scope.widget.height;
-          startPos.width = scope.widget.width;
+          startPos = gridCtrl.getWidgetRenderPosition(scope.widget);
           startPos.bottom = startPos.top + startPos.height - 1;
           startPos.right = startPos.left + startPos.width - 1;
           

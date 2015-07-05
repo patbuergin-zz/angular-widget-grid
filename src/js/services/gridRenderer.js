@@ -56,7 +56,7 @@
             position.left = widget.left;
           }
           
-          rendering.positions[widget.id] = position;
+          rendering.setWidgetPosition(widget.id, position);
         }
         
         return rendering;

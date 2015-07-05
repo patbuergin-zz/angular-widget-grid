@@ -1,8 +1,15 @@
 (function () {
   angular.module('widgetGrid').factory('GridRendering', [function () {
-    var GridRendering = function GridRendering(grid, positions) {
-      this.grid = grid || { widgets: [] };
-      this.positions = positions || {};
+    var GridRendering = function GridRendering(grid) {
+      this.grid = grid || { rows: 0, columns: 0 };
+      this.positions = {};
+      
+      this.obstructions = [];
+      for (var i = 0; i < this.grid.rows * this.grid.columns; i++) {
+          this.obstructions[i] = 0;
+      }
+      
+      this.nextPos = null;
     };
     
     GridRendering.prototype.rasterizeCoords = function (x, y, gridWidth, gridHeight) {
@@ -27,12 +34,39 @@
       return null;
     };
     
-    GridRendering.prototype.updateWidget = function (widget) {
-      var position = this.positions[widget.id];
-      position.top = widget.top || position.top;
-      position.left = widget.left || position.left;
-      position.height = widget.height || position.height;
-      position.width = widget.width || position.width;
+    GridRendering.prototype.getWidgetPosition = function (widgetId) {
+      return this.positions[widgetId];
+    };
+    
+    GridRendering.prototype.setWidgetPosition = function (widgetId, newPosition) {
+      var currPosition = this.positions[widgetId];
+      
+      if (currPosition) {
+        this.setObstructionValue(currPosition, 0);
+      }
+      
+      newPosition = {
+        top: newPosition.top || currPosition.top,
+        left: newPosition.left || currPosition.left,
+        height: newPosition.height || currPosition.height,
+        width: newPosition.width || currPosition.width
+      };
+      
+      this.positions[widgetId] = newPosition;
+      this.setObstructionValue(this.positions[widgetId], 1);
+    };
+    
+    GridRendering.hasSpaceLeft = function () {
+      for (var i = 0; i < this.obstructions.length; i++) {
+        if (!this.obstructions[i]) {
+          return true;
+        }
+      }
+      return false;
+    };
+    
+    GridRendering.prototype.getNextPosition = function () {
+      // TODO
     };
   
     // options: excludedArea, expanding
@@ -40,11 +74,7 @@
       options = angular.isObject(options) ? options : {};
       
       // obstructed if (i, j) exceeds the grid's regular non-expanding boundaries
-      if (i < 1 || j < 1 || j > this.grid.columns) {
-        return true;
-      }
-      
-      if (!options.expanding && i > this.grid.rows) {
+      if (i < 1 || j < 1 || j > this.grid.columns || (!options.expanding && i > this.grid.rows)) {
         return true;
       }
       
@@ -54,7 +84,8 @@
           options.excludedArea.left <= j && j <= options.excludedArea.right) {
         return false;
       }
-      return this.getWidgetIdAt(i, j) !== null;
+      
+      return this.obstructions[(i-1) * this.grid.columns + (j-1)] === 1;
     };
     
     // options: excludedArea, fromBottom, fromRight, expanding
@@ -96,6 +127,27 @@
         left: ((render.left - 1) * this.grid.cellSize.width).toString() + '%',
         width: (render.width * this.grid.cellSize.width).toString() + '%'
       };
+    };
+    
+    GridRendering.prototype.setObstructionValue = function (area, value) {
+      // positions are 1-indexed (like matrices)
+      for (var i = area.top - 1; i < area.top + area.height - 1; i++) {
+        for (var j = area.left - 1; j < area.left + area.width - 1; j++) {
+          this.obstructions[i * this.grid.columns + j] = value;
+        }
+      }
+    };
+    
+    GridRendering.prototype.printObstructions = function () {
+      var row = 'obstructions:';
+      for (var i = 0; i < this.grid.columns * this.grid.rows; i++) {
+        if (i % this.grid.columns === 0) {
+          console.log(row);
+          row = '';
+        }
+        row += this.obstructions[i] + ' ';
+      }
+      console.log(row);
     };
     
     return GridRendering;

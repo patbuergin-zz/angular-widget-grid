@@ -19,6 +19,7 @@
     vm.getPositions = getPositions;
     vm.rasterizeCoords = rasterizeCoords;
     vm.updateWidget = updateWidget;
+    vm.getWidgetRenderPosition = getWidgetPosition;
     vm.getWidgetStyle = getWidgetStyle;
     vm.isPositionObstructed = isObstructed;
     vm.isAreaObstructed = isAreaObstructed;
@@ -56,7 +57,11 @@
     }
     
     function updateWidget(widget) {
-        vm.rendering.updateWidget(widget);
+        vm.rendering.setWidgetPosition(widget.id, widget.getPosition());
+    }
+    
+    function getWidgetPosition(widget) {
+      return vm.rendering.getWidgetPosition(widget.id);
     }
     
     function getWidgetStyle(widget) {
@@ -81,12 +86,12 @@
       return { top: 0, left: 0, height: 0, width: 0 };
     }
     
-    function isObstructed(i, j, excludedArea) {
-      return vm.rendering ? vm.rendering.isObstructed(i, j, excludedArea) : true;
+    function isObstructed(i, j, options) {
+      return vm.rendering ? vm.rendering.isObstructed(i, j, options) : true;
     }
     
-    function isAreaObstructed(area, excludedArea, fromBottom, fromRight) {
-      return vm.rendering ? vm.rendering.isAreaObstructed(area, excludedArea, fromBottom, fromRight) : true;
+    function isAreaObstructed(area, options) {
+      return vm.rendering ? vm.rendering.isAreaObstructed(area, options) : true;
     }
     
     function rasterizeCoords(x, y) {
@@ -114,7 +119,8 @@
       scope: {
         'columns': '@',
         'rows': '@',
-        'showGrid': '@?'
+        'showGrid': '@?',
+        'highlightNextPos': '@?'
       },
       restrict: 'AE',
       controller: 'wgGridController',

@@ -18,7 +18,7 @@ describe('GridRendering', function () {
   
   describe('#rasterizeCoords', function () {
     it('returns the closest cell when passed coords within the grid container', function () {
-      var rendering = new GridRendering(minGrid, {});
+      var rendering = new GridRendering(minGrid);
       expect(rendering.rasterizeCoords(0, 0, 1, 1)).toEqual({ i: 1, j: 1 });
       
       rendering = new GridRendering(new Grid({ columns: 2, rows: 2 }), {});
@@ -54,11 +54,9 @@ describe('GridRendering', function () {
       medGrid.add(w1);
       medGrid.add(w2);
       
-      var render = {};
-      render[w1.id] = p1;
-      render[w2.id] = p2;
-      
-      var rendering = new GridRendering(medGrid, render);
+      var rendering = new GridRendering(medGrid);
+      rendering.setWidgetPosition(w1.id, p1);
+      rendering.setWidgetPosition(w2.id, p2);
       
       expect(rendering.getWidgetIdAt(1, 1)).toEqual(w1.id);
       expect(rendering.getWidgetIdAt(4, 5)).toEqual(w1.id);
@@ -81,10 +79,8 @@ describe('GridRendering', function () {
       var w1 = new Widget(p1);
       medGrid.add(w1);
       
-      var render = {};
-      render[w1.id] = p1Rendered;
-      
-      var rendering = new GridRendering(medGrid, render);
+      var rendering = new GridRendering(medGrid);
+      rendering.setWidgetPosition(w1.id, p1Rendered);
       
       expect(rendering.getWidgetIdAt(1, 1)).toBeNull();
       expect(rendering.getWidgetIdAt(4, 5)).toBeNull();
@@ -102,17 +98,18 @@ describe('GridRendering', function () {
       medGrid.add(w1);
       medGrid.add(w2);
       
-      var render = {};
-      render[w1.id] = p1;
-      render[w2.id] = p2;
+      var rendering = new GridRendering(medGrid);
+      rendering.setWidgetPosition(w1.id, p1);
+      rendering.setWidgetPosition(w2.id, p2);
       
-      var rendering = new GridRendering(medGrid, render);
+      rendering.printObstructions();
+      
       expect(rendering.isObstructed(1, 1)).toBe(true);
       expect(rendering.isObstructed(4, 5)).toBe(true);
       expect(rendering.isObstructed(5, 6)).toBe(true);
       expect(rendering.isObstructed(6, 8)).toBe(true);
       expect(rendering.isObstructed(8, 12)).toBe(true);
-      console.debug(rendering.positions);
+
       expect(rendering.isObstructed(4, 6)).toBe(false);
       expect(rendering.isObstructed(4, 12)).toBe(false);
       expect(rendering.isObstructed(5, 5)).toBe(false);
@@ -141,9 +138,8 @@ describe('GridRendering', function () {
       var widget = new Widget(pos);
       grid.add(widget);
       
-      var renderedPositions = {};
-      renderedPositions[widget.id] = pos;
-      var rendering = new GridRendering(grid, renderedPositions);
+      var rendering = new GridRendering(grid);
+      rendering.setWidgetPosition(widget.id, pos);
       
       var style = rendering.getStyle(widget.id);
       expect(style).toEqual({ top: '16.6667%', height: '66.6668%',  left: '50%', width: '50%' });
