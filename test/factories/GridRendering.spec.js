@@ -145,4 +145,41 @@ describe('GridRendering', function () {
       expect(style).toEqual({ top: '16.6667%', height: '66.6668%',  left: '50%', width: '50%' });
     });
   });
+  
+  describe('#getNextPosition', function () {
+    it('returns the position of the largest non-obstructed rectangular area in the grid', function () {
+      var p1 = { top: 1, height: 4, left: 1, width: 5 };
+      var p2 = { top: 5, height: 4, left: 6, width: 7 };
+      var w1 = new Widget(p1);
+      var w2 = new Widget(p2);
+      medGrid.add(w1);
+      medGrid.add(w2);
+      
+      var rendering = new GridRendering(medGrid);
+      rendering.setWidgetPosition(w1.id, p1);
+      rendering.setWidgetPosition(w2.id, p2);
+      
+      var nextPosition = rendering.getNextPosition();
+      expect(nextPosition).toEqual({ top: 1, height: 4, left: 6, width: 7 });
+      
+      var w3 = new Widget(nextPosition);
+      medGrid.add(w3);
+      rendering.setWidgetPosition(w3.id, nextPosition);
+      
+      nextPosition = rendering.getNextPosition();
+      expect(nextPosition).toEqual({ top: 5, height: 4, left: 1, width: 5 });
+    });
+    
+    it('returns null if the grid is full', function () {
+      var p1 = { top: 1, height: 8, left: 1, width: 12 };
+      var w1 = new Widget(p1);
+      medGrid.add(w1);
+      
+      var rendering = new GridRendering(medGrid);
+      rendering.setWidgetPosition(w1.id, p1);
+      
+      var nextPosition = rendering.getNextPosition();
+      expect(nextPosition).toBeNull();
+    });
+  });
 });

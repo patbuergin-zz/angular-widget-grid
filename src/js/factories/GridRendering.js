@@ -56,7 +56,7 @@
       this.setObstructionValue(this.positions[widgetId], 1);
     };
     
-    GridRendering.hasSpaceLeft = function () {
+    GridRendering.prototype.hasSpaceLeft = function () {
       for (var i = 0; i < this.obstructions.length; i++) {
         if (!this.obstructions[i]) {
           return true;
@@ -65,8 +65,65 @@
       return false;
     };
     
+    // returns the position of the largest non-obstructed rectangular area in the grid
     GridRendering.prototype.getNextPosition = function () {
-      // TODO
+      if (!this.hasSpaceLeft()) {
+        return null;
+      }
+      
+      var maxPosition = null,
+          maxArea = 0,
+          currAreaLimit, currArea, currHeight, currWidth, currMaxPosition, currMaxArea, currMaxRight;
+      for (var i = 1; i <= this.grid.rows; i++) {
+        for (var j = 1; j <= this.grid.columns; j++) {
+          if (!this._isObstructed(i, j)) {
+            currAreaLimit = (this.grid.rows - i + 1) * (this.grid.columns - j + 1);
+            if (currAreaLimit < maxArea) {
+              break; // area can't be larger than the current max area
+            }
+            
+            // determine the largest area that starts from the current cell
+            currMaxPosition = null;
+            currMaxArea = 0;
+            currMaxRight = this.grid.columns;
+            for (var ii = i; ii <= this.grid.rows; ii++) {
+              for (var jj = currMaxRight; jj >= j; jj--) {
+                if (!this._isObstructed(ii, jj)) {
+                  currHeight = (ii - i + 1);
+                  currWidth = (jj - j + 1);
+                  currArea = currHeight * currWidth;
+                  
+                  if (currArea > currMaxArea) {
+                    currMaxArea = currArea;
+                    currMaxPosition = {
+                      top: i,
+                      left: j,
+                      height: currHeight,
+                      width: currWidth
+                    };
+                  }
+                  break;
+                } else {
+                  // column jj can be disregarded in the remaining local search
+                  currMaxRight = jj;
+                }
+              }
+            }
+            
+            // compare local max w/ global max
+            if (currMaxArea > maxArea) {
+              maxArea = currMaxArea;
+              maxPosition = currMaxPosition;
+            }
+          }
+        }
+        
+        if (maxArea > i+1 * this.grid.columns) {
+          break; // area can't be larger than the current max area
+        }
+      }
+      
+      return maxPosition;
     };
   
     // options: excludedArea, expanding
@@ -85,6 +142,11 @@
         return false;
       }
       
+      return this._isObstructed(i, j);
+    };
+  
+    // unsafe; w/o bounding box & excluded area
+    GridRendering.prototype._isObstructed = function(i, j) {
       return this.obstructions[(i-1) * this.grid.columns + (j-1)] === 1;
     };
     
