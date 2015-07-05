@@ -37,7 +37,7 @@
       <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" options="demo.options" class="demo-grid" id="demo-grid">
         <wg-widget wg-resizable wg-movable editable="{{demo.editable}}" ng-repeat="widget in demo.greetingWidgets" position="widget.position">
           <div random-bg-color>
-            <button ng-show="demo.editable" title="Remove Widget" class="demo-btn demo-btn-remove-widget" ng-click="demo.removeWidget(widget)">x</button>
+            <button ng-show="demo.editable" title="Remove Widget" class="demo-btn demo-btn-remove-widget" ng-click="demo.removeWidget(widget)">&#x2715;</button>
             <p class="demo-greeting">{{widget.text}}</p>
           </div>
         </wg-widget>
