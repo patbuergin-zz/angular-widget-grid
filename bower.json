@@ -1,7 +1,10 @@
 {
   "name": "angular-widget-grid",
   "version": "0.2.1",
-  "main": "angular-widget-grid.js",
+  "main": [
+      "angular-widget-grid.js",
+      "angular-widget-grid.css"
+  ],
   "homepage": "https://github.com/patbuergin/angular-widget-grid",
   "authors": [
     "Patrick Buergin <hi@patrickbuergin.com>"
