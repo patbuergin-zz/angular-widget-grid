@@ -16,7 +16,7 @@
           }
         }
       },
-      controller: function ($attrs, $parse, $scope) {
+      controller: ['$attrs', '$parse', '$scope', function ($attrs, $parse, $scope) {
         var vm = this;
         
         var DEFAULT_DIRECTIONS = ['NW', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W'];
@@ -25,7 +25,7 @@
             var attrValue = $parse($attrs.wgResizable)($scope);
             return attrValue && attrValue.directions ? attrValue.directions : DEFAULT_DIRECTIONS;
         };
-      },
+      }],
       controllerAs: 'resizableCtrl'
     };
   }]);
