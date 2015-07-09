@@ -15,39 +15,32 @@
             widgetCtrl.innerCompile(template);
           }
         }
-      }
+      },
+      controller: function ($attrs, $parse, $scope) {
+        var vm = this;
+        
+        var DEFAULT_DIRECTIONS = ['NW', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W'];
+        
+        vm.getResizeDirections = function () {
+            var attrValue = $parse($attrs.wgResizable)($scope);
+            return attrValue && attrValue.directions ? attrValue.directions : DEFAULT_DIRECTIONS;
+        };
+      },
+      controllerAs: 'resizableCtrl'
     };
   }]);
   
-  var INDEX_DRAGGER_N = 0,
-      INDEX_DRAGGER_E = 1,
-      INDEX_DRAGGER_S = 2,
-      INDEX_DRAGGER_W = 3,
-      INDEX_DRAGGER_NW = 4,
-      INDEX_DRAGGER_NE = 5,
-      INDEX_DRAGGER_SE = 6,
-      INDEX_DRAGGER_SW = 7;
-  var MIN_HEIGHT = 42,
-      MIN_WIDTH = 42;
-  var ADD_OFFSET = 1;
-  
   angular.module('widgetGrid').directive('wgResizer', ['$document', function ($document) {
+    var MIN_HEIGHT = 42,
+        MIN_WIDTH = 42,
+        ADD_OFFSET = 1;
+    
     return {
       restrict: 'A',
-      require: '^wgGrid',
-      link: function (scope, element, attrs, gridCtrl) {        
-        var draggerElements = element.children();
-        
-        var draggers = [
-          { up: true, right: false, down: false, left: false, element: angular.element(draggerElements[INDEX_DRAGGER_N]) },
-          { up: false, right: true, down: false, left: false, element: angular.element(draggerElements[INDEX_DRAGGER_E]) },
-          { up: false, right: false, down: true, left: false, element: angular.element(draggerElements[INDEX_DRAGGER_S]) },
-          { up: false, right: false, down: false, left: true, element: angular.element(draggerElements[INDEX_DRAGGER_W]) },
-          { up: true, right: false, down: false, left: true, element: angular.element(draggerElements[INDEX_DRAGGER_NW]) },
-          { up: true, right: true, down: false, left: false, element: angular.element(draggerElements[INDEX_DRAGGER_NE]) },
-          { up: false, right: true, down: true, left: false, element: angular.element(draggerElements[INDEX_DRAGGER_SE]) },
-          { up: false, right: false, down: true, left: true, element: angular.element(draggerElements[INDEX_DRAGGER_SW]) }
-        ];
+      require: ['^wgGrid', '^wgResizable'],
+      link: function (scope, element, attrs, ctrls) {
+        var gridCtrl = ctrls[0],
+            resizableCtrl = ctrls[1];
         
         var eventDown, eventMove, eventUp;
         if (window.navigator.pointerEnabled) {
@@ -59,9 +52,25 @@
           eventMove = 'mousemove touchmove';
           eventUp = 'mouseup touchend touchcancel';
         }
-         
-        for (var i = 0; i < draggers.length; i++) {
-          registerDragHandler(draggers[i], element);
+        
+        var draggers = {
+          N: { up: true, right: false, down: false, left: false, element: angular.element('<div class="wg-resize wg-resize-axis wg-resize-n"></div>') },
+          E: { up: false, right: true, down: false, left: false, element: angular.element('<div class="wg-resize wg-resize-axis wg-resize-e"></div>') },
+          S: { up: false, right: false, down: true, left: false, element: angular.element('<div class="wg-resize wg-resize-axis wg-resize-s"></div>') },
+          W: { up: false, right: false, down: false, left: true, element: angular.element('<div class="wg-resize wg-resize-axis wg-resize-w"></div>') },
+          NW: { up: true, right: false, down: false, left: true, element: angular.element('<div class="wg-resize wg-resize-diag wg-resize-nw"></div>') },
+          NE: { up: true, right: true, down: false, left: false, element: angular.element('<div class="wg-resize wg-resize-diag wg-resize-ne"></div>') },
+          SE: { up: false, right: true, down: true, left: false, element: angular.element('<div class="wg-resize wg-resize-diag wg-resize-se"></div>') },
+          SW: { up: false, right: false, down: true, left: true, element: angular.element('<div class="wg-resize wg-resize-diag wg-resize-sw"></div>') }
+        };
+        
+        var directions = resizableCtrl.getResizeDirections();
+        for (var i = 0; i < directions.length; i++) {
+          var dragger = draggers[angular.uppercase(directions[i])];
+          if (angular.isDefined(dragger)) {
+            registerDragHandler(dragger, element);
+            element.append(dragger.element);
+          }
         }
         
         function registerDragHandler(dragger, containerElement) {

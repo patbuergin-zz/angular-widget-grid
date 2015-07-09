@@ -119,8 +119,6 @@ body {
 
 .demo-btn-remove-widget {
   position: relative;
-  height: 24px;
-  width: 24px;
   float: right;
   z-index: 30;
   
