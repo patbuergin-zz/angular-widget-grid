@@ -66,8 +66,7 @@ Optionally, you can limit the resize directions:
 ```
 Shows the grid's structure and provides visual feedback when resizing or moving widgets.
 
-![Feedback on Resize (1/2)](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-5.png)
-![Feedback on Resize (2/2)](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-6.png)
+![Feedback on Resize](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-6.png)
 
 ##### `highlightNextPosition` (default: `false`)
 ```html
