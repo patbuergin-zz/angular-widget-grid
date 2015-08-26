@@ -12,7 +12,7 @@
   <body ng-app="widgetGridDemo">
     <div ng-controller="DemoController as demo">
       <div class="demo-header">
-        <a class="demo-title" href="https://github.com/patbuergin/angular-widget-grid">angular-widget-grid</a>
+        <a class="demo-title" title="angular-widget-grid on GitHub" href="https://github.com/patbuergin/angular-widget-grid">angular-widget-grid</a>
         <div class="demo-config">
           <div class="demo-config-grid hidden-xs">
             <label for="columns">Columns</label>
@@ -21,14 +21,16 @@
             <input type="number" id="rows" min="1" ng-model="demo.rows">
           </div>
           
-          <button ng-show="demo.editable" title="Add a Widget" class="demo-btn demo-btn-add-widget", ng-class="{ inactive: !demo.additionPossible }"
-                  ng-mousedown="demo.addWidget()" 
+          <button title="Add a Widget" class="demo-btn demo-btn-add-widget",
+                  ng-show="demo.editable"
+                  ng-class="{ inactive: !demo.additionPossible }"
+                  ng-click="demo.addWidget()" 
                   ng-mouseenter="demo.options.highlightNextPosition = true"
                   ng-mouseleave="demo.options.highlightNextPosition = false">
             Add Widget
           </button>
           
-          <button ng-mousedown="demo.toggleEditable()" class="demo-btn demo-btn-edit" ng-class="{ editing: demo.editable }">
+          <button ng-click="demo.toggleEditable()" class="demo-btn demo-btn-edit" ng-class="{ editing: demo.editable }">
             {{ demo.editable ? "Done" : "Edit" }}
           </button>
         </div>
@@ -37,7 +39,7 @@
       <wg-grid columns="{{demo.columns}}" rows="{{demo.rows}}" options="demo.options" class="demo-grid" id="demo-grid">
         <wg-widget wg-resizable wg-movable editable="{{demo.editable}}" ng-repeat="widget in demo.greetingWidgets" position="widget.position">
           <div random-bg-color>
-            <button ng-show="demo.editable" title="Remove Widget" class="demo-btn demo-btn-remove-widget" ng-mousedown="demo.removeWidget(widget)">&#x2715;</button>
+            <button title="Remove Widget" class="demo-btn demo-btn-remove-widget" ng-show="demo.editable" ng-click="demo.removeWidget(widget)">&#x2715;</button>
             <p class="demo-greeting">{{widget.text}}</p>
           </div>
         </wg-widget>

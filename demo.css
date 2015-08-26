@@ -54,7 +54,7 @@ body {
 }
 
 .demo-grid {
-  background-color: #E5E5E5;
+  background-color: #FAFAFA;
   top: 42px;
   right: 0;
   bottom: 0;
@@ -118,15 +118,14 @@ body {
 }
 
 .demo-btn-remove-widget {
-  position: relative;
-  float: right;
+  position: absolute;
+  right: 16px;
+  top: 16px;
   z-index: 30;
   
   font-size: 13px;
   font-weight: 400;
   line-height: 20px;
-  margin-top: 20px;
-  margin-right: 20px;
 }
 
 .demo-btn-edit.editing:hover,
