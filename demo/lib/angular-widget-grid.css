@@ -29,10 +29,10 @@
 
 .wg-widget-edit-move {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  bottom: 10px;
-  left: 10px;
+  top: 6px;
+  right: 6px;
+  bottom: 6px;
+  left: 6px;
   z-index: 20;
   touch-action: none;
   cursor: move;
@@ -51,11 +51,6 @@
 }
 
 .wg-moving .wg-widget-edit-move {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  bottom: 10px;
-  left: 10px;
   background-color: rgba(0, 113, 188, 0.06);
   cursor: move;
   cursor: -moz-grabbing;
@@ -77,19 +72,19 @@
 }
 
 .wg-resize-diag {
-  border-color: rgb(0, 113, 188);
+  border-color: rgba(0, 113, 188, 0.75);
   border-style: solid;
-  width: 12px;
-  height: 12px;
+  width: 0;
+  height: 0;
   z-index: 1;
 }
 
 .wg-resize-diag:hover {
-  border-color: rgb(0, 138, 229);
+  border-color: rgba(0, 138, 229, 0.75);
 }
 
 .wg-resize-diag.dragging {
-  border-color: rgb(0, 174, 239);
+  border-color: rgba(0, 174, 239, 0.75);
 }
 
 .wg-resize-axis {
@@ -104,35 +99,39 @@
   top: 0;
   left: 0;
   cursor: nw-resize;
-  border-width:  10px 0 0  10px;
+  border-width: 16px 16px 0 0;
+  border-right-color: transparent !important;
 }
 
 .wg-resize-ne {
   top: 0;
   right: 0;
   cursor: ne-resize;
-  border-width:  10px  10px 0 0;
+  border-width: 16px 0 0 16px;
+  border-left-color: transparent !important;
 }
 
 .wg-resize-se {
   bottom: 0;
   right: 0;
   cursor: se-resize;
-  border-width: 0  10px  10px 0;
+  border-width: 0 0 16px 16px;
+  border-left-color: transparent !important;
 }
 
 .wg-resize-sw {
   bottom: 0;
   left: 0;
   cursor: sw-resize;
-  border-width: 0 0  10px  10px;
+  border-width: 0 16px 16px 0;
+  border-right-color: transparent !important;
 }
 
 .wg-resize-n {
   top: 0;
   right: 0;
   left: 0;
-  height:  10px;
+  height: 6px;
   cursor: n-resize;
 }
 
@@ -140,7 +139,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width:  10px;
+  width: 6px;
   cursor: e-resize;
 }
 
@@ -148,7 +147,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  height:  10px;
+  height: 6px;
   cursor: s-resize;
 }
 
@@ -156,7 +155,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width:  10px;
+  width: 6px;
   cursor: w-resize;
 }
 
@@ -171,14 +170,14 @@
 
 .wg-preview-row {
   width: 100%;
-  border-top: 1px dashed rgb(185, 185, 185);
-  border-bottom: 1px solid rgb(215, 215, 215);
+  border-top: 1px dotted rgb(215, 215, 215);
+  border-bottom: 1px solid rgb(240, 240, 240);
 }
 
 .wg-preview-column {
   height: 100%;
-  border-left: 1px dashed rgb(185, 185, 185);
-  border-right: 1px solid rgb(215, 215, 215);
+  border-left: 1px dotted rgb(215, 215, 215);
+  border-right: 1px solid rgb(240, 240, 240);
 }
 
 .wg-preview-highlight {
