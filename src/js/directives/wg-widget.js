@@ -38,7 +38,7 @@
         };
         
         scope.$on('wg-finished-rendering', function () {
-          element.css(gridCtrl.getWidgetStyle(widget));
+          scope.setWidgetPosition(widget.getPosition());
         });
         
         scope.$on('$destroy', function () {
