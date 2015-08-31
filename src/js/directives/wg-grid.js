@@ -91,12 +91,12 @@
     
     function updateWidget(widget) {
       var newPosition = widget.getPosition();
-        vm.rendering.setWidgetPosition(widget.id, newPosition);
-        $scope.$emit('wg-update-position', {
-          index: getWidgetIndex(widget),
-          newPosition: newPosition
-        });
-        assessAvailableGridSpace();
+      vm.rendering.setWidgetPosition(widget.id, newPosition);
+      $scope.$emit('wg-update-position', {
+        index: getWidgetIndex(widget),
+        newPosition: newPosition
+      });
+      assessAvailableGridSpace();
     }
     
     function updateNextPositionHighlight() {
