@@ -42,6 +42,10 @@ angular.module('widgetGridDemo', ['widgetGrid'])
     vm.additionPossible = true;
   });
   
+  $scope.$on('wg-update-position', function (event, widgetInfo) {
+    console.log('A widget has changed its position!', widgetInfo);
+  });
+  
   var greetings = ['Hola!', 'Hey!', 'Bonjour!', 'Servus!', 'Hello!'];
   function addWidget() {
     if (vm.additionPossible) {    
