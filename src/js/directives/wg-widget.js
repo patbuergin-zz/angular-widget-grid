@@ -31,15 +31,22 @@
         };
         
         scope.setWidgetPosition = function (position) {
+          var oldPosition = widget.getPosition();
           widget.setPosition(position);
-          scope.position = widget.getPosition();
-          gridCtrl.updateWidget(widget);
-          element.css(gridCtrl.getWidgetStyle(widget));
+          var newPosition = widget.getPosition();
+          
+          if (!angular.equals(oldPosition, newPosition)) {
+            gridCtrl.updateWidget(widget);
+          }
+          updateRendering();
         };
         
-        scope.$on('wg-finished-rendering', function () {
-          scope.setWidgetPosition(widget.getPosition());
-        });
+        function updateRendering() {
+          element.css(gridCtrl.getWidgetStyle(widget));
+          scope.position = widget.getPosition();
+        }
+        
+        scope.$on('wg-update-rendering', updateRendering);
         
         scope.$on('$destroy', function () {
           gridCtrl.removeWidget(widget);

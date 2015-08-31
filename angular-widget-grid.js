@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.2.2
+ * @license angular-widget-grid v0.2.3
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -181,7 +181,7 @@
       vm.rendering = gridRenderer.render(vm.grid, vm.options.renderStrategy);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
-      $scope.$broadcast('wg-finished-rendering');
+      $scope.$broadcast('wg-update-rendering');
     }
     
     function assessAvailableGridSpace() {
@@ -196,7 +196,12 @@
     }
     
     function updateWidget(widget) {
-        vm.rendering.setWidgetPosition(widget.id, widget.getPosition());
+      var newPosition = widget.getPosition();
+        vm.rendering.setWidgetPosition(widget.id, newPosition);
+        $scope.$emit('wg-update-position', {
+          index: getWidgetIndex(widget),
+          newPosition: newPosition
+        });
         assessAvailableGridSpace();
     }
     
@@ -213,6 +218,15 @@
     
     function getWidgetStyle(widget) {
       return vm.rendering.getStyle(widget.id);
+    }
+    
+    function getWidgetIndex(widget) {
+      for (var i = vm.grid.widgets.length - 1; i >= 0; i--) {
+        if (vm.grid.widgets[i].id === widget.id) {
+          return i;
+        }
+      }
+      return -1;
     }
     
     function getPositions() {
@@ -799,15 +813,22 @@
         };
         
         scope.setWidgetPosition = function (position) {
+          var oldPosition = widget.getPosition();
           widget.setPosition(position);
-          scope.position = widget.getPosition();
-          gridCtrl.updateWidget(widget);
-          element.css(gridCtrl.getWidgetStyle(widget));
+          var newPosition = widget.getPosition();
+          
+          if (!angular.equals(oldPosition, newPosition)) {
+            gridCtrl.updateWidget(widget);
+          }
+          updateRendering();
         };
         
-        scope.$on('wg-finished-rendering', function () {
-          scope.setWidgetPosition(widget.getPosition());
-        });
+        function updateRendering() {
+          element.css(gridCtrl.getWidgetStyle(widget));
+          scope.position = widget.getPosition();
+        }
+        
+        scope.$on('wg-update-rendering', updateRendering);
         
         scope.$on('$destroy', function () {
           gridCtrl.removeWidget(widget);

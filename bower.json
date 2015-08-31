@@ -1,6 +1,6 @@
 {
   "name": "angular-widget-grid",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "main": [
       "angular-widget-grid.js",
       "angular-widget-grid.css"

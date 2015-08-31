@@ -75,7 +75,7 @@
       vm.rendering = gridRenderer.render(vm.grid, vm.options.renderStrategy);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
-      $scope.$broadcast('wg-finished-rendering');
+      $scope.$broadcast('wg-update-rendering');
     }
     
     function assessAvailableGridSpace() {
@@ -90,7 +90,12 @@
     }
     
     function updateWidget(widget) {
-        vm.rendering.setWidgetPosition(widget.id, widget.getPosition());
+      var newPosition = widget.getPosition();
+        vm.rendering.setWidgetPosition(widget.id, newPosition);
+        $scope.$emit('wg-update-position', {
+          index: getWidgetIndex(widget),
+          newPosition: newPosition
+        });
         assessAvailableGridSpace();
     }
     
@@ -107,6 +112,15 @@
     
     function getWidgetStyle(widget) {
       return vm.rendering.getStyle(widget.id);
+    }
+    
+    function getWidgetIndex(widget) {
+      for (var i = vm.grid.widgets.length - 1; i >= 0; i--) {
+        if (vm.grid.widgets[i].id === widget.id) {
+          return i;
+        }
+      }
+      return -1;
     }
     
     function getPositions() {
