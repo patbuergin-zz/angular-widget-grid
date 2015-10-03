@@ -10,8 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   </head>
   <body ng-app="widgetGridDemo" style="padding: 20px;">
-    <wg-grid columns="20" rows="15" style="width: 400px; height: 300px; border: 1px solid #cacaca;">
-      <wg-widget wg-movable editable="true" position="{ top: 2, left: 4, height: 6, width: 8 }">
+    <wg-grid columns="20" rows="15" style="width: 400px; height: 300px; border: 1px solid #cacaca;" options="{ showGrid: true, highlightNextPosition: false }">
+      <wg-widget wg-movable wg-resizable editable="false" position="{ top: 2, left: 4, height: 6, width: 8 }">
         <div style="background-color: rgb(140, 198, 0);"></div>
       </wg-widget>
     </wg-grid>
