@@ -1,7 +1,6 @@
 .wg-grid {
   position: absolute;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .wg-widget {
