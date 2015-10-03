@@ -43,7 +43,7 @@
         
         function updateRendering() {
           element.css(gridCtrl.getWidgetStyle(widget));
-          scope.position = widget.getPosition();
+          angular.extend(scope.position, widget.getPosition());
         }
         
         scope.$on('wg-update-rendering', updateRendering);
