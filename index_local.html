@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="lib/angular-widget-grid.min.js"></script>
+    <script src="demo.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="lib/angular-widget-grid.css"></link>
+    <link rel="stylesheet" href="demo.css"></link>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  </head>
+  <body ng-app="widgetGridDemo" style="padding: 20px;">
+    <wg-grid columns="20" rows="15" style="width: 400px; height: 300px; border: 1px solid #cacaca;">
+      <wg-widget wg-movable editable="true" position="{ top: 2, left: 4, height: 6, width: 8 }">
+        <div style="background-color: rgb(140, 198, 0);"></div>
+      </wg-widget>
+    </wg-grid>
+    </div>
+    
+    <!-- suppress iOS' rubber band effect -->
+    <!-- c.f. http://stackoverflow.com/a/26853900 -->
+    <script>
+    var firstMove;
+    
+    window.addEventListener('touchstart', function (e) {
+      firstMove = true;
+    });
+    
+    window.addEventListener('touchmove', function (e) {
+      if (firstMove) {
+        e.preventDefault();
+        firstMove = false;
+      }
+    });
+    </script>
+  </body>
+</html>
