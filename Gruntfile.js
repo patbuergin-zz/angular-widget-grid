@@ -117,10 +117,19 @@ module.exports = function(grunt) {
         base: 'demo'
       },
       src: ['**']
+    },
+    connect: {
+      server: {
+        options: {
+          base: 'demo',
+          livereload: true
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -130,6 +139,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-karma');
 
+  grunt.registerTask('serve', ['connect', 'watch']);
   grunt.registerTask('test', ['karma']);
   grunt.registerTask('build', ['ngtemplates', 'concat', 'uglify', 'clean', 'copy']);
   grunt.registerTask('default', ['jshint', 'test', 'build']);
