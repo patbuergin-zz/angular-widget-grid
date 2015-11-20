@@ -4,17 +4,18 @@ A flexible grid layout for responsive dashboards.
 #### Demo: http://patbuergin.github.io/angular-widget-grid/
 
 ## Installation
-Install with [Bower](http://bower.io/):
+Install with [Bower](http://bower.io/) / [npm](http://www.npmjs.com/), or simply download the files from the root folder:
 
 ```sh
 $ bower install angular-widget-grid
+$ npm install angular-widget-grid
 ```
 
 Add `<script>` and `<link>` tags to your `index.html`:
 
 ```html
-<link rel="stylesheet" href="bower_components/angular-widget-grid/angular-widget-grid.css">
-<script src="bower_components/angular-widget-grid/angular-widget-grid.min.js"></script>
+<link rel="stylesheet" href="[...]/angular-widget-grid.css">
+<script src="[...]/angular-widget-grid.min.js"></script>
 ```
 
 Add the angular-widget-grid module as a dependency to your application module:
@@ -91,3 +92,15 @@ $scope.$on('wg-grid-full', function () {
 
 ##### `wg-update-position`
 Emitted whenever the position of a widget is changed. The event comes with an attached object argument, which contains the affected widget's `index` and its `newPosition`.
+
+## Build
+Check out `/src` for the original source code.
+
+You can build and test the project by executing the following commands after cloning the repository:
+```sh
+$ npm install -g bower grunt grunt-cli
+
+$ npm install
+$ bower install
+$ grunt serve
+```

@@ -1,0 +1,11 @@
+**/.*
+node_modules
+bower_components
+src
+test
+doc
+karma.conf.js
+typings
+demo
+bower.json
+Gruntfile.js
