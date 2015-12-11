@@ -1,16 +1,23 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {  
+  var DEFAULT_OPTIONS = {
+    showGrid: false,
+    highlightNextPosition: false
+  };
+
   angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
-    
+
     vm.grid = new Grid({
       columns: $scope.columns,
       rows: $scope.rows
     });
     vm.rendering = null;
     vm.highlight = null;
-    
+    vm.options = DEFAULT_OPTIONS;
+    vm.overlayOptions = {};
+
     vm.addWidget = addWidget;
     vm.removeWidget = removeWidget;
     vm.updateGridSize = updateGridSize;
@@ -24,32 +31,25 @@
     vm.isAreaObstructed = isAreaObstructed;
     vm.highlightArea = highlightArea;
     vm.resetHighlights = resetHighlights;
-  
-    var DEFAULT_OPTIONS = {
-      showGrid: false,
-      highlightNextPosition: false,
-      renderStrategy: 'maxSize'
-    };
-    
-    vm.options = DEFAULT_OPTIONS;
-    vm.overlayOptions = {};
-    
+
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
     $scope.$watch('options', updateOptions, true);
-    
+
     updateRendering();
-    
+
     function addWidget(widget) {
       vm.grid.add(widget);
       updateRendering();
     }
-    
+
+
     function removeWidget(widget) {
       vm.grid.remove(widget);
       updateRendering();
     }
-    
+
+
     function updateGridSize() {
       var columns = parseInt($scope.columns);
       var rows = parseInt($scope.rows);
@@ -58,26 +58,29 @@
         updateRendering();
       }
     }
-    
+
+
     function updateOptions() {
       vm.options = angular.extend({}, DEFAULT_OPTIONS, $scope.options);
       vm.overlayOptions.showGrid = vm.options.showGrid;
-      
+
       if (vm.options.highlightNextPosition) {
         updateNextPositionHighlight();
       } else {
         resetHighlights();
       }
     }
-    
+
+
     var usedToBeFull = false;
     function updateRendering() {
-      vm.rendering = gridRenderer.render(vm.grid, vm.options.renderStrategy);
+      vm.rendering = gridRenderer.render(vm.grid);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
       $scope.$broadcast('wg-update-rendering');
     }
-    
+
+
     function assessAvailableGridSpace() {
       var gridHasSpaceLeft = vm.rendering.hasSpaceLeft();
       if (gridHasSpaceLeft && usedToBeFull) {
@@ -88,7 +91,8 @@
         usedToBeFull = true;
       }
     }
-    
+
+
     function updateWidget(widget) {
       var newPosition = widget.getPosition();
       vm.rendering.setWidgetPosition(widget.id, newPosition);
@@ -98,22 +102,26 @@
       });
       assessAvailableGridSpace();
     }
-    
+
+
     function updateNextPositionHighlight() {
       if (vm.options.highlightNextPosition) {
         var nextPos = vm.rendering.getNextPosition();
         vm.highlight = nextPos;
       }
     }
-    
+
+
     function getWidgetPosition(widget) {
       return vm.rendering.getWidgetPosition(widget.id);
     }
-    
+
+
     function getWidgetStyle(widget) {
       return vm.rendering.getStyle(widget.id);
     }
-    
+
+
     function getWidgetIndex(widget) {
       for (var i = vm.grid.widgets.length - 1; i >= 0; i--) {
         if (vm.grid.widgets[i].id === widget.id) {
@@ -122,7 +130,8 @@
       }
       return -1;
     }
-    
+
+
     function getPositions() {
       var gridContainer = $element[0];
 
@@ -140,19 +149,23 @@
       }
       return { top: 0, left: 0, height: 0, width: 0 };
     }
-    
+
+
     function isObstructed(i, j, options) {
       return vm.rendering ? vm.rendering.isObstructed(i, j, options) : true;
     }
-    
+
+
     function isAreaObstructed(area, options) {
       return vm.rendering ? vm.rendering.isAreaObstructed(area, options) : true;
     }
-    
+
+
     function rasterizeCoords(x, y) {
       return vm.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
     }
-    
+
+
     function highlightArea(area) {
       if (area.top && area.left && area.height && area.width) {
         $timeout(function () {
@@ -160,16 +173,17 @@
         });
       }
     }
-    
+
+
     function resetHighlights() {
       $timeout(function () {
         vm.highlight = null;
       });
     }
   }]);
-  
-  angular.module('widgetGrid').directive('wgGrid', gridDirective);
-  function gridDirective() {
+
+
+  angular.module('widgetGrid').directive('wgGrid', function () {
     return {
       scope: {
         'columns': '@',
@@ -183,5 +197,5 @@
       replace: true,
       templateUrl: 'wg-grid'
     };
-  }
+  });
 })();

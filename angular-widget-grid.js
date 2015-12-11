@@ -20,76 +20,95 @@
       replace: true,
       template: '<div class="wg-grid-overlay"></div>',
       link: function (scope, element) {
-        var highlights = [];
-        
+        var activeHighlights = [],
+            activeGridLines = [];
+
         scope.options = scope.options || { showGrid: false };
-        
-        scope.$watch('rendering', function (newRendering) {
-          if (newRendering) {
-            updateGridPreview(newRendering);
-            resetHighlights();
+
+        scope.$watch('highlight', applyHighlight);
+        scope.$watch('options', applyOptions, true);
+        scope.$watch('rendering', applyRendering);
+
+        function applyRendering(rendering) {
+          if (angular.isDefined(rendering)) {
+            updateGridLines(rendering, scope.options);
           }
-        });
-        
-        scope.$watch('options', function () {
-          updateGridPreview(scope.rendering);
-        }, true);
-        
-        scope.$watch('highlight', function (newHighlight) {        
-          if (newHighlight !== null) {  
-            if (highlights.length > 0) {
-              resetHighlights();
-            }
-            
-            if (angular.isArray(newHighlight)) {
-              for (var i = 0; i < newHighlight.length; i++) {
-                highlightArea(scope.rendering, newHighlight[i]);
-              }
-            } else {
-              highlightArea(scope.rendering, newHighlight);
+        }
+
+
+        function applyOptions(options) {
+          updateGridLines(scope.rendering, options);
+        }
+
+
+        function applyHighlight(highlight) {
+          clearHighlights();
+
+          if (highlight === null) { return; }
+
+          if (angular.isArray(highlight)) {
+            for (var i = 0; i < highlight.length; i++) {
+              highlightArea(highlight[i], scope.rendering);
             }
           } else {
-            resetHighlights();
-          }
-        });
-        
-        function updateGridPreview(rendering) {
-          element.children().remove();
-          
-          if (scope.options.showGrid) {
-            var cellHeight = rendering.grid.cellSize.height,
-                cellWidth = rendering.grid.cellSize.width,
-                height = cellHeight + '%',
-                width = cellWidth + '%';
-            
-            // use an interlaced approach to reduce the number of dom elements
-            var i, x, y, bar;
-            for (i = 1; i < rendering.grid.rows; i += 2) {
-                y = (i * cellHeight) + '%';
-                bar = '<div class="wg-preview-item wg-preview-row" style="top: ' + y + '; height: calc(' + height + ' - 1px);"></div>';
-                element.append(bar);
-            }
-            
-            for (i = 1; i < rendering.grid.columns; i += 2) {
-                x = (i * cellWidth) + '%';
-                bar = '<div class="wg-preview-item wg-preview-column" style="left: ' + x + '; width: calc(' + width + ' - 1px);"></div>';
-                element.append(bar);
-            }
+            highlightArea(highlight, scope.rendering);
           }
         }
-        
-        function resetHighlights() {
-          for (var i = 0; i < highlights.length; i++) {
-            highlights[i].remove();
-            
+
+
+        function updateGridLines(rendering, options) {
+          clearGridLines();
+          if (options && options.showGrid) {
+            showGridLines(rendering);
           }
-          highlights = [];
         }
-        
-        function highlightArea(rendering, area) {
+
+
+        function showGridLines(rendering) {
+          var cellHeight = rendering.grid.cellSize.height,
+              cellWidth = rendering.grid.cellSize.width,
+              height = cellHeight + '%',
+              width = cellWidth + '%';
+
+          var i, x, y, gridLine;
+          for (i = 1; i < rendering.grid.rows; i += 2) {
+              y = (i * cellHeight) + '%';
+              gridLine = '<div class="wg-preview-item wg-preview-row" style="top: ' + y + '; height: calc(' + height + ' - 1px);"></div>';
+              gridLine = angular.element(gridLine);
+              element.append(gridLine);
+              activeGridLines.push(gridLine);
+          }
+
+          for (i = 1; i < rendering.grid.columns; i += 2) {
+              x = (i * cellWidth) + '%';
+              gridLine = '<div class="wg-preview-item wg-preview-column" style="left: ' + x + '; width: calc(' + width + ' - 1px);"></div>';
+              gridLine = angular.element(gridLine);
+              element.append(gridLine);
+              activeGridLines.push(gridLine);
+          }
+        }
+
+
+        function clearHighlights() {
+          angular.forEach(activeHighlights, function (activeHighlight) {
+            activeHighlight.remove();
+          });
+          activeHighlights = [];
+        }
+
+
+        function clearGridLines() {
+          angular.forEach(activeGridLines, function(activeGridLine) {
+            activeGridLine.remove();
+          });
+          activeGridLines = [];
+        }
+
+
+        function highlightArea(area, rendering) {
           var cellHeight = rendering.grid.cellSize.height,
               cellWidth = rendering.grid.cellSize.width;
-          
+
           var highlight = angular.element('<div>');
           highlight.addClass('wg-preview-item');
           highlight.addClass('wg-preview-highlight');
@@ -97,9 +116,9 @@
           highlight.css('left', (area.left - 1) * cellWidth + '%');
           highlight.css('height', area.height * cellHeight + '%');
           highlight.css('width', area.width * cellWidth + '%');
-          
+
           element.append(highlight);
-          highlights.push(highlight);
+          activeHighlights.push(highlight);
         }
       }
     };
@@ -107,16 +126,23 @@
 })();
 
 (function () {  
+  var DEFAULT_OPTIONS = {
+    showGrid: false,
+    highlightNextPosition: false
+  };
+
   angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
-    
+
     vm.grid = new Grid({
       columns: $scope.columns,
       rows: $scope.rows
     });
     vm.rendering = null;
     vm.highlight = null;
-    
+    vm.options = DEFAULT_OPTIONS;
+    vm.overlayOptions = {};
+
     vm.addWidget = addWidget;
     vm.removeWidget = removeWidget;
     vm.updateGridSize = updateGridSize;
@@ -130,32 +156,25 @@
     vm.isAreaObstructed = isAreaObstructed;
     vm.highlightArea = highlightArea;
     vm.resetHighlights = resetHighlights;
-  
-    var DEFAULT_OPTIONS = {
-      showGrid: false,
-      highlightNextPosition: false,
-      renderStrategy: 'maxSize'
-    };
-    
-    vm.options = DEFAULT_OPTIONS;
-    vm.overlayOptions = {};
-    
+
     $scope.$watch('columns', updateGridSize);
     $scope.$watch('rows', updateGridSize);
     $scope.$watch('options', updateOptions, true);
-    
+
     updateRendering();
-    
+
     function addWidget(widget) {
       vm.grid.add(widget);
       updateRendering();
     }
-    
+
+
     function removeWidget(widget) {
       vm.grid.remove(widget);
       updateRendering();
     }
-    
+
+
     function updateGridSize() {
       var columns = parseInt($scope.columns);
       var rows = parseInt($scope.rows);
@@ -164,26 +183,29 @@
         updateRendering();
       }
     }
-    
+
+
     function updateOptions() {
       vm.options = angular.extend({}, DEFAULT_OPTIONS, $scope.options);
       vm.overlayOptions.showGrid = vm.options.showGrid;
-      
+
       if (vm.options.highlightNextPosition) {
         updateNextPositionHighlight();
       } else {
         resetHighlights();
       }
     }
-    
+
+
     var usedToBeFull = false;
     function updateRendering() {
-      vm.rendering = gridRenderer.render(vm.grid, vm.options.renderStrategy);
+      vm.rendering = gridRenderer.render(vm.grid);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
       $scope.$broadcast('wg-update-rendering');
     }
-    
+
+
     function assessAvailableGridSpace() {
       var gridHasSpaceLeft = vm.rendering.hasSpaceLeft();
       if (gridHasSpaceLeft && usedToBeFull) {
@@ -194,7 +216,8 @@
         usedToBeFull = true;
       }
     }
-    
+
+
     function updateWidget(widget) {
       var newPosition = widget.getPosition();
       vm.rendering.setWidgetPosition(widget.id, newPosition);
@@ -204,22 +227,26 @@
       });
       assessAvailableGridSpace();
     }
-    
+
+
     function updateNextPositionHighlight() {
       if (vm.options.highlightNextPosition) {
         var nextPos = vm.rendering.getNextPosition();
         vm.highlight = nextPos;
       }
     }
-    
+
+
     function getWidgetPosition(widget) {
       return vm.rendering.getWidgetPosition(widget.id);
     }
-    
+
+
     function getWidgetStyle(widget) {
       return vm.rendering.getStyle(widget.id);
     }
-    
+
+
     function getWidgetIndex(widget) {
       for (var i = vm.grid.widgets.length - 1; i >= 0; i--) {
         if (vm.grid.widgets[i].id === widget.id) {
@@ -228,7 +255,8 @@
       }
       return -1;
     }
-    
+
+
     function getPositions() {
       var gridContainer = $element[0];
 
@@ -246,19 +274,23 @@
       }
       return { top: 0, left: 0, height: 0, width: 0 };
     }
-    
+
+
     function isObstructed(i, j, options) {
       return vm.rendering ? vm.rendering.isObstructed(i, j, options) : true;
     }
-    
+
+
     function isAreaObstructed(area, options) {
       return vm.rendering ? vm.rendering.isAreaObstructed(area, options) : true;
     }
-    
+
+
     function rasterizeCoords(x, y) {
       return vm.rendering.rasterizeCoords(x, y, $element[0].clientWidth, $element[0].clientHeight);
     }
-    
+
+
     function highlightArea(area) {
       if (area.top && area.left && area.height && area.width) {
         $timeout(function () {
@@ -266,16 +298,17 @@
         });
       }
     }
-    
+
+
     function resetHighlights() {
       $timeout(function () {
         vm.highlight = null;
       });
     }
   }]);
-  
-  angular.module('widgetGrid').directive('wgGrid', gridDirective);
-  function gridDirective() {
+
+
+  angular.module('widgetGrid').directive('wgGrid', function () {
     return {
       scope: {
         'columns': '@',
@@ -289,7 +322,7 @@
       replace: true,
       templateUrl: 'wg-grid'
     };
-  }
+  });
 })();
 
 (function () {
@@ -802,17 +835,28 @@
       link: function (scope, element, attrs, gridCtrl) {
         var widgetOptions = scope.position;
         var widget = new Widget(widgetOptions);
-        
+
         scope.editable = 'false';
         scope.widget = widget;
-        
-        scope.getNodeIndex = function () {
+
+        scope.getNodeIndex = getNodeIndex;
+        scope.setWidgetPosition = setWidgetPosition;
+
+        scope.$on('wg-update-rendering', updateView);
+        scope.$on('$destroy', function () {
+          gridCtrl.removeWidget(widget);
+        });
+
+        gridCtrl.addWidget(widget);
+
+        function getNodeIndex() {
           var index = 0, elem = element[0];
           while ((elem = elem.previousElementSibling) !== null) { ++index; }
           return index;
-        };
-        
-        scope.setWidgetPosition = function (position) {
+        }
+
+
+        function setWidgetPosition(position) {
           var oldPosition = widget.getPosition();
           widget.setPosition(position);
           var newPosition = widget.getPosition();
@@ -820,22 +864,15 @@
           if (!angular.equals(oldPosition, newPosition)) {
             gridCtrl.updateWidget(widget);
           }
-          updateRendering();
-        };
-        
-        function updateRendering() {
+          updateView();
+        }
+
+
+        function updateView() {
           element.css(gridCtrl.getWidgetStyle(widget));
           scope.position = scope.position || {};
           angular.extend(scope.position, widget.getPosition());
         }
-        
-        scope.$on('wg-update-rendering', updateRendering);
-        
-        scope.$on('$destroy', function () {
-          gridCtrl.removeWidget(widget);
-        });
-        
-        gridCtrl.addWidget(widget);
       }
     };
   }]);
@@ -844,104 +881,106 @@
 (function () {
   var DEFAULT_COLUMNS = 4,
       DEFAULT_ROWS = 4;
-  
+
   angular.module('widgetGrid').factory('Grid', ['gridUtil', function (gridUtil) {
     var Grid = function Grid(options) {
       options = options || {};
-      
+      this.widgets = [];
       this.columns = parseInt(options.columns) || DEFAULT_COLUMNS;
       this.rows = parseInt(options.rows) || DEFAULT_ROWS;
       this.cellSize = gridUtil.computeCellSize(this.rows, this.columns);
-
-      this.widgets = [];
     };
+
 
     Grid.prototype.add = function (widget) {
       this.widgets.push(widget);
     };
-    
+
+
     Grid.prototype.remove = function (widget) {
-      var idx = this.widgets.indexOf(widget);
-      if (idx >= 0) {
-        this.widgets.splice(idx, 1);
+      var widgetIndex = this.widgets.indexOf(widget);
+      if (widgetIndex >= 0) {
+        this.widgets.splice(widgetIndex, 1);
       }
     };
+
 
     Grid.prototype.resize = function (rows, columns) {
       columns = parseInt(columns) || 0;
       rows = parseInt(rows) || 0;
-      
+
       if (columns > 0 && rows > 0 && columns !== this.columns || rows !== this.rows) {
         this.columns = columns;
         this.rows = rows;
         this.cellSize = gridUtil.computeCellSize(this.rows, this.columns);
       }
     };
-    
+
     return Grid;
   }]);
 })();
 
 (function () {
-  angular.module('widgetGrid').factory('GridRendering', [function () {
+  angular.module('widgetGrid').factory('GridRendering', ['gridUtil', function (gridUtil) {
     var GridRendering = function GridRendering(grid) {
       this.grid = grid || { rows: 0, columns: 0 };
       this.positions = {};
-      
+      this.cachedNextPosition = undefined;
       this.obstructions = [];
       for (var i = 0; i < this.grid.rows * this.grid.columns; i++) {
           this.obstructions[i] = 0;
       }
-      
-      this.cachedNextPosition = undefined;
     };
-    
+
+
     GridRendering.prototype.rasterizeCoords = function (x, y, gridWidth, gridHeight) {
       x = Math.min(Math.max(x, 0), gridWidth - 1);
       y = Math.min(Math.max(y, 0), gridHeight - 1);
-      
+
       return {
         i: Math.floor(y / gridHeight * this.grid.rows) + 1,
         j: Math.floor(x / gridWidth * this.grid.columns) + 1
       };
     };
-    
+
+
     GridRendering.prototype.getWidgetIdAt = function (i, j) {
       for (var widgetId in this.positions) {
-        var pos = this.positions[widgetId];
+        var position = this.positions[widgetId];
 
-        if (pos.top <= i && i <= (pos.top + pos.height - 1) &&
-            pos.left <= j && j <= (pos.left + pos.width - 1)) {
+        if (position.top <= i && i <= (position.top + position.height - 1) &&
+            position.left <= j && j <= (position.left + position.width - 1)) {
           return widgetId;
         }
       }
       return null;
     };
-    
+
+
     GridRendering.prototype.getWidgetPosition = function (widgetId) {
       return this.positions[widgetId];
     };
-    
+
+
     GridRendering.prototype.setWidgetPosition = function (widgetId, newPosition) {
       var currPosition = this.positions[widgetId];
-      
       if (currPosition) {
         this.setObstructionValues(currPosition, 0);
       }
-      
+
       newPosition = {
         top: angular.isNumber(newPosition.top) ? newPosition.top : currPosition.top,
         left: angular.isNumber(newPosition.left) ? newPosition.left : currPosition.left,
         height: angular.isNumber(newPosition.height) ? newPosition.height : currPosition.height,
         width: angular.isNumber(newPosition.width) ? newPosition.width : currPosition.width
       };
-      
       this.positions[widgetId] = newPosition;
+
       this.setObstructionValues(this.positions[widgetId], 1);
-      
-      this.cachedNextPosition = undefined; // possibly invalid now
+      this.cachedNextPosition = undefined;
     };
-    
+
+
     GridRendering.prototype.hasSpaceLeft = function () {
       for (var i = 0; i < this.obstructions.length; i++) {
         if (!this.obstructions[i]) {
@@ -950,111 +989,71 @@
       }
       return false;
     };
-    
-    // returns the position of the largest non-obstructed rectangular area in the grid
+
+
     GridRendering.prototype.getNextPosition = function () {
       if (angular.isDefined(this.cachedNextPosition)) {
         return this.cachedNextPosition; 
       }
-      
+
       if (!this.hasSpaceLeft()) {
         return null;
       }
-      
-      var maxPosition = null,
-          maxArea = 0,
-          currAreaLimit, currArea, currHeight, currWidth, currMaxPosition, currMaxArea, currMaxRight;
-      for (var i = 1; i <= this.grid.rows; i++) {
-        for (var j = 1; j <= this.grid.columns; j++) {
-          if (!this._isObstructed(i, j)) {
-            currAreaLimit = (this.grid.rows - i + 1) * (this.grid.columns - j + 1);
-            if (currAreaLimit < maxArea) {
-              break; // area can't be larger than the current max area
-            }
-            
-            // determine the largest area that starts from the current cell
-            currMaxPosition = null;
-            currMaxArea = 0;
-            currMaxRight = this.grid.columns;
-            for (var ii = i; ii <= this.grid.rows; ii++) {
-              for (var jj = j; jj <= currMaxRight; jj++) {
-                if (!this._isObstructed(ii, jj)) {
-                  currHeight = (ii - i + 1);
-                  currWidth = (jj - j + 1);
-                  currArea = currHeight * currWidth;
-                  
-                  if (currArea > currMaxArea) {
-                    currMaxArea = currArea;
-                    currMaxPosition = {
-                      top: i,
-                      left: j,
-                      height: currHeight,
-                      width: currWidth
-                    };
-                  }
-                } else {
-                  // column jj can be disregarded in the remaining local search
-                  currMaxRight = jj - 1;
-                }
-              }
-            }
-            
-            // compare local max w/ global max
-            if (currMaxArea > maxArea) {
-              maxArea = currMaxArea;
-              maxPosition = currMaxPosition;
-            }
-          }
-        }
-        
-        if (maxArea > (this.grid.rows - i + 1) * this.grid.columns) {
-          break; // area can't be larger than the current max area
-        }
-      }
-      
+
+      var maxPosition = gridUtil.findLargestEmptyArea(this);
       this.cachedNextPosition = maxPosition;
       return maxPosition;
     };
-  
+
+
     // options: excludedArea, expanding
     GridRendering.prototype.isObstructed = function (i, j, options) {
       options = angular.isObject(options) ? options : {};
-      
+
       // obstructed if (i, j) exceeds the grid's regular non-expanding boundaries
       if (i < 1 || j < 1 || j > this.grid.columns || (!options.expanding && i > this.grid.rows)) {
         return true;
       }
-      
+
       // pass if (i, j) is within the excluded area, if any
       if (options.excludedArea &&
           options.excludedArea.top <= i && i <= options.excludedArea.bottom &&
           options.excludedArea.left <= j && j <= options.excludedArea.right) {
         return false;
       }
-      
+
       return this._isObstructed(i, j);
     };
-  
+
+
     // unsafe; w/o bounding box & excluded area
-    GridRendering.prototype._isObstructed = function(i, j) {
+    GridRendering.prototype._isObstructed = function (i, j) {
       return this.obstructions[(i-1) * this.grid.columns + (j-1)] === 1;
     };
-    
+
+
     // options: excludedArea, fromBottom, fromRight, expanding
     GridRendering.prototype.isAreaObstructed = function (area, options) {
+      if (!area) { return false; }
       options = angular.isObject(options) ? options : {};
-      
+
       var top = area.top,
           left = area.left,
           bottom = area.bottom || area.top + area.height - 1,
           right = area.right || area.left + area.width - 1;
+      
+      if (!angular.isNumber(top) || !angular.isNumber(left) ||
+          !angular.isNumber(bottom) || !angular.isNumber(right)) {
+        return false;
+      }
+
       var verticalStart = options.fromBottom ? bottom : top,
           verticalStep = options.fromBottom ? -1 : 1,
           verticalEnd = (options.fromBottom ? top : bottom) + verticalStep;
       var horizontalStart = options.fromRight ? right : left,
           horizontalStep = options.fromRight ? -1 : 1,
           horizontalEnd = (options.fromRight ? left: right) + horizontalStep;
-      
+
       for (var i = verticalStart; i !== verticalEnd; i += verticalStep) {
         for (var j = horizontalStart; j !== horizontalEnd; j += horizontalStep) {
           if (this.isObstructed(i, j, options)) {
@@ -1064,23 +1063,25 @@
       }
       return false;
     };
-    
+
+
     GridRendering.prototype.getStyle = function (widgetId) {
       widgetId = widgetId.id || widgetId;
       var render = this.positions[widgetId];
-      
+
       if (!render) {
-        return { display: 'none' };
+        return { 'display': 'none' };
       }
-      
+
       return {
-        top: ((render.top - 1) * this.grid.cellSize.height).toString() + '%',
-        height: (render.height * this.grid.cellSize.height).toString() + '%',
-        left: ((render.left - 1) * this.grid.cellSize.width).toString() + '%',
-        width: (render.width * this.grid.cellSize.width).toString() + '%'
+        'top': ((render.top - 1) * this.grid.cellSize.height).toString() + '%',
+        'height': (render.height * this.grid.cellSize.height).toString() + '%',
+        'left': ((render.left - 1) * this.grid.cellSize.width).toString() + '%',
+        'width': (render.width * this.grid.cellSize.width).toString() + '%'
       };
     };
-    
+
+
     GridRendering.prototype.setObstructionValues = function (area, value) {
       // positions are 1-indexed (like matrices)
       for (var i = area.top - 1; i < area.top + area.height - 1; i++) {
@@ -1089,7 +1090,8 @@
         }
       }
     };
-    
+
+
     GridRendering.prototype.printObstructions = function () {
       var row = 'obstructions:';
       for (var i = 0; i < this.grid.columns * this.grid.rows; i++) {
@@ -1101,7 +1103,7 @@
       }
       console.log(row);
     };
-    
+
     return GridRendering;
   }]);
 })();
@@ -1110,25 +1112,24 @@
   angular.module('widgetGrid').factory('Widget', ['gridUtil', function (gridUtil) {
     var Widget = function Widget(options) {
       this.id = gridUtil.getUID();
-      
-      options = options || {};
-
-      this.width = parseInt(options.width) || null;
-      this.height = parseInt(options.height) || null;
-      
-      this.top = parseInt(options.top) || null;
-      this.left = parseInt(options.left) || null;
-      
       this.style = {};
+
+      options = options || {};
+      this.top = parseInt(options.top) || 0;
+      this.left = parseInt(options.left) || 0;
+      this.width = parseInt(options.width) || 0;
+      this.height = parseInt(options.height) || 0;
     };
-    
+
+
     Widget.prototype.setPosition = function (position) {
       this.top =  angular.isNumber(position.top) ? position.top : this.top;
       this.left = angular.isNumber(position.left) ? position.left : this.left;
       this.height = angular.isNumber(position.height) ? position.height : this.height;
       this.width = angular.isNumber(position.width) ? position.width : this.width;
     };
-    
+
+
     Widget.prototype.getPosition = function () {
       return {
         top: this.top,
@@ -1137,204 +1138,218 @@
         width: this.width
       };
     };
-    
+
     return Widget;
   }]);
 })();
 
 (function () {
-  angular.module('widgetGrid').service('gridRenderer', ['GridRendering', 'gridUtil', function (GridRendering, gridUtil) {
-    return {
-      render: function (grid, renderStrategy) {
-        if (renderStrategy === 'maxSize') {
-          return renderMaxSize(grid);
-        }
-        
-        return renderClassic(grid);
-      }
+  var EMPTY_POSITION = { top: 0, left: 0, height: 0, width: 0 };
+  
+  angular.module('widgetGrid').service('gridRenderer', ['GridRendering', function (GridRendering) {
+    var service = {
+      render: render
     };
-    
-    function renderMaxSize(grid) {
-      var rendering = new GridRendering(grid);
+
+    function render(grid) {
       var widgets = grid && grid.widgets ? grid.widgets : [];
-      
-      var conflicts = [];
-      
-      var widget;
-      for (var i = 0; i < widgets.length; i++) {
-        widget = widgets[i];
-        
-        if (widget.top === null || widget.left === null ||
-            widget.height === null || widget.width === null ||
-            rendering.isAreaObstructed(widget)) {
-          conflicts.push(widget);
+      var unpositionedWidgets = [];
+      var rendering = new GridRendering(grid);
+
+      angular.forEach(widgets, function (widget) {
+        var position = widget.getPosition();
+        if (position.width * position.height === 0 ||
+            rendering.isAreaObstructed(position)) {
+          unpositionedWidgets.push(widget);
         } else {
           rendering.setWidgetPosition(widget.id, widget);
         }
-      }
-      
-      for (i = 0; i < conflicts.length; i++) {
-        widget = conflicts[i];
-        
+      });
+
+      angular.forEach(unpositionedWidgets, function (widget) {
         var nextPosition = rendering.getNextPosition();
         if (nextPosition !== null) {
           widget.setPosition(nextPosition);
           rendering.setWidgetPosition(widget.id, nextPosition);
         } else {
-          widget.setPosition({ top: 0, left: 0, height: 0, width: 0 });
-          rendering.setWidgetPosition(widget.id, { top: 0, left: 0, height: 0, width: 0 });
+          widget.setPosition(EMPTY_POSITION);
+          rendering.setWidgetPosition(widget.id, EMPTY_POSITION);
         }
-      }
-      
+      });
+
       return rendering;
     }
-    
-    function renderClassic(grid) {
-      var rendering = new GridRendering(grid);
-      
-      var widgets = grid && grid.widgets ? grid.widgets : [];
-      var sorted = gridUtil.sortWidgets(widgets);
-      
-      for (var idx = 0; idx < sorted.length; idx++) {
-        var widget = sorted[idx];
-        
-        var position = {};
-        
-        // if necessary, scale the widget s.t. it fits the width of the grid
-        if (widget.width > grid.columns) {
-          position.width = grid.columns;
-          position.height = Math.max(Math.round((position.width / widget.width) * widget.height), 1);
-        } else {
-          position.width = widget.width;
-          position.height = widget.height;
-        }
-        
-        // check for conflicts
-        var needsRepositioning = rendering.isAreaObstructed({
-          top: widget.top,
-          left: widget.left,
-          height: position.height,
-          width: position.width
-        }, { expanding: true });
-        
-        // resolve conflicts, if any
-        if (needsRepositioning) {
-          var i = 1;
-          while (needsRepositioning) {
-            for (var j = 1; j <= grid.columns - position.width + 1; j++) {
-              needsRepositioning = rendering.isAreaObstructed({
-                top: i,
-                left: j,
-                height: position.height,
-                width: position.width
-              }, { expanding: true });
-              
-              if (!needsRepositioning) {
-                position.top = i;
-                position.left = j;
-                break;
-              }
-            }
-            i++;
-          }
-        } else {
-          position.top = widget.top;
-          position.left = widget.left;
-        }
-        
-        rendering.setWidgetPosition(widget.id, position);
-      }
-      
-      return rendering;
-    }
+
+    return service;
   }]);
 })();
 
 (function () {
   angular.module('widgetGrid').service('gridUtil', ['$templateCache', function ($templateCache) {
-    var nextId = 1;
-    
-    return {
-      getUID: function () {
-        return (nextId++).toString();
-      },
-      
-      sortWidgets: function (widgets) {
-        var sorted = [];
-        
-        if (!widgets.length || widgets.length < 2) {
-          return widgets;
-        }
-        
-        var curr, comp, found;
-        for (var i = 0; i < widgets.length; i++) {
-          curr = widgets[i];
-          
-          found = false;
-          for (var j = 0; j < sorted.length; j++) {
-            comp = sorted[j];
-            if (curr.top < comp.top || (curr.top === comp.top && curr.left < comp.left)) {
-              sorted.splice(j, 0, curr);
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            sorted.push(curr);
-          }
-        }
-        
-        return sorted;
-      },
-      
-      roundDecimal: function (decimal) {
-        return Math.round(decimal * 10000) / 10000;
-      },
-      
-      computeCellSize: function (rowCount, columnCount) {
-        return {
-          height: rowCount >= 1 ? this.roundDecimal(100 / rowCount) : 0,
-          width: columnCount >= 1 ? this.roundDecimal(100 / columnCount) : 0
-        };
-      },
-      
-      getTemplate: function (templateName) {
-        var template = $templateCache.get(templateName);
-        return template ? template : null;
-      },
-      
-      getPathIterator: function (endPos, startPos) {
-        var topDelta = endPos.top - startPos.top;
-        var leftDelta = endPos.left - startPos.left;        
-        var steps = Math.max(Math.abs(topDelta), Math.abs(leftDelta));
-        var currStep = 0;
-        var currPos = null;
-        var nextPos = { top: startPos.top, left: startPos.left };
-        
-        return {
-          hasNext: function () {
-            return nextPos !== null;
-          },
-          next: function () {
-            currPos = nextPos;
-            
-            if (currStep < steps) {
-              currStep++;              
-              var currTopDelta = Math.round((currStep/steps) * topDelta);
-              var currLeftDelta = Math.round((currStep/steps) * leftDelta);
-              nextPos = {
-                top: startPos.top + currTopDelta,
-                left: startPos.left + currLeftDelta
-              };
-            } else {
-              nextPos = null;
-            }
-
-            return currPos;
-          }
-        };
-      }
+    var service = {
+      getUID: getUID,
+      sortWidgets: sortWidgets,
+      findLargestEmptyArea: findLargestEmptyArea,
+      roundDecimal: roundDecimal,
+      computeCellSize: computeCellSize,
+      getTemplate: getTemplate,
+      getPathIterator: getPathIterator
     };
+
+    var nextId = 1;
+    function getUID() {
+      return (nextId++).toString();
+    }
+
+
+    function sortWidgets(widgets) {
+      var sorted = [];
+      
+      if (!widgets.length || widgets.length < 2) {
+        return widgets;
+      }
+      
+      var curr, comp, found;
+      for (var i = 0; i < widgets.length; i++) {
+        curr = widgets[i];
+        
+        found = false;
+        for (var j = 0; j < sorted.length; j++) {
+          comp = sorted[j];
+          if (curr.top < comp.top || (curr.top === comp.top && curr.left < comp.left)) {
+            sorted.splice(j, 0, curr);
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          sorted.push(curr);
+        }
+      }
+      
+      return sorted;
+    }
+
+
+    function roundDecimal(decimal) {
+      return Math.round(decimal * 10000) / 10000;
+    }
+
+
+    function computeCellSize(rowCount, columnCount) {
+      return {
+        height: rowCount >= 1 ? this.roundDecimal(100 / rowCount) : 0,
+        width: columnCount >= 1 ? this.roundDecimal(100 / columnCount) : 0
+      };
+    }
+
+
+    function getTemplate(templateName) {
+      var template = $templateCache.get(templateName);
+      return template ? template : null;
+    }
+
+
+    function getPathIterator(endPos, startPos) {
+      var topDelta = endPos.top - startPos.top;
+      var leftDelta = endPos.left - startPos.left;        
+      var steps = Math.max(Math.abs(topDelta), Math.abs(leftDelta));
+      var currStep = 0;
+      var currPos = null;
+      var nextPos = { top: startPos.top, left: startPos.left };
+
+      return {
+        hasNext: function () {
+          return nextPos !== null;
+        },
+        next: function () {
+          currPos = nextPos;
+          
+          if (currStep < steps) {
+            currStep++;              
+            var currTopDelta = Math.round((currStep/steps) * topDelta);
+            var currLeftDelta = Math.round((currStep/steps) * leftDelta);
+            nextPos = {
+              top: startPos.top + currTopDelta,
+              left: startPos.left + currLeftDelta
+            };
+          } else {
+            nextPos = null;
+          }
+
+          return currPos;
+        }
+      };
+    }
+
+
+    function findLargestEmptyArea(rendering) {
+      if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid)) {
+        return null;
+      }
+
+      var grid = rendering.grid;
+      var maxPosition = null, currMaxPosition = null,
+          maxArea = 0, currMaxArea = 0;
+      for (var i = 1; i <= grid.rows; i++) {
+        for (var j = 1; j <= grid.columns; j++) {
+          if (rendering._isObstructed(i, j)) {
+            continue;
+          }
+
+          var currAreaLimit = (grid.rows - i + 1) * (grid.columns - j + 1);
+          if (currAreaLimit < maxArea) {
+            break;
+          }
+
+          currMaxPosition = findLargestEmptyAreaFrom(i, j, rendering);
+          currMaxArea = currMaxPosition.height * currMaxPosition.width;
+
+          if (currMaxArea > maxArea) {
+            maxArea = currMaxArea;
+            maxPosition = currMaxPosition;
+          }
+        }
+      }
+      return maxPosition;
+    }
+
+
+    function findLargestEmptyAreaFrom(row, column, rendering) {
+      if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid) ||
+          !angular.isNumber(rendering.grid.columns) || !angular.isNumber(rendering.grid.rows)) {
+        return null;
+      }
+
+      var maxPosition = null,
+          maxArea = 0,
+          endColumn = rendering.grid.columns;
+      for (var i = row; i <= rendering.grid.rows; i++) {
+        for (var j = column; j <= endColumn; j++) {
+          if (rendering._isObstructed(i, j)) {
+            endColumn = j - 1;
+            continue;
+          }
+
+          var currHeight = (i - row + 1),
+              currWidth = (j - column + 1),
+              currArea = currHeight * currWidth;
+
+          if (currArea > maxArea) {
+            maxArea = currArea;
+            maxPosition = {
+              top: row,
+              left: column,
+              height: currHeight,
+              width: currWidth
+            };
+          }
+        }
+      }
+      return maxPosition;
+    }
+
+    return service;
   }]);
 })();
 

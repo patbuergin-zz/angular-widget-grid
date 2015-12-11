@@ -20,17 +20,28 @@
       link: function (scope, element, attrs, gridCtrl) {
         var widgetOptions = scope.position;
         var widget = new Widget(widgetOptions);
-        
+
         scope.editable = 'false';
         scope.widget = widget;
-        
-        scope.getNodeIndex = function () {
+
+        scope.getNodeIndex = getNodeIndex;
+        scope.setWidgetPosition = setWidgetPosition;
+
+        scope.$on('wg-update-rendering', updateView);
+        scope.$on('$destroy', function () {
+          gridCtrl.removeWidget(widget);
+        });
+
+        gridCtrl.addWidget(widget);
+
+        function getNodeIndex() {
           var index = 0, elem = element[0];
           while ((elem = elem.previousElementSibling) !== null) { ++index; }
           return index;
-        };
-        
-        scope.setWidgetPosition = function (position) {
+        }
+
+
+        function setWidgetPosition(position) {
           var oldPosition = widget.getPosition();
           widget.setPosition(position);
           var newPosition = widget.getPosition();
@@ -38,22 +49,15 @@
           if (!angular.equals(oldPosition, newPosition)) {
             gridCtrl.updateWidget(widget);
           }
-          updateRendering();
-        };
-        
-        function updateRendering() {
+          updateView();
+        }
+
+
+        function updateView() {
           element.css(gridCtrl.getWidgetStyle(widget));
           scope.position = scope.position || {};
           angular.extend(scope.position, widget.getPosition());
         }
-        
-        scope.$on('wg-update-rendering', updateRendering);
-        
-        scope.$on('$destroy', function () {
-          gridCtrl.removeWidget(widget);
-        });
-        
-        gridCtrl.addWidget(widget);
       }
     };
   }]);

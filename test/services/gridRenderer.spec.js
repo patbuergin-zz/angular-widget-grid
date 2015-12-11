@@ -14,7 +14,7 @@ describe('gridRenderer', function () {
     Widget = _Widget_;
   }));
   
-  describe('#render (classic)', function () {
+  describe('#render', function () {
     var xsGrid, smGrid, mdGrid, p1, p2, p3, p4, w1, w2, w3, w4;
     
     beforeEach(function () {
@@ -50,7 +50,7 @@ describe('gridRenderer', function () {
       expect(positions[w4.id]).toEqual(p4);
     });
     
-    it('moves overlapping widgets left-to-right, top-to-bottom', function () {
+    xit('moves overlapping widgets left-to-right, top-to-bottom', function () {
       var minGrid = new Grid({ columns: 2, rows: 2 });
       var ov1 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
       var ov2 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
@@ -65,7 +65,7 @@ describe('gridRenderer', function () {
       expect(positions[ov3.id]).toEqual({ top: 2, height: 1, left: 1, width: 1 });
     });
     
-    it('extends the effective grid vertically, if necessary', function () {
+    xit('extends the effective grid vertically, if necessary', function () {
       var minGrid = new Grid({ columns: 2, rows: 1 });
       var ov1 = new Widget({ top: 1, height: 1, left: 1, width: 2 });
       var ov2 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
@@ -77,7 +77,7 @@ describe('gridRenderer', function () {
       expect(positions[ov2.id]).toEqual({ top: 2, height: 1, left: 1, width: 1 });
     });
     
-    it('evenly scales widgets whose width exceeds the width of the grid', function () {
+    xit('evenly scales widgets whose width exceeds the width of the grid', function () {
       xsGrid.add(w2);
       var positions = gridRenderer.render(xsGrid).positions;
       // (height 4, width 7) + container width 5 => (height 3, width 5)
@@ -92,14 +92,14 @@ describe('gridRenderer', function () {
       expect(positions[widget.id]).toEqual({ top: 1, height: 1, left: 1, width: 1 });
     });
     
-    it('considers the current row when searching for a free slot', function () {
+    xit('considers the current row when searching for a free slot', function () {
       smGrid.add(w1);
       smGrid.add(w4);
       var positions = gridRenderer.render(smGrid).positions;
       expect(positions[w4.id]).toEqual({ top: 1, height: 2, left: 6, width: 3 });
     });
     
-    it('prioritizes elements top-to-bottom, left-to-right', function () {
+    xit('prioritizes elements top-to-bottom, left-to-right', function () {
       xsGrid.add(w1);
       xsGrid.add(w2);
       xsGrid.add(w3);
