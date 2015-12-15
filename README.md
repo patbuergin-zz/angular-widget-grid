@@ -1,4 +1,5 @@
-# angular-widget-grid
+# angular-widget-grid [![devDependency Status](https://david-dm.org/patbuergin/angular-widget-grid/dev-status.svg)](https://david-dm.org/patbuergin/angular-widget-grid#info=devDependencies)
+
 A flexible grid layout for responsive dashboards.
 
 #### Demo: http://patbuergin.github.io/angular-widget-grid/
