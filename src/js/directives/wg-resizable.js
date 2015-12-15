@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {
-  angular.module('widgetGrid').directive('wgResizable', ['gridUtil', function (gridUtil) {
+  angular.module('widgetGrid').directive('wgResizable', function (gridUtil) {
     return {
       restrict: 'A',
       require: 'wgWidget',
@@ -28,9 +28,10 @@
       }],
       controllerAs: 'resizableCtrl'
     };
-  }]);
-  
-  angular.module('widgetGrid').directive('wgResizer', ['$document', function ($document) {
+  });
+
+
+  angular.module('widgetGrid').directive('wgResizer', function ($document) {
     var MIN_HEIGHT = 42,
         MIN_WIDTH = 42,
         ADD_OFFSET = 1;
@@ -189,10 +190,10 @@
                   requestedEndPoint = gridCtrl.rasterizeCoords(startRender.right - delta.right, startRender.bottom - delta.bottom);
 
               var requestedPos = {
-                top: requestedStartPoint.i,
-                right: requestedEndPoint.j,
-                bottom: requestedEndPoint.i,
-                left: requestedStartPoint.j
+                top: requestedStartPoint.top,
+                right: requestedEndPoint.left,
+                bottom: requestedEndPoint.top,
+                left: requestedStartPoint.left
               };
               
               // determine a suitable final position (one that is not obstructed)
@@ -277,5 +278,5 @@
         }
       }
     };
-  }]);
+  });
 })();

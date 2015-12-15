@@ -2,7 +2,7 @@
   var DEFAULT_COLUMNS = 4,
       DEFAULT_ROWS = 4;
 
-  angular.module('widgetGrid').factory('Grid', ['gridUtil', function (gridUtil) {
+  angular.module('widgetGrid').factory('Grid', function (gridUtil) {
     var Grid = function Grid(options) {
       options = options || {};
       this.widgets = [];
@@ -37,5 +37,5 @@
     };
 
     return Grid;
-  }]);
+  });
 })();

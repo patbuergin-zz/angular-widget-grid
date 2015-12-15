@@ -1,28 +1,68 @@
 (function () {
-  angular.module('widgetGrid').service('gridUtil', ['$templateCache', function ($templateCache) {
+  /**
+   * @ngdoc service
+   * @name gridUtil
+   * 
+   * @description
+   * Provides utility functions for various library components
+   */
+  angular.module('widgetGrid').service('gridUtil', function ($templateCache, GridPosition) {
     var service = {
+      getTemplate: getTemplate,
       getUID: getUID,
       sortWidgets: sortWidgets,
       findLargestEmptyArea: findLargestEmptyArea,
-      roundDecimal: roundDecimal,
-      computeCellSize: computeCellSize,
-      getTemplate: getTemplate,
-      getPathIterator: getPathIterator
+      computeCellSize: computeCellSize
     };
 
+    /**
+     * @ngdoc method
+     * @name getTemplate
+     * 
+     * @description
+     * Retrieves templates from the cache
+     * 
+     * @param {string} templateName Cache key
+     * @return {string} Markup of the cached template, if any
+     */
+    function getTemplate(templateName) {
+      var template = $templateCache.get(templateName);
+      return template ? template : null;
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name getUID
+     * 
+     * @description
+     * Returns a unique identifier
+     * 
+     * @return {number} Unique identifier
+     */
     var nextId = 1;
     function getUID() {
       return (nextId++).toString();
     }
 
 
+    /**
+     * @ngdoc method
+     * @name sortWidgets
+     * 
+     * @description
+     * Sorts a collection of widgets by position, from top-left to bottom-right
+     * 
+     * @param {Widget[]} widgets Unsorted Widgets
+     * @return {Widget[]} Sorted widgets
+     */
     function sortWidgets(widgets) {
       var sorted = [];
-      
+
       if (!widgets.length || widgets.length < 2) {
         return widgets;
       }
-      
+
       var curr, comp, found;
       for (var i = 0; i < widgets.length; i++) {
         curr = widgets[i];
@@ -40,63 +80,40 @@
           sorted.push(curr);
         }
       }
-      
+
       return sorted;
     }
 
 
-    function roundDecimal(decimal) {
-      return Math.round(decimal * 10000) / 10000;
-    }
-
-
+    /**
+     * @ngdoc method
+     * @name computeCellSize
+     * 
+     * @description
+     * Computes the relative cell size given row and column count
+     * 
+     * @param {number} rowCount
+     * @param {number} columnCount
+     * @return {{ height: number, width: number }} Cell size (%)
+     */
     function computeCellSize(rowCount, columnCount) {
       return {
-        height: rowCount >= 1 ? this.roundDecimal(100 / rowCount) : 0,
-        width: columnCount >= 1 ? this.roundDecimal(100 / columnCount) : 0
+        height: rowCount >= 1 ? 100 / rowCount : 0,
+        width: columnCount >= 1 ? 100 / columnCount : 0
       };
     }
 
 
-    function getTemplate(templateName) {
-      var template = $templateCache.get(templateName);
-      return template ? template : null;
-    }
-
-
-    function getPathIterator(endPos, startPos) {
-      var topDelta = endPos.top - startPos.top;
-      var leftDelta = endPos.left - startPos.left;        
-      var steps = Math.max(Math.abs(topDelta), Math.abs(leftDelta));
-      var currStep = 0;
-      var currPos = null;
-      var nextPos = { top: startPos.top, left: startPos.left };
-
-      return {
-        hasNext: function () {
-          return nextPos !== null;
-        },
-        next: function () {
-          currPos = nextPos;
-          
-          if (currStep < steps) {
-            currStep++;              
-            var currTopDelta = Math.round((currStep/steps) * topDelta);
-            var currLeftDelta = Math.round((currStep/steps) * leftDelta);
-            nextPos = {
-              top: startPos.top + currTopDelta,
-              left: startPos.left + currLeftDelta
-            };
-          } else {
-            nextPos = null;
-          }
-
-          return currPos;
-        }
-      };
-    }
-
-
+    /**
+     * @ngdoc method
+     * @name findLargestEmptyArea
+     * 
+     * @description
+     * Finds the largest non-obstructed area in a given rendering, if any
+     * 
+     * @param {GridRendering} rendering
+     * @return {GridArea} Largest empty area, or null
+     */
     function findLargestEmptyArea(rendering) {
       if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid)) {
         return null;
@@ -116,7 +133,7 @@
             break;
           }
 
-          currMaxPosition = findLargestEmptyAreaFrom(i, j, rendering);
+          currMaxPosition = _findLargestEmptyAreaFrom(new GridPosition(i, j), rendering);
           currMaxArea = currMaxPosition.height * currMaxPosition.width;
 
           if (currMaxArea > maxArea) {
@@ -129,7 +146,13 @@
     }
 
 
-    function findLargestEmptyAreaFrom(row, column, rendering) {
+    /**
+     * Finds the largest empty area that starts at a given position
+     * 
+     * @param {GridPosition} start
+     * @return {GridArea} Largest empty area, or null
+     */
+    function _findLargestEmptyAreaFrom(start, rendering) {
       if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid) ||
           !angular.isNumber(rendering.grid.columns) || !angular.isNumber(rendering.grid.rows)) {
         return null;
@@ -138,22 +161,22 @@
       var maxPosition = null,
           maxArea = 0,
           endColumn = rendering.grid.columns;
-      for (var i = row; i <= rendering.grid.rows; i++) {
-        for (var j = column; j <= endColumn; j++) {
+      for (var i = start.top; i <= rendering.grid.rows; i++) {
+        for (var j = start.left; j <= endColumn; j++) {
           if (rendering._isObstructed(i, j)) {
             endColumn = j - 1;
             continue;
           }
 
-          var currHeight = (i - row + 1),
-              currWidth = (j - column + 1),
+          var currHeight = (i - start.top + 1),
+              currWidth = (j - start.left + 1),
               currArea = currHeight * currWidth;
 
           if (currArea > maxArea) {
             maxArea = currArea;
             maxPosition = {
-              top: row,
-              left: column,
+              top: start.top,
+              left: start.left,
               height: currHeight,
               width: currWidth
             };
@@ -164,5 +187,5 @@
     }
 
     return service;
-  }]);
+  });
 })();

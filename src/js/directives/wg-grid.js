@@ -6,7 +6,7 @@
     highlightNextPosition: false
   };
 
-  angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
+  angular.module('widgetGrid').controller('wgGridController', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
 
     vm.grid = new Grid({
@@ -180,7 +180,7 @@
         vm.highlight = null;
       });
     }
-  }]);
+  });
 
 
   angular.module('widgetGrid').directive('wgGrid', function () {

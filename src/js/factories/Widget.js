@@ -1,5 +1,5 @@
 (function () {
-  angular.module('widgetGrid').factory('Widget', ['gridUtil', function (gridUtil) {
+  angular.module('widgetGrid').factory('Widget', function (gridUtil) {
     var Widget = function Widget(options) {
       this.id = gridUtil.getUID();
       this.style = {};
@@ -30,5 +30,5 @@
     };
 
     return Widget;
-  }]);
+  });
 })();

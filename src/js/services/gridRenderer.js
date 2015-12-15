@@ -1,7 +1,7 @@
 (function () {
   var EMPTY_POSITION = { top: 0, left: 0, height: 0, width: 0 };
   
-  angular.module('widgetGrid').service('gridRenderer', ['GridRendering', function (GridRendering) {
+  angular.module('widgetGrid').service('gridRenderer', function (GridRendering) {
     var service = {
       render: render
     };
@@ -36,5 +36,5 @@
     }
 
     return service;
-  }]);
+  });
 })();

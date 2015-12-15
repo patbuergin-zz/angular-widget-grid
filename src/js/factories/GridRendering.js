@@ -1,5 +1,5 @@
 (function () {
-  angular.module('widgetGrid').factory('GridRendering', ['gridUtil', function (gridUtil) {
+  angular.module('widgetGrid').factory('GridRendering', function (gridUtil, GridPosition) {
     var GridRendering = function GridRendering(grid) {
       this.grid = grid || { rows: 0, columns: 0 };
       this.positions = {};
@@ -15,10 +15,9 @@
       x = Math.min(Math.max(x, 0), gridWidth - 1);
       y = Math.min(Math.max(y, 0), gridHeight - 1);
 
-      return {
-        i: Math.floor(y / gridHeight * this.grid.rows) + 1,
-        j: Math.floor(x / gridWidth * this.grid.columns) + 1
-      };
+      var i = Math.floor(y / gridHeight * this.grid.rows) + 1,
+          j = Math.floor(x / gridWidth * this.grid.columns) + 1;
+      return new GridPosition(i, j);
     };
 
 
@@ -183,5 +182,5 @@
     };
 
     return GridRendering;
-  }]);
+  });
 })();

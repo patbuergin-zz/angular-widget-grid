@@ -1,11 +1,12 @@
 (function () {
-  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', 'Widget', function($scope, $compile) {    
+  angular.module('widgetGrid').controller('wgWidgetController', function($scope, $compile) {    
     this.innerCompile = function (element) {
       $compile(element)($scope);
     };
-  }]);
-  
-  angular.module('widgetGrid').directive('wgWidget', ['Widget', function (Widget) {
+  });
+
+
+  angular.module('widgetGrid').directive('wgWidget', function (Widget) {
     return {
       scope: {
         position: '=',
@@ -60,5 +61,5 @@
         }
       }
     };
-  }]);
+  });
 })();

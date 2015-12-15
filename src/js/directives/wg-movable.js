@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
 (function () {
-  angular.module('widgetGrid').directive('wgMovable', ['gridUtil', function (gridUtil) {
+  angular.module('widgetGrid').directive('wgMovable', function (gridUtil) {
     return {
       restrict: 'A',
       require: 'wgWidget',
@@ -17,9 +17,10 @@
         }
       }
     };
-  }]);
-  
-  angular.module('widgetGrid').directive('wgMover', ['$document', 'gridUtil', function ($document, gridUtil) {
+  });
+
+
+  angular.module('widgetGrid').directive('wgMover', function ($document, gridUtil, PathIterator) {
     return {
       restrict: 'A',
       require: '^wgGrid',
@@ -141,9 +142,11 @@
           var movedDown = anchorTop >= startRender.top,
               movedRight = anchorLeft >= startRender.left;
               
-          var finalPosRequest = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
+          var desiredFinalPosition = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           
-          var path = gridUtil.getPathIterator(startPos, { top: finalPosRequest.i, left: finalPosRequest.j });
+          var path = new PathIterator(desiredFinalPosition, startPos);
+          
+          // var path = gridUtil.getPathIterator(startPos, { top: desiredFinalPosition.i, left: desiredFinalPosition.j });
           
           while (path.hasNext()) {
             var currPos = path.next();
@@ -163,16 +166,16 @@
 
             if (!gridCtrl.isAreaObstructed(targetArea, options)) {
               // try to get closer to the desired position by leaving the original path
-              if (finalPosRequest.i < targetArea.top) {
-                while (finalPosRequest.i <= targetArea.top - 1 &&
+              if (desiredFinalPosition.top < targetArea.top) {
+                while (desiredFinalPosition.top <= targetArea.top - 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top - 1,
                                                     left: targetArea.left,
                                                     height: targetArea.height,
                                                     width: targetArea.width }, options)) {
                   targetArea.top--;
                 }
-              } else if (finalPosRequest.i > targetArea.top) {
-                while (finalPosRequest.i >= targetArea.top + 1 &&
+              } else if (desiredFinalPosition.top > targetArea.top) {
+                while (desiredFinalPosition.top >= targetArea.top + 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top + 1,
                                                     left: targetArea.left,
                                                     height: targetArea.height,
@@ -181,16 +184,16 @@
                 }
               }
               
-              if (finalPosRequest.j < targetArea.left) {
-                while (finalPosRequest.j <= targetArea.left - 1 &&
+              if (desiredFinalPosition.left < targetArea.left) {
+                while (desiredFinalPosition.left <= targetArea.left - 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top,
                                                     left: targetArea.left - 1,
                                                     height: targetArea.height,
                                                     width: targetArea.width }, options)) {
                   targetArea.left--;
                 }
-              } else if (finalPosRequest.j > targetArea.left) {
-                while (finalPosRequest.j >= targetArea.left + 1 &&
+              } else if (desiredFinalPosition.left > targetArea.left) {
+                while (desiredFinalPosition.left >= targetArea.left + 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top,
                                                     left: targetArea.left + 1,
                                                     height: targetArea.height,
@@ -205,5 +208,5 @@
         }
       }
     };
-  }]);
+  });
 })();
