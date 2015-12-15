@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.2.4
+ * @license angular-widget-grid v0.2.5
  * (c) 2015 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
@@ -343,8 +343,9 @@
       }
     };
   }]);
-  
-  angular.module('widgetGrid').directive('wgMover', ['$document', 'gridUtil', function ($document, gridUtil) {
+
+
+  angular.module('widgetGrid').directive('wgMover', ['$document', 'gridUtil', 'PathIterator', function ($document, gridUtil, PathIterator) {
     return {
       restrict: 'A',
       require: '^wgGrid',
@@ -466,9 +467,11 @@
           var movedDown = anchorTop >= startRender.top,
               movedRight = anchorLeft >= startRender.left;
               
-          var finalPosRequest = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
+          var desiredFinalPosition = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           
-          var path = gridUtil.getPathIterator(startPos, { top: finalPosRequest.i, left: finalPosRequest.j });
+          var path = new PathIterator(desiredFinalPosition, startPos);
+          
+          // var path = gridUtil.getPathIterator(startPos, { top: desiredFinalPosition.i, left: desiredFinalPosition.j });
           
           while (path.hasNext()) {
             var currPos = path.next();
@@ -488,16 +491,16 @@
 
             if (!gridCtrl.isAreaObstructed(targetArea, options)) {
               // try to get closer to the desired position by leaving the original path
-              if (finalPosRequest.i < targetArea.top) {
-                while (finalPosRequest.i <= targetArea.top - 1 &&
+              if (desiredFinalPosition.top < targetArea.top) {
+                while (desiredFinalPosition.top <= targetArea.top - 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top - 1,
                                                     left: targetArea.left,
                                                     height: targetArea.height,
                                                     width: targetArea.width }, options)) {
                   targetArea.top--;
                 }
-              } else if (finalPosRequest.i > targetArea.top) {
-                while (finalPosRequest.i >= targetArea.top + 1 &&
+              } else if (desiredFinalPosition.top > targetArea.top) {
+                while (desiredFinalPosition.top >= targetArea.top + 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top + 1,
                                                     left: targetArea.left,
                                                     height: targetArea.height,
@@ -506,16 +509,16 @@
                 }
               }
               
-              if (finalPosRequest.j < targetArea.left) {
-                while (finalPosRequest.j <= targetArea.left - 1 &&
+              if (desiredFinalPosition.left < targetArea.left) {
+                while (desiredFinalPosition.left <= targetArea.left - 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top,
                                                     left: targetArea.left - 1,
                                                     height: targetArea.height,
                                                     width: targetArea.width }, options)) {
                   targetArea.left--;
                 }
-              } else if (finalPosRequest.j > targetArea.left) {
-                while (finalPosRequest.j >= targetArea.left + 1 &&
+              } else if (desiredFinalPosition.left > targetArea.left) {
+                while (desiredFinalPosition.left >= targetArea.left + 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top,
                                                     left: targetArea.left + 1,
                                                     height: targetArea.height,
@@ -562,7 +565,8 @@
       controllerAs: 'resizableCtrl'
     };
   }]);
-  
+
+
   angular.module('widgetGrid').directive('wgResizer', ['$document', function ($document) {
     var MIN_HEIGHT = 42,
         MIN_WIDTH = 42,
@@ -722,10 +726,10 @@
                   requestedEndPoint = gridCtrl.rasterizeCoords(startRender.right - delta.right, startRender.bottom - delta.bottom);
 
               var requestedPos = {
-                top: requestedStartPoint.i,
-                right: requestedEndPoint.j,
-                bottom: requestedEndPoint.i,
-                left: requestedStartPoint.j
+                top: requestedStartPoint.top,
+                right: requestedEndPoint.left,
+                bottom: requestedEndPoint.top,
+                left: requestedStartPoint.left
               };
               
               // determine a suitable final position (one that is not obstructed)
@@ -814,12 +818,13 @@
 })();
 
 (function () {
-  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', 'Widget', function($scope, $compile) {    
+  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', function($scope, $compile) {    
     this.innerCompile = function (element) {
       $compile(element)($scope);
     };
   }]);
-  
+
+
   angular.module('widgetGrid').directive('wgWidget', ['Widget', function (Widget) {
     return {
       scope: {
@@ -921,7 +926,18 @@
 })();
 
 (function () {
-  angular.module('widgetGrid').factory('GridRendering', ['gridUtil', function (gridUtil) {
+  angular.module('widgetGrid').factory('GridPosition', function () {
+    var GridPosition = function GridPosition(top, left) {
+      this.top = parseInt(top) || 1;
+      this.left = parseInt(left) || 1;
+    };
+
+    return GridPosition;
+  });
+})();
+
+(function () {
+  angular.module('widgetGrid').factory('GridRendering', ['gridUtil', 'GridPosition', function (gridUtil, GridPosition) {
     var GridRendering = function GridRendering(grid) {
       this.grid = grid || { rows: 0, columns: 0 };
       this.positions = {};
@@ -937,10 +953,9 @@
       x = Math.min(Math.max(x, 0), gridWidth - 1);
       y = Math.min(Math.max(y, 0), gridHeight - 1);
 
-      return {
-        i: Math.floor(y / gridHeight * this.grid.rows) + 1,
-        j: Math.floor(x / gridWidth * this.grid.columns) + 1
-      };
+      var i = Math.floor(y / gridHeight * this.grid.rows) + 1,
+          j = Math.floor(x / gridWidth * this.grid.columns) + 1;
+      return new GridPosition(i, j);
     };
 
 
@@ -1109,6 +1124,43 @@
 })();
 
 (function () {
+  angular.module('widgetGrid').factory('PathIterator', ['GridPosition', function (GridPosition) {
+    var PathIterator = function PathIterator(start, end) {
+      this.start = start;
+      this.topDelta = end.top - start.top;
+      this.leftDelta = end.left - start.left;
+      this.steps = Math.max(Math.abs(this.topDelta), Math.abs(this.leftDelta));
+      this.currStep = 0;
+      this.currPos = null;
+      this.nextPos = new GridPosition(start.top, start.left);
+    };
+
+
+    PathIterator.prototype.hasNext = function () {
+      return this.nextPos !== null;
+    };
+
+
+    PathIterator.prototype.next = function () {
+      this.currPos = this.nextPos;
+      
+      if (this.currStep < this.steps) {
+        this.currStep++;              
+        var currTopDelta = Math.round((this.currStep/this.steps) * this.topDelta);
+        var currLeftDelta = Math.round((this.currStep/this.steps) * this.leftDelta);
+        this.nextPos = new GridPosition(this.start.top + currTopDelta, this.start.left + currLeftDelta);
+      } else {
+        this.nextPos = null;
+      }
+
+      return this.currPos;
+    };
+
+    return PathIterator;
+  }]);
+})();
+
+(function () {
   angular.module('widgetGrid').factory('Widget', ['gridUtil', function (gridUtil) {
     var Widget = function Widget(options) {
       this.id = gridUtil.getUID();
@@ -1185,30 +1237,76 @@
 })();
 
 (function () {
-  angular.module('widgetGrid').service('gridUtil', ['$templateCache', function ($templateCache) {
+  /**
+   * @ngdoc service
+   * @name widgetGrid.gridUtil
+   * 
+   * @description
+   * Provides utility functions for various library components.
+   * 
+   * @requires $templateCache
+   * @requires GridPosition
+   */
+  angular.module('widgetGrid').service('gridUtil', ['$templateCache', 'GridPosition', function ($templateCache, GridPosition) {
     var service = {
+      getTemplate: getTemplate,
       getUID: getUID,
       sortWidgets: sortWidgets,
       findLargestEmptyArea: findLargestEmptyArea,
-      roundDecimal: roundDecimal,
-      computeCellSize: computeCellSize,
-      getTemplate: getTemplate,
-      getPathIterator: getPathIterator
+      computeCellSize: computeCellSize
     };
 
+    /**
+     * @ngdoc method
+     * @name getTemplate
+     * @methodOf widgetGrid.gridUtil
+     * 
+     * @description
+     * Retrieves templates from the cache.
+     * 
+     * @param {string} templateName Cache key
+     * @return {string} Markup of the cached template, if any
+     */
+    function getTemplate(templateName) {
+      var template = $templateCache.get(templateName);
+      return template ? template : null;
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name getUID
+     * @methodOf widgetGrid.gridUtil
+     * 
+     * @description
+     * Returns a unique identifier.
+     * 
+     * @return {number} Unique identifier
+     */
     var nextId = 1;
     function getUID() {
       return (nextId++).toString();
     }
 
 
+    /**
+     * @ngdoc method
+     * @name sortWidgets
+     * @methodOf widgetGrid.gridUtil
+     * 
+     * @description
+     * Sorts a collection of widgets by position, from top-left to bottom-right.
+     * 
+     * @param {Widget[]} widgets Widgets
+     * @return {Widget[]} Sorted widgets
+     */
     function sortWidgets(widgets) {
       var sorted = [];
-      
+
       if (!widgets.length || widgets.length < 2) {
         return widgets;
       }
-      
+
       var curr, comp, found;
       for (var i = 0; i < widgets.length; i++) {
         curr = widgets[i];
@@ -1226,63 +1324,42 @@
           sorted.push(curr);
         }
       }
-      
+
       return sorted;
     }
 
 
-    function roundDecimal(decimal) {
-      return Math.round(decimal * 10000) / 10000;
-    }
-
-
+    /**
+     * @ngdoc method
+     * @name computeCellSize
+     * @methodOf widgetGrid.gridUtil
+     * 
+     * @description
+     * Computes the relative size of a single cell, given row and column count of a grid.
+     * 
+     * @param {number} rowCount Row count
+     * @param {number} columnCount Column count
+     * @return {object} Cell sizes (%)
+     */
     function computeCellSize(rowCount, columnCount) {
       return {
-        height: rowCount >= 1 ? this.roundDecimal(100 / rowCount) : 0,
-        width: columnCount >= 1 ? this.roundDecimal(100 / columnCount) : 0
+        height: rowCount >= 1 ? 100 / rowCount : 0,
+        width: columnCount >= 1 ? 100 / columnCount : 0
       };
     }
 
 
-    function getTemplate(templateName) {
-      var template = $templateCache.get(templateName);
-      return template ? template : null;
-    }
-
-
-    function getPathIterator(endPos, startPos) {
-      var topDelta = endPos.top - startPos.top;
-      var leftDelta = endPos.left - startPos.left;        
-      var steps = Math.max(Math.abs(topDelta), Math.abs(leftDelta));
-      var currStep = 0;
-      var currPos = null;
-      var nextPos = { top: startPos.top, left: startPos.left };
-
-      return {
-        hasNext: function () {
-          return nextPos !== null;
-        },
-        next: function () {
-          currPos = nextPos;
-          
-          if (currStep < steps) {
-            currStep++;              
-            var currTopDelta = Math.round((currStep/steps) * topDelta);
-            var currLeftDelta = Math.round((currStep/steps) * leftDelta);
-            nextPos = {
-              top: startPos.top + currTopDelta,
-              left: startPos.left + currLeftDelta
-            };
-          } else {
-            nextPos = null;
-          }
-
-          return currPos;
-        }
-      };
-    }
-
-
+    /**
+     * @ngdoc method
+     * @name findLargestEmptyArea
+     * @methodOf widgetGrid.gridUtil
+     * 
+     * @description
+     * Finds the largest non-obstructed area in a given rendering, if any.
+     * 
+     * @param {GridRendering} rendering Rendering
+     * @return {GridArea} Largest empty area, or null
+     */
     function findLargestEmptyArea(rendering) {
       if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid)) {
         return null;
@@ -1302,7 +1379,7 @@
             break;
           }
 
-          currMaxPosition = findLargestEmptyAreaFrom(i, j, rendering);
+          currMaxPosition = _findLargestEmptyAreaFrom(new GridPosition(i, j), rendering);
           currMaxArea = currMaxPosition.height * currMaxPosition.width;
 
           if (currMaxArea > maxArea) {
@@ -1315,7 +1392,13 @@
     }
 
 
-    function findLargestEmptyAreaFrom(row, column, rendering) {
+    /**
+     * Finds the largest empty area that starts at a given position.
+     * 
+     * @param {GridPosition} start Start position
+     * @return {GridArea} Largest empty area, or null
+     */
+    function _findLargestEmptyAreaFrom(start, rendering) {
       if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid) ||
           !angular.isNumber(rendering.grid.columns) || !angular.isNumber(rendering.grid.rows)) {
         return null;
@@ -1324,22 +1407,22 @@
       var maxPosition = null,
           maxArea = 0,
           endColumn = rendering.grid.columns;
-      for (var i = row; i <= rendering.grid.rows; i++) {
-        for (var j = column; j <= endColumn; j++) {
+      for (var i = start.top; i <= rendering.grid.rows; i++) {
+        for (var j = start.left; j <= endColumn; j++) {
           if (rendering._isObstructed(i, j)) {
             endColumn = j - 1;
             continue;
           }
 
-          var currHeight = (i - row + 1),
-              currWidth = (j - column + 1),
+          var currHeight = (i - start.top + 1),
+              currWidth = (j - start.left + 1),
               currArea = currHeight * currWidth;
 
           if (currArea > maxArea) {
             maxArea = currArea;
             maxPosition = {
-              top: row,
-              left: column,
+              top: start.top,
+              left: start.left,
               height: currHeight,
               width: currWidth
             };
