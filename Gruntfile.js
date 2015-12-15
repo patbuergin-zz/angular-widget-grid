@@ -49,6 +49,12 @@ module.exports = function(grunt) {
         files: [{ expand: true, src: ['<%= pkg.name %>.js'] }]
       }
     },
+    ngdocs: {
+      options: {
+        dest: 'demo/docs'
+      },
+      all: ['src/js/**/*.js']
+    },
     uglify: {
       options: {
         banner: '<%= banner %>',
@@ -147,9 +153,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-ng-annotate');
+  grunt.loadNpmTasks('grunt-ngdocs');
 
   grunt.registerTask('serve', ['connect', 'watch']);
   grunt.registerTask('test', ['karma']);
-  grunt.registerTask('build', ['ngtemplates', 'concat', 'ngAnnotate', 'uglify', 'clean', 'copy']);
+  grunt.registerTask('build', ['ngtemplates', 'concat', 'ngAnnotate', 'uglify', 'clean', 'copy', 'ngdocs']);
   grunt.registerTask('default', ['jshint', 'test', 'build']);
 };

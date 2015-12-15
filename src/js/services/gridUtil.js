@@ -1,10 +1,13 @@
 (function () {
   /**
    * @ngdoc service
-   * @name gridUtil
+   * @name widgetGrid.gridUtil
    * 
    * @description
-   * Provides utility functions for various library components
+   * Provides utility functions for various library components.
+   * 
+   * @requires $templateCache
+   * @requires GridPosition
    */
   angular.module('widgetGrid').service('gridUtil', function ($templateCache, GridPosition) {
     var service = {
@@ -18,9 +21,10 @@
     /**
      * @ngdoc method
      * @name getTemplate
+     * @methodOf widgetGrid.gridUtil
      * 
      * @description
-     * Retrieves templates from the cache
+     * Retrieves templates from the cache.
      * 
      * @param {string} templateName Cache key
      * @return {string} Markup of the cached template, if any
@@ -34,9 +38,10 @@
     /**
      * @ngdoc method
      * @name getUID
+     * @methodOf widgetGrid.gridUtil
      * 
      * @description
-     * Returns a unique identifier
+     * Returns a unique identifier.
      * 
      * @return {number} Unique identifier
      */
@@ -49,11 +54,12 @@
     /**
      * @ngdoc method
      * @name sortWidgets
+     * @methodOf widgetGrid.gridUtil
      * 
      * @description
-     * Sorts a collection of widgets by position, from top-left to bottom-right
+     * Sorts a collection of widgets by position, from top-left to bottom-right.
      * 
-     * @param {Widget[]} widgets Unsorted Widgets
+     * @param {Widget[]} widgets Widgets
      * @return {Widget[]} Sorted widgets
      */
     function sortWidgets(widgets) {
@@ -88,13 +94,14 @@
     /**
      * @ngdoc method
      * @name computeCellSize
+     * @methodOf widgetGrid.gridUtil
      * 
      * @description
-     * Computes the relative cell size given row and column count
+     * Computes the relative size of a single cell, given row and column count of a grid.
      * 
-     * @param {number} rowCount
-     * @param {number} columnCount
-     * @return {{ height: number, width: number }} Cell size (%)
+     * @param {number} rowCount Row count
+     * @param {number} columnCount Column count
+     * @return {object} Cell sizes (%)
      */
     function computeCellSize(rowCount, columnCount) {
       return {
@@ -107,11 +114,12 @@
     /**
      * @ngdoc method
      * @name findLargestEmptyArea
+     * @methodOf widgetGrid.gridUtil
      * 
      * @description
-     * Finds the largest non-obstructed area in a given rendering, if any
+     * Finds the largest non-obstructed area in a given rendering, if any.
      * 
-     * @param {GridRendering} rendering
+     * @param {GridRendering} rendering Rendering
      * @return {GridArea} Largest empty area, or null
      */
     function findLargestEmptyArea(rendering) {
@@ -147,9 +155,9 @@
 
 
     /**
-     * Finds the largest empty area that starts at a given position
+     * Finds the largest empty area that starts at a given position.
      * 
-     * @param {GridPosition} start
+     * @param {GridPosition} start Start position
      * @return {GridArea} Largest empty area, or null
      */
     function _findLargestEmptyAreaFrom(start, rendering) {

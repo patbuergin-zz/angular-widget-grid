@@ -40,6 +40,7 @@
     "grunt-gh-pages": "^0.10.0",
     "grunt-karma": "^0.10.1",
     "grunt-ng-annotate": "^1.0.1",
+    "grunt-ngdocs": "^0.2.9",
     "jasmine": "^2.3.1",
     "jasmine-core": "^2.3.0",
     "karma": "^0.12.31",
