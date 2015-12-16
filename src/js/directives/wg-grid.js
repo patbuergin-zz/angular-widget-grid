@@ -9,10 +9,7 @@
   angular.module('widgetGrid').controller('wgGridController', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
 
-    vm.grid = new Grid({
-      columns: $scope.columns,
-      rows: $scope.rows
-    });
+    vm.grid = new Grid($scope.rows, $scope.columns);
     vm.rendering = null;
     vm.highlight = null;
     vm.options = DEFAULT_OPTIONS;

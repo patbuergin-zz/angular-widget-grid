@@ -1,32 +1,66 @@
 (function () {
-  angular.module('widgetGrid').factory('Widget', function (gridUtil) {
-    var Widget = function Widget(options) {
+  /**
+   * @ngdoc object
+   * @name widgetGrid.Widget
+   * 
+   * @description
+   * Describes a widget container.
+   * 
+   * @requires widgetGrid.gridUtil
+   */
+  angular.module('widgetGrid').factory('Widget', function (gridUtil, GridArea) {
+    /**
+     * @ngdoc method
+     * @name Widget
+     * @methodOf widgetGrid.Widget
+     * 
+     * @description
+     * Constructor.
+     * 
+     * @param {GridArea} gridArea Widget position
+     */
+    var Widget = function Widget(gridArea) {
       this.id = gridUtil.getUID();
       this.style = {};
 
-      options = options || {};
-      this.top = parseInt(options.top) || 0;
-      this.left = parseInt(options.left) || 0;
-      this.width = parseInt(options.width) || 0;
-      this.height = parseInt(options.height) || 0;
+      gridArea = gridArea || GridArea.empty;
+      this.top = parseInt(gridArea.top) || 0;
+      this.left = parseInt(gridArea.left) || 0;
+      this.width = parseInt(gridArea.width) || 0;
+      this.height = parseInt(gridArea.height) || 0;
     };
 
 
-    Widget.prototype.setPosition = function (position) {
-      this.top =  angular.isNumber(position.top) ? position.top : this.top;
-      this.left = angular.isNumber(position.left) ? position.left : this.left;
-      this.height = angular.isNumber(position.height) ? position.height : this.height;
-      this.width = angular.isNumber(position.width) ? position.width : this.width;
-    };
-
-
+    /**
+     * @ngdoc method
+     * @name getPosition
+     * @methodOf widgetGrid.Widget
+     * 
+     * @description
+     * Gets the position of a widget.
+     * 
+     * @return {GridArea} Widget position
+     */
     Widget.prototype.getPosition = function () {
-      return {
-        top: this.top,
-        left: this.left,
-        height: this.height,
-        width: this.width
-      };
+      return new GridArea(this.top, this.left, this.height, this.width);
+    };
+
+
+    /**
+     * @ngdoc method
+     * @name setPosition
+     * @methodOf widgetGrid.Widget
+     * 
+     * @description
+     * Updates the position of a widget.
+     * 
+     * @param {GridArea} gridArea Widget position
+     */
+    Widget.prototype.setPosition = function (gridArea) {
+      this.top =  angular.isNumber(gridArea.top) ? gridArea.top : this.top;
+      this.left = angular.isNumber(gridArea.left) ? gridArea.left : this.left;
+      this.width = angular.isNumber(gridArea.width) ? gridArea.width : this.width;
+      this.height = angular.isNumber(gridArea.height) ? gridArea.height : this.height;
     };
 
     return Widget;

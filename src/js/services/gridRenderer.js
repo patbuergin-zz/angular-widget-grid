@@ -1,11 +1,31 @@
 (function () {
-  var EMPTY_POSITION = { top: 0, left: 0, height: 0, width: 0 };
-  
-  angular.module('widgetGrid').service('gridRenderer', function (GridRendering) {
+  /**
+   * @ngdoc service
+   * @name widgetGrid.gridRenderer
+   * 
+   * @description
+   * Provides methods for rendering grids.
+   * 
+   * @requires widgetGrid.GridArea
+   * @requires widgetGrid.GridRendering
+   */
+  angular.module('widgetGrid').service('gridRenderer', function (GridArea, GridRendering) {
     var service = {
       render: render
     };
 
+    /**
+     * @ngdoc method
+     * @name render
+     * @methodOf widgetGrid.gridRenderer
+     * 
+     * @description
+     * Creates a rendering for a given grid, assigning positions to unpositioned widgets,
+     * repositioning widgets with non-valid positions, and resolving position clashes.
+     * 
+     * @param {Grid} grid Grid
+     * @return {GridRendering} Rendering
+     */
     function render(grid) {
       var widgets = grid && grid.widgets ? grid.widgets : [];
       var unpositionedWidgets = [];
@@ -27,8 +47,8 @@
           widget.setPosition(nextPosition);
           rendering.setWidgetPosition(widget.id, nextPosition);
         } else {
-          widget.setPosition(EMPTY_POSITION);
-          rendering.setWidgetPosition(widget.id, EMPTY_POSITION);
+          widget.setPosition(GridArea.empty);
+          rendering.setWidgetPosition(widget.id, GridArea.empty);
         }
       });
 

@@ -7,16 +7,60 @@
    * Provides utility functions for various library components.
    * 
    * @requires $templateCache
-   * @requires GridPosition
+   * @requires widgetGrid.CellSize
+   * @requires widgetGrid.GridArea
+   * @requires widgetGrid.GridPoint
    */
-  angular.module('widgetGrid').service('gridUtil', function ($templateCache, GridPosition) {
+  angular.module('widgetGrid').service('gridUtil', function ($templateCache, GridArea, GridPoint) {
     var service = {
+      findLargestEmptyArea: findLargestEmptyArea,
       getTemplate: getTemplate,
       getUID: getUID,
-      sortWidgets: sortWidgets,
-      findLargestEmptyArea: findLargestEmptyArea,
-      computeCellSize: computeCellSize
+      sortWidgets: sortWidgets
     };
+
+    /**
+     * @ngdoc method
+     * @name findLargestEmptyArea
+     * @methodOf widgetGrid.gridUtil
+     * 
+     * @description
+     * Finds the largest non-obstructed area in a given rendering, if any.
+     * 
+     * @param {GridRendering} rendering Rendering
+     * @return {GridArea} Largest empty area, or null
+     */
+    function findLargestEmptyArea(rendering) {
+      if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid)) {
+        return null;
+      }
+
+      var grid = rendering.grid;
+      var maxArea = null, currMaxArea = null,
+          maxSurfaceArea = 0, currMaxSurfaceArea = 0;
+      for (var i = 1; i <= grid.rows; i++) {
+        for (var j = 1; j <= grid.columns; j++) {
+          if (rendering._isObstructed(i, j)) {
+            continue;
+          }
+
+          var currAreaLimit = (grid.rows - i + 1) * (grid.columns - j + 1);
+          if (currAreaLimit < maxSurfaceArea) {
+            break;
+          }
+
+          currMaxArea = _findLargestEmptyAreaFrom(new GridPoint(i, j), rendering);
+          currMaxSurfaceArea = currMaxArea.getSurfaceArea();
+
+          if (currMaxSurfaceArea > maxSurfaceArea) {
+            maxSurfaceArea = currMaxSurfaceArea;
+            maxArea = currMaxArea;
+          }
+        }
+      }
+      return maxArea;
+    }
+
 
     /**
      * @ngdoc method
@@ -24,7 +68,8 @@
      * @methodOf widgetGrid.gridUtil
      * 
      * @description
-     * Retrieves templates from the cache.
+     * Tries to retrieve a template from the cache.
+     * The cache is populated by `ngtemplates` during build.
      * 
      * @param {string} templateName Cache key
      * @return {string} Markup of the cached template, if any
@@ -92,72 +137,9 @@
 
 
     /**
-     * @ngdoc method
-     * @name computeCellSize
-     * @methodOf widgetGrid.gridUtil
-     * 
-     * @description
-     * Computes the relative size of a single cell, given row and column count of a grid.
-     * 
-     * @param {number} rowCount Row count
-     * @param {number} columnCount Column count
-     * @return {object} Cell sizes (%)
-     */
-    function computeCellSize(rowCount, columnCount) {
-      return {
-        height: rowCount >= 1 ? 100 / rowCount : 0,
-        width: columnCount >= 1 ? 100 / columnCount : 0
-      };
-    }
-
-
-    /**
-     * @ngdoc method
-     * @name findLargestEmptyArea
-     * @methodOf widgetGrid.gridUtil
-     * 
-     * @description
-     * Finds the largest non-obstructed area in a given rendering, if any.
-     * 
-     * @param {GridRendering} rendering Rendering
-     * @return {GridArea} Largest empty area, or null
-     */
-    function findLargestEmptyArea(rendering) {
-      if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid)) {
-        return null;
-      }
-
-      var grid = rendering.grid;
-      var maxPosition = null, currMaxPosition = null,
-          maxArea = 0, currMaxArea = 0;
-      for (var i = 1; i <= grid.rows; i++) {
-        for (var j = 1; j <= grid.columns; j++) {
-          if (rendering._isObstructed(i, j)) {
-            continue;
-          }
-
-          var currAreaLimit = (grid.rows - i + 1) * (grid.columns - j + 1);
-          if (currAreaLimit < maxArea) {
-            break;
-          }
-
-          currMaxPosition = _findLargestEmptyAreaFrom(new GridPosition(i, j), rendering);
-          currMaxArea = currMaxPosition.height * currMaxPosition.width;
-
-          if (currMaxArea > maxArea) {
-            maxArea = currMaxArea;
-            maxPosition = currMaxPosition;
-          }
-        }
-      }
-      return maxPosition;
-    }
-
-
-    /**
      * Finds the largest empty area that starts at a given position.
      * 
-     * @param {GridPosition} start Start position
+     * @param {GridPoint} start Start position
      * @return {GridArea} Largest empty area, or null
      */
     function _findLargestEmptyAreaFrom(start, rendering) {
@@ -166,8 +148,8 @@
         return null;
       }
 
-      var maxPosition = null,
-          maxArea = 0,
+      var maxArea = null,
+          maxSurfaceArea = 0,
           endColumn = rendering.grid.columns;
       for (var i = start.top; i <= rendering.grid.rows; i++) {
         for (var j = start.left; j <= endColumn; j++) {
@@ -178,20 +160,15 @@
 
           var currHeight = (i - start.top + 1),
               currWidth = (j - start.left + 1),
-              currArea = currHeight * currWidth;
+              currSurfaceArea = currHeight * currWidth;
 
-          if (currArea > maxArea) {
-            maxArea = currArea;
-            maxPosition = {
-              top: start.top,
-              left: start.left,
-              height: currHeight,
-              width: currWidth
-            };
+          if (currSurfaceArea > maxSurfaceArea) {
+            maxSurfaceArea = currSurfaceArea;
+            maxArea = new GridArea(start.top, start.left, currHeight, currWidth);
           }
         }
       }
-      return maxPosition;
+      return maxArea;
     }
 
     return service;

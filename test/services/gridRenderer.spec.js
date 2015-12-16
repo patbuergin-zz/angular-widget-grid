@@ -18,9 +18,9 @@ describe('gridRenderer', function () {
     var xsGrid, smGrid, mdGrid, p1, p2, p3, p4, w1, w2, w3, w4;
     
     beforeEach(function () {
-      xsGrid = new Grid({ columns: 5, rows: 6 });
-      smGrid = new Grid({ columns: 8, rows: 8 });
-      mdGrid = new Grid({ columns: 12, rows: 8 });
+      xsGrid = new Grid(6, 5);
+      smGrid = new Grid(8, 8);
+      mdGrid = new Grid(8, 12);
       p1 = { top: 1, height: 4, left: 1, width: 5 };
       p2 = { top: 5, height: 4, left: 6, width: 7 };
       p3 = { top: 8, height: 1, left: 3, width: 3 };
@@ -32,7 +32,7 @@ describe('gridRenderer', function () {
     });
     
     it('returns an empty GridRendering when passed an empty/no grid', function () {
-      var grid = new Grid({ columns: 2, rows: 2 });
+      var grid = new Grid(2, 2);
       expect(gridRenderer.render(grid).positions).toEqual({});
       expect(gridRenderer.render().positions).toEqual({});
     });
@@ -50,42 +50,8 @@ describe('gridRenderer', function () {
       expect(positions[w4.id]).toEqual(p4);
     });
     
-    xit('moves overlapping widgets left-to-right, top-to-bottom', function () {
-      var minGrid = new Grid({ columns: 2, rows: 2 });
-      var ov1 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
-      var ov2 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
-      var ov3 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
-      minGrid.add(ov1);
-      minGrid.add(ov2);
-      minGrid.add(ov3);
-      
-      var positions = gridRenderer.render(minGrid).positions;
-      expect(positions[ov1.id]).toEqual({ top: 1, height: 1, left: 1, width: 1 });
-      expect(positions[ov2.id]).toEqual({ top: 1, height: 1, left: 2, width: 1 });
-      expect(positions[ov3.id]).toEqual({ top: 2, height: 1, left: 1, width: 1 });
-    });
-    
-    xit('extends the effective grid vertically, if necessary', function () {
-      var minGrid = new Grid({ columns: 2, rows: 1 });
-      var ov1 = new Widget({ top: 1, height: 1, left: 1, width: 2 });
-      var ov2 = new Widget({ top: 1, height: 1, left: 1, width: 1 });
-      minGrid.add(ov1);
-      minGrid.add(ov2);
-      
-      var positions = gridRenderer.render(minGrid).positions;
-      expect(positions[ov1.id]).toEqual({ top: 1, height: 1, left: 1, width: 2 });
-      expect(positions[ov2.id]).toEqual({ top: 2, height: 1, left: 1, width: 1 });
-    });
-    
-    xit('evenly scales widgets whose width exceeds the width of the grid', function () {
-      xsGrid.add(w2);
-      var positions = gridRenderer.render(xsGrid).positions;
-      // (height 4, width 7) + container width 5 => (height 3, width 5)
-      expect(positions[w2.id]).toEqual({ top: 1, height: 3, left: 1, width: 5 });
-    });
-    
     it('considers a minimum height of 1 when scaling widgets', function () {
-      var minGrid = new Grid({ columns: 1, rows: 1 });
+      var minGrid = new Grid(1, 1);
       var widget = new Widget({ top: 42, left: 777, width: 9001, height: 1 });
       minGrid.add(widget);
       var positions = gridRenderer.render(minGrid).positions;

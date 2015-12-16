@@ -4,16 +4,16 @@
 describe('PathIterator', function () {
   beforeEach(module('widgetGrid'));
   
-  var GridPosition, PathIterator;
+  var GridPoint, PathIterator;
   
-  beforeEach(inject(function (_GridPosition_, _PathIterator_) {
-    GridPosition = _GridPosition_;
+  beforeEach(inject(function (_GridPoint_, _PathIterator_) {
+    GridPoint = _GridPoint_;
     PathIterator = _PathIterator_;
   }));
 
   it('yields exactly one value if startPos equals endPos', function () {
-    var start = new GridPosition(4, 9);
-    var end = new GridPosition(4, 9);
+    var start = new GridPoint(4, 9);
+    var end = new GridPoint(4, 9);
     var iter = new PathIterator(start, end);
     
     expect(iter.hasNext()).toBe(true);
@@ -25,72 +25,72 @@ describe('PathIterator', function () {
   });
   
   it('yields a linear path from start to end when passed positions that share a coordinate', function () {
-    var start = new GridPosition(4, 12);
-    var end = new GridPosition(4, 9);
+    var start = new GridPoint(4, 12);
+    var end = new GridPoint(4, 9);
     var iter = new PathIterator(start, end);
     expect(iter.hasNext()).toBe(true);
-    expect(iter.next()).toEqual(new GridPosition(4, 12));
-    expect(iter.next()).toEqual(new GridPosition(4, 11));
-    expect(iter.next()).toEqual(new GridPosition(4, 10));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(4, 12));
+    expect(iter.next()).toEqual(new GridPoint(4, 11));
+    expect(iter.next()).toEqual(new GridPoint(4, 10));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
 
-    start = new GridPosition(4, 8);
+    start = new GridPoint(4, 8);
     iter = new PathIterator(start, end);
-    expect(iter.next()).toEqual(new GridPosition(4, 8));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(4, 8));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
 
-    start = new GridPosition(6, 9);
+    start = new GridPoint(6, 9);
     iter = new PathIterator(start, end);
-    expect(iter.next()).toEqual(new GridPosition(6, 9));
-    expect(iter.next()).toEqual(new GridPosition(5, 9));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(6, 9));
+    expect(iter.next()).toEqual(new GridPoint(5, 9));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
     
-    start = new GridPosition(2, 9);
+    start = new GridPoint(2, 9);
     iter = new PathIterator(start, end);
-    expect(iter.next()).toEqual(new GridPosition(2, 9));
-    expect(iter.next()).toEqual(new GridPosition(3, 9));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(2, 9));
+    expect(iter.next()).toEqual(new GridPoint(3, 9));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
   });
   
   it('yields diagonal paths if applicable', function () {
-    var start = new GridPosition(7, 12);
-    var end = new GridPosition(4, 9);
+    var start = new GridPoint(7, 12);
+    var end = new GridPoint(4, 9);
     var iter = new PathIterator(start, end);
     expect(iter.hasNext()).toBe(true);
-    expect(iter.next()).toEqual(new GridPosition(7, 12));
-    expect(iter.next()).toEqual(new GridPosition(6, 11));
-    expect(iter.next()).toEqual(new GridPosition(5, 10));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(7, 12));
+    expect(iter.next()).toEqual(new GridPoint(6, 11));
+    expect(iter.next()).toEqual(new GridPoint(5, 10));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
 
-    start = new GridPosition(9, 8);
+    start = new GridPoint(9, 8);
     iter = new PathIterator(start, end);
-    expect(iter.next()).toEqual(new GridPosition(9, 8));
-    expect(iter.next()).toEqual(new GridPosition(8, 8));
-    expect(iter.next()).toEqual(new GridPosition(7, 8));
-    expect(iter.next()).toEqual(new GridPosition(6, 9));
-    expect(iter.next()).toEqual(new GridPosition(5, 9));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(9, 8));
+    expect(iter.next()).toEqual(new GridPoint(8, 8));
+    expect(iter.next()).toEqual(new GridPoint(7, 8));
+    expect(iter.next()).toEqual(new GridPoint(6, 9));
+    expect(iter.next()).toEqual(new GridPoint(5, 9));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
 
-    start = new GridPosition(3, 6);
+    start = new GridPoint(3, 6);
     iter = new PathIterator(start, end);
-    expect(iter.next()).toEqual(new GridPosition(3, 6));
-    expect(iter.next()).toEqual(new GridPosition(3, 7));
-    expect(iter.next()).toEqual(new GridPosition(4, 8));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(3, 6));
+    expect(iter.next()).toEqual(new GridPoint(3, 7));
+    expect(iter.next()).toEqual(new GridPoint(4, 8));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
 
-    start = new GridPosition(1, 10);
+    start = new GridPoint(1, 10);
     iter = new PathIterator(start, end);
-    expect(iter.next()).toEqual(new GridPosition(1, 10));
-    expect(iter.next()).toEqual(new GridPosition(2, 10));
-    expect(iter.next()).toEqual(new GridPosition(3, 9));
-    expect(iter.next()).toEqual(new GridPosition(4, 9));
+    expect(iter.next()).toEqual(new GridPoint(1, 10));
+    expect(iter.next()).toEqual(new GridPoint(2, 10));
+    expect(iter.next()).toEqual(new GridPoint(3, 9));
+    expect(iter.next()).toEqual(new GridPoint(4, 9));
     expect(iter.next()).toBeNull();
   });
 });

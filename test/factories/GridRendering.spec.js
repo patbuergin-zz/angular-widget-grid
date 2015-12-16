@@ -4,45 +4,46 @@
 describe('GridRendering', function () {
   beforeEach(module('widgetGrid'));
   
-  var GridRendering, GridPosition, Grid, Widget;
+  var Grid, GridArea, GridRendering, GridPoint, Widget;
   var minGrid, medGrid;
   
-  beforeEach(inject(function (_GridRendering_, _GridPosition_, _Grid_, _Widget_) {
-    GridRendering = _GridRendering_;
-    GridPosition = _GridPosition_;
+  beforeEach(inject(function (_Grid_, _GridArea_, _GridRendering_, _GridPoint_, _Widget_) {
     Grid = _Grid_;
+    GridArea = _GridArea_;
+    GridRendering = _GridRendering_;
+    GridPoint = _GridPoint_;
     Widget = _Widget_;
     
-    minGrid = new Grid({ columns: 1, rows: 1 });
-    medGrid = new Grid({ columns: 12, rows: 8 });
+    minGrid = new Grid(1, 1);
+    medGrid = new Grid(8, 12);
   }));
   
   describe('#rasterizeCoords', function () {
     it('returns the closest cell when passed coords within the grid container', function () {
       var rendering = new GridRendering(minGrid);
-      expect(rendering.rasterizeCoords(0, 0, 1, 1)).toEqual(new GridPosition(1, 1));
+      expect(rendering.rasterizeCoords(0, 0, 1, 1)).toEqual(new GridPoint(1, 1));
       
-      rendering = new GridRendering(new Grid({ columns: 2, rows: 2 }), {});
-      expect(rendering.rasterizeCoords(0, 0, 2, 2)).toEqual(new GridPosition(1, 1));
-      expect(rendering.rasterizeCoords(1, 0, 2, 2)).toEqual(new GridPosition(1, 2));
-      expect(rendering.rasterizeCoords(0, 1, 2, 2)).toEqual(new GridPosition(2, 1));
-      expect(rendering.rasterizeCoords(1, 1, 2, 2)).toEqual(new GridPosition(2, 2));
+      rendering = new GridRendering(new Grid(2, 2), {});
+      expect(rendering.rasterizeCoords(0, 0, 2, 2)).toEqual(new GridPoint(1, 1));
+      expect(rendering.rasterizeCoords(1, 0, 2, 2)).toEqual(new GridPoint(1, 2));
+      expect(rendering.rasterizeCoords(0, 1, 2, 2)).toEqual(new GridPoint(2, 1));
+      expect(rendering.rasterizeCoords(1, 1, 2, 2)).toEqual(new GridPoint(2, 2));
       
-      rendering = new GridRendering(new Grid({ columns: 3, rows: 3 }), {});
-      expect(rendering.rasterizeCoords(2, 3, 6, 6)).toEqual(new GridPosition(2, 2));
-      expect(rendering.rasterizeCoords(200, 300, 600, 600)).toEqual(new GridPosition(2, 2));
+      rendering = new GridRendering(new Grid(3, 3), {});
+      expect(rendering.rasterizeCoords(2, 3, 6, 6)).toEqual(new GridPoint(2, 2));
+      expect(rendering.rasterizeCoords(200, 300, 600, 600)).toEqual(new GridPoint(2, 2));
       
       rendering = new GridRendering(medGrid, {});
-      expect(rendering.rasterizeCoords(499, 399, 1200, 800)).toEqual(new GridPosition(4, 5));
-      expect(rendering.rasterizeCoords(500, 400, 1200, 800)).toEqual(new GridPosition(5, 6));
+      expect(rendering.rasterizeCoords(499, 399, 1200, 800)).toEqual(new GridPoint(4, 5));
+      expect(rendering.rasterizeCoords(500, 400, 1200, 800)).toEqual(new GridPoint(5, 6));
     });
     
     it('returns the closest cell when passed a coords that exceed the width and/or the height of the container', function () {
       var rendering = new GridRendering(medGrid, {});
-      expect(rendering.rasterizeCoords(4200, 1337, 1200, 800)).toEqual(new GridPosition(8, 12));
-      expect(rendering.rasterizeCoords(650, 1337, 1200, 800)).toEqual(new GridPosition(8, 7));
-      expect(rendering.rasterizeCoords(-1, 333, 1200, 800)).toEqual(new GridPosition(4, 1));
-      expect(rendering.rasterizeCoords(150, -1, 1200, 800)).toEqual(new GridPosition(1, 2));
+      expect(rendering.rasterizeCoords(4200, 1337, 1200, 800)).toEqual(new GridPoint(8, 12));
+      expect(rendering.rasterizeCoords(650, 1337, 1200, 800)).toEqual(new GridPoint(8, 7));
+      expect(rendering.rasterizeCoords(-1, 333, 1200, 800)).toEqual(new GridPoint(4, 1));
+      expect(rendering.rasterizeCoords(150, -1, 1200, 800)).toEqual(new GridPoint(1, 2));
     });
   });
   
@@ -161,14 +162,14 @@ describe('GridRendering', function () {
       rendering.setWidgetPosition(w2.id, p2);
       
       var nextPosition = rendering.getNextPosition();
-      expect(nextPosition).toEqual({ top: 1, height: 4, left: 6, width: 7 });
+      expect(nextPosition).toEqual(new GridArea(1, 6, 4, 7));
       
       var w3 = new Widget(nextPosition);
       medGrid.add(w3);
       rendering.setWidgetPosition(w3.id, nextPosition);
       
       nextPosition = rendering.getNextPosition();
-      expect(nextPosition).toEqual({ top: 5, height: 4, left: 1, width: 5 });
+      expect(nextPosition).toEqual(new GridArea(5, 1, 4, 5));
     });
     
     it('considers obstructions that are surrounded by free spots', function () {
@@ -188,7 +189,7 @@ describe('GridRendering', function () {
       rendering.setWidgetPosition(w3.id, p3);
       
       var nextPosition = rendering.getNextPosition();
-      expect(nextPosition).toEqual({ top: 5, height: 4, left: 1, width: 5 });
+      expect(nextPosition).toEqual(new GridArea(5, 1, 4, 5));
     });
     
     it('returns null if the grid is full', function () {

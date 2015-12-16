@@ -19,8 +19,7 @@
       templateUrl: 'wg-widget',
       replace: true,
       link: function (scope, element, attrs, gridCtrl) {
-        var widgetOptions = scope.position;
-        var widget = new Widget(widgetOptions);
+        var widget = new Widget(scope.position);
 
         scope.editable = 'false';
         scope.widget = widget;

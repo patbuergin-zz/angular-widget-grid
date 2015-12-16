@@ -33,8 +33,7 @@
 
   angular.module('widgetGrid').directive('wgResizer', function ($document) {
     var MIN_HEIGHT = 42,
-        MIN_WIDTH = 42,
-        ADD_OFFSET = 1;
+        MIN_WIDTH = 42;
     
     return {
       restrict: 'A',
@@ -99,24 +98,22 @@
             startPos.right = startPos.left + scope.widget.width - 1;
             
             var startRender = {}; // pixel values
-            startRender.top = widgetContainer.offsetTop;
-            startRender.left = widgetContainer.offsetLeft;
-            startRender.height = container.offsetHeight;
-            startRender.width = container.offsetWidth;
+            startRender.top = Math.ceil(widgetContainer.offsetTop);
+            startRender.left = Math.ceil(widgetContainer.offsetLeft);
+            startRender.height = Math.floor(container.offsetHeight);
+            startRender.width = Math.floor(container.offsetWidth);
             startRender.bottom = startRender.top + startRender.height;
             startRender.right = startRender.left + startRender.width;
             
             event.offsetX = event.offsetX || event.layerX;
             event.offsetY = event.offsetY || event.layerY;
             
-            // add an offset to avoid ambiguity when faced w/ odd widths and/or heights
-            var delta = { top: ADD_OFFSET, right: ADD_OFFSET, bottom: ADD_OFFSET, left: ADD_OFFSET };
-            
+            var delta = { top: 0, right: 0, bottom: 0, left: 0 };
             var draggerOffset = {
-              top: event.offsetY + ADD_OFFSET,
-              left: event.offsetX + ADD_OFFSET,
-              bottom: event.offsetY - dragger.element[0].offsetHeight + ADD_OFFSET,
-              right: event.offsetX - dragger.element[0].offsetWidth + ADD_OFFSET
+              top: event.offsetY,
+              left: event.offsetX,
+              bottom: event.offsetY - dragger.element[0].offsetHeight,
+              right: event.offsetX - dragger.element[0].offsetWidth
             };
             
             var gridPositions = gridCtrl.getPositions();
@@ -141,18 +138,18 @@
                   dragPositionY = Math.round(event.clientY) - gridPositions.top;
               
               if (dragger.up) {
-                delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height - 1) - startRender.top;
+                delta.top = Math.min(Math.max(dragPositionY - draggerOffset.top, 0), gridPositions.height) - startRender.top;
                 delta.top = Math.min(delta.top, startRender.height - MIN_HEIGHT);
               } else if (dragger.down) {
-                delta.bottom = startRender.bottom - Math.min(Math.max(dragPositionY - draggerOffset.bottom, 0), gridPositions.height - 1);
+                delta.bottom = startRender.bottom - Math.min(Math.max(dragPositionY - draggerOffset.bottom, 0), gridPositions.height);
                 delta.bottom = Math.min(delta.bottom, startRender.height - MIN_HEIGHT);
               }
               
               if (dragger.left) {
-                delta.left = Math.min(Math.max(dragPositionX - draggerOffset.left, 0), gridPositions.width - 1) - startRender.left; 
+                delta.left = Math.min(Math.max(dragPositionX - draggerOffset.left, 0), gridPositions.width) - startRender.left; 
                 delta.left = Math.min(delta.left, startRender.width - MIN_WIDTH);
               } else if (dragger.right) {
-                delta.right = startRender.right - Math.min(Math.max(dragPositionX - draggerOffset.right, 0), gridPositions.width - 1); 
+                delta.right = startRender.right - Math.min(Math.max(dragPositionX - draggerOffset.right, 0), gridPositions.width); 
                 delta.right = Math.min(delta.right, startRender.width - MIN_WIDTH);
               }
               
@@ -186,8 +183,8 @@
             function determineFinalPos() {
               var finalPos = {};
               
-              var requestedStartPoint = gridCtrl.rasterizeCoords(startRender.left + delta.left, startRender.top + delta.top),
-                  requestedEndPoint = gridCtrl.rasterizeCoords(startRender.right - delta.right, startRender.bottom - delta.bottom);
+              var requestedStartPoint = gridCtrl.rasterizeCoords(startRender.left + delta.left + 1, startRender.top + delta.top + 1),
+                  requestedEndPoint = gridCtrl.rasterizeCoords(startRender.right - delta.right - 1, startRender.bottom - delta.bottom - 1);
 
               var requestedPos = {
                 top: requestedStartPoint.top,

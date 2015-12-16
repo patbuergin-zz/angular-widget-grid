@@ -4,10 +4,11 @@
 describe('gridUtil', function () {
   beforeEach(module('widgetGrid'));
   
-  var gridUtil;
+  var gridUtil, CellSize;
   
-  beforeEach(inject(function (_gridUtil_) {
+  beforeEach(inject(function (_gridUtil_, _CellSize_) {
     gridUtil = _gridUtil_;
+    CellSize = _CellSize_;
   }));
   
   describe('#sortWidgets', function () {
@@ -26,26 +27,6 @@ describe('gridUtil', function () {
       var widgets = [w1, w2, w3];
       var sorted = gridUtil.sortWidgets(widgets);
       expect(sorted).toEqual([w2, w3, w1]);
-    });
-  });
-  
-  describe('#computeCellSize', function () {
-    it('returns a size of 0 when the respective dimension is 0 or undefined', function () {
-      expect(gridUtil.computeCellSize(0, 0)).toEqual({ height: 0, width: 0 });
-      expect(gridUtil.computeCellSize()).toEqual({ height: 0, width: 0 });
-      expect(gridUtil.computeCellSize(5, 0)).toEqual({ height: 20, width: 0 });
-      expect(gridUtil.computeCellSize(0, 5)).toEqual({ height: 0, width: 20 });
-    });
-    
-    it('returns valid integer sizes when passed suitable dimensions', function () {
-      expect(gridUtil.computeCellSize(1, 1)).toEqual({ height: 100, width: 100 });
-      expect(gridUtil.computeCellSize(4, 2)).toEqual({ height: 25, width: 50 });
-      expect(gridUtil.computeCellSize(50, 100)).toEqual({ height: 2, width: 1 });
-    });
-    
-    xit('rounds to four decimal places when applicable', function () {
-      expect(gridUtil.computeCellSize(3, 7)).toEqual({ height: 33.3333, width: 14.2857 });
-      expect(gridUtil.computeCellSize(11, 33)).toEqual({ height: 9.0909, width: 3.0303 });
     });
   });
   

@@ -1,5 +1,5 @@
 (function () {
-  angular.module('widgetGrid').factory('GridRendering', function (gridUtil, GridPosition) {
+  angular.module('widgetGrid').factory('GridRendering', function (gridUtil, GridPoint) {
     var GridRendering = function GridRendering(grid) {
       this.grid = grid || { rows: 0, columns: 0 };
       this.positions = {};
@@ -17,7 +17,7 @@
 
       var i = Math.floor(y / gridHeight * this.grid.rows) + 1,
           j = Math.floor(x / gridWidth * this.grid.columns) + 1;
-      return new GridPosition(i, j);
+      return new GridPoint(i, j);
     };
 
 
