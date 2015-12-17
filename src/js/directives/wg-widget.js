@@ -6,6 +6,16 @@
   });
 
 
+  /**
+   * @ngdoc directive
+   * @name widgetGrid.wgWidget
+   * 
+   * @description
+   * Container for dashboard elements ("widgets").
+   * 
+   * @restict AE
+   * @requires widgetGrid.Widget
+   */
   angular.module('widgetGrid').directive('wgWidget', function (Widget) {
     return {
       scope: {
@@ -24,7 +34,6 @@
         scope.editable = 'false';
         scope.widget = widget;
 
-        scope.getNodeIndex = getNodeIndex;
         scope.setWidgetPosition = setWidgetPosition;
 
         scope.$on('wg-update-rendering', updateView);
@@ -34,13 +43,18 @@
 
         gridCtrl.addWidget(widget);
 
-        function getNodeIndex() {
-          var index = 0, elem = element[0];
-          while ((elem = elem.previousElementSibling) !== null) { ++index; }
-          return index;
-        }
 
-
+        /**
+         * @ngdoc method
+         * @name setWidgetPosition
+         * @methodOf widgetGrid.wgWidget
+         * 
+         * @description
+         * Updates the position of the associated widget instance, and updates the view.
+         * 
+         * @param {GridArea} position Position
+         * @return {GridRendering} Rendering
+         */
         function setWidgetPosition(position) {
           var oldPosition = widget.getPosition();
           widget.setPosition(position);

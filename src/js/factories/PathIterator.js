@@ -1,5 +1,25 @@
 (function () {
+  /**
+   * @ngdoc object
+   * @name widgetGrid.PathIterator
+   * 
+   * @description
+   * Generates a path between two points on a grid.
+   * 
+   * @requires widgetGrid.GridPoint
+   */
   angular.module('widgetGrid').factory('PathIterator', function (GridPoint) {
+    /**
+     * @ngdoc method
+     * @name PathIterator
+     * @methodOf widgetGrid.PathIterator
+     * 
+     * @description
+     * Constructor.
+     * 
+     * @param {GridPoint} start Start point
+     * @param {GridPoint} end End point
+     */
     var PathIterator = function PathIterator(start, end) {
       this.start = start;
       this.topDelta = end.top - start.top;
@@ -11,11 +31,16 @@
     };
 
 
-    PathIterator.prototype.hasNext = function () {
-      return this.nextPos !== null;
-    };
-
-
+    /**
+     * @ngdoc method
+     * @name next
+     * @methodOf widgetGrid.Widget
+     * 
+     * @description
+     * Yields the next point on the path, if any.
+     * 
+     * @return {GridPoint} Next point on the path
+     */
     PathIterator.prototype.next = function () {
       this.currPos = this.nextPos;
       
@@ -29,6 +54,21 @@
       }
 
       return this.currPos;
+    };
+
+
+    /**
+     * @ngdoc method
+     * @name hasNext
+     * @methodOf widgetGrid.PathIterator
+     * 
+     * @description
+     * Whether there is a next point on the path.
+     * 
+     * @return {boolean} Result
+     */
+    PathIterator.prototype.hasNext = function () {
+      return this.nextPos !== null;
     };
 
     return PathIterator;

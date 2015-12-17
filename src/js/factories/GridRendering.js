@@ -1,5 +1,26 @@
 (function () {
-  angular.module('widgetGrid').factory('GridRendering', function (gridUtil, GridPoint) {
+  /**
+   * @ngdoc object
+   * @name widgetGrid.GridRendering
+   * 
+   * @description
+   * A rendering of a grid, assigning positions to each of its widgets,
+   * keeping track of obstructions, and providing utility functions.
+   * 
+   * @requires widgetGrid.GridArea
+   * @requires widgetGrid.GridPoint
+   */
+  angular.module('widgetGrid').factory('GridRendering', function (GridArea, GridPoint) {
+    /**
+     * @ngdoc method
+     * @name GridRendering
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Constructor.
+     * 
+     * @param {Grid} grid Rendered grid
+     */
     var GridRendering = function GridRendering(grid) {
       this.grid = grid || { rows: 0, columns: 0 };
       this.positions = {};
@@ -11,16 +32,41 @@
     };
 
 
-    GridRendering.prototype.rasterizeCoords = function (x, y, gridWidth, gridHeight) {
-      x = Math.min(Math.max(x, 0), gridWidth - 1);
-      y = Math.min(Math.max(y, 0), gridHeight - 1);
+    /**
+     * @ngdoc method
+     * @name rasterizeCoords
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Returns grid coordinates for a set of pixel coordinates.
+     * 
+     * @param {number} top Top position (px)
+     * @param {number} left Left position (px)
+     * @param {number} gridWidth Width of the grid container (px)
+     * @param {number} gridHeight Height of the grid container (px)
+     * @return {GridPoint} Corresponding point on the grid
+     */
+    GridRendering.prototype.rasterizeCoords = function (top, left, gridWidth, gridHeight) {
+      top = Math.min(Math.max(top, 0), gridWidth - 1);
+      left = Math.min(Math.max(left, 0), gridHeight - 1);
 
-      var i = Math.floor(y / gridHeight * this.grid.rows) + 1,
-          j = Math.floor(x / gridWidth * this.grid.columns) + 1;
+      var i = Math.floor(left / gridHeight * this.grid.rows) + 1,
+          j = Math.floor(top / gridWidth * this.grid.columns) + 1;
       return new GridPoint(i, j);
     };
 
 
+    /**
+     * @ngdoc method
+     * @name getWidgetIdAt
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Gets the id of the widget at a given grid position, if any.
+     * 
+     * @param {number} i Top position
+     * @param {number} j Left position
+     */
     GridRendering.prototype.getWidgetIdAt = function (i, j) {
       for (var widgetId in this.positions) {
         var position = this.positions[widgetId];
@@ -34,11 +80,33 @@
     };
 
 
+    /**
+     * @ngdoc method
+     * @name getWidgetPosition
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Gets the rendered position of a given widget.
+     * 
+     * @param {string} widgetId Id of the widget
+     * @return {GridArea} Rendered position
+     */
     GridRendering.prototype.getWidgetPosition = function (widgetId) {
       return this.positions[widgetId];
     };
 
 
+    /**
+     * @ngdoc method
+     * @name setWidgetPosition
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Sets the rendered position for a given widget.
+     * 
+     * @param {string} widgetId Id of the widget
+     * @param {GridArea} newPosition Rendered position
+     */
     GridRendering.prototype.setWidgetPosition = function (widgetId, newPosition) {
       var currPosition = this.positions[widgetId];
       if (currPosition) {
@@ -58,6 +126,16 @@
     };
 
 
+    /**
+     * @ngdoc method
+     * @name hasSpaceLeft
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Whether any cell in the grid is unoccupied.
+     * 
+     * @return {boolean} Has space left
+     */
     GridRendering.prototype.hasSpaceLeft = function () {
       for (var i = 0; i < this.obstructions.length; i++) {
         if (!this.obstructions[i]) {
@@ -68,6 +146,17 @@
     };
 
 
+    /**
+     * @ngdoc method
+     * @name getNextPosition
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Gets the next best unoccupied area in the current rendering, if any.
+     * Can e.g. be used to determine positions for newly added widgets.
+     * 
+     * @return {GridPosition} Next position, or null
+     */
     GridRendering.prototype.getNextPosition = function () {
       if (angular.isDefined(this.cachedNextPosition)) {
         return this.cachedNextPosition; 
@@ -77,25 +166,38 @@
         return null;
       }
 
-      var maxPosition = gridUtil.findLargestEmptyArea(this);
+      var maxPosition = this.findLargestEmptyArea(this);
       this.cachedNextPosition = maxPosition;
       return maxPosition;
     };
 
 
-    // options: excludedArea, expanding
-    GridRendering.prototype.isObstructed = function (i, j, options) {
-      options = angular.isObject(options) ? options : {};
-
+    /**
+     * @ngdoc method
+     * @name isObstructed
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Checks whether a given point in the grid is obstructed by a widget,
+     * considering the current grid's bounds, as well as an optional excluded area.
+     * 
+     * @param {number} i Top position
+     * @param {number} j Left position
+     * @param {GridArea} excludedArea Area to ignore (optional)
+     * @return {boolean} Whether it is obstructed
+     */
+    GridRendering.prototype.isObstructed = function (i, j, excludedArea) {
       // obstructed if (i, j) exceeds the grid's regular non-expanding boundaries
-      if (i < 1 || j < 1 || j > this.grid.columns || (!options.expanding && i > this.grid.rows)) {
+      if (i < 1 || j < 1 || j > this.grid.columns || i > this.grid.rows) {
         return true;
       }
 
       // pass if (i, j) is within the excluded area, if any
-      if (options.excludedArea &&
-          options.excludedArea.top <= i && i <= options.excludedArea.bottom &&
-          options.excludedArea.left <= j && j <= options.excludedArea.right) {
+      if (excludedArea &&
+          excludedArea.top <= i &&
+          i <= excludedArea.bottom &&
+          excludedArea.left <= j &&
+          j <= excludedArea.right) {
         return false;
       }
 
@@ -103,13 +205,35 @@
     };
 
 
-    // unsafe; w/o bounding box & excluded area
+    /**
+     * @ngdoc method
+     * @name _isObstructed
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Checks whether a given point in the grid is obstructed by a widget.
+     * 
+     * @param {number} i Top position
+     * @param {number} j Left position
+     * @return {boolean} Whether it is obstructed
+     */
     GridRendering.prototype._isObstructed = function (i, j) {
       return this.obstructions[(i-1) * this.grid.columns + (j-1)] === 1;
     };
 
 
-    // options: excludedArea, fromBottom, fromRight, expanding
+    /**
+     * @ngdoc method
+     * @name isAreaObstructed
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Checks whether a given area in the grid is obstructed by a widget.
+     * 
+     * @param {GridArea} area Area
+     * @param {Map<string, any>} options Options: `fromBottom` (start search from bottom), `fromRight` (.. from right), `excludedArea` (area to ignore).
+     * @return {boolean} Whether it is obstructed
+     */
     GridRendering.prototype.isAreaObstructed = function (area, options) {
       if (!area) { return false; }
       options = angular.isObject(options) ? options : {};
@@ -133,7 +257,7 @@
 
       for (var i = verticalStart; i !== verticalEnd; i += verticalStep) {
         for (var j = horizontalStart; j !== horizontalEnd; j += horizontalStep) {
-          if (this.isObstructed(i, j, options)) {
+          if (this.isObstructed(i, j, options.excludedArea)) {
             return true;
           }
         }
@@ -142,6 +266,17 @@
     };
 
 
+    /**
+     * @ngdoc method
+     * @name getStyle
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Gets the CSS rules for a given widget.
+     * 
+     * @param {string} widgetId Id of the widget
+     * @return {Map<string, string>} CSS rules
+     */
     GridRendering.prototype.getStyle = function (widgetId) {
       widgetId = widgetId.id || widgetId;
       var render = this.positions[widgetId];
@@ -159,8 +294,18 @@
     };
 
 
+    /**
+     * @ngdoc method
+     * @name setObstructionValues
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Sets the obstruction state of an area to a given value. 
+     * 
+     * @param {GridArea} area Affected area
+     * @param {number} value New obstruction value
+     */
     GridRendering.prototype.setObstructionValues = function (area, value) {
-      // positions are 1-indexed (like matrices)
       for (var i = area.top - 1; i < area.top + area.height - 1; i++) {
         for (var j = area.left - 1; j < area.left + area.width - 1; j++) {
           this.obstructions[i * this.grid.columns + j] = value;
@@ -169,6 +314,14 @@
     };
 
 
+    /**
+     * @ngdoc method
+     * @name printObstructions
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Prints the current obstruction state of a rendering to the console.
+     */
     GridRendering.prototype.printObstructions = function () {
       var row = 'obstructions:';
       for (var i = 0; i < this.grid.columns * this.grid.rows; i++) {
@@ -180,6 +333,79 @@
       }
       console.log(row);
     };
+
+
+    /**
+     * @ngdoc method
+     * @name findLargestEmptyArea
+     * @methodOf widgetGrid.GridRendering
+     * 
+     * @description
+     * Finds the largest non-obstructed area in a given rendering, if any.
+     * 
+     * @return {GridArea} Largest empty area, or null
+     */
+    GridRendering.prototype.findLargestEmptyArea = function () {
+      var maxArea = null, currMaxArea = null,
+          maxSurfaceArea = 0, currMaxSurfaceArea = 0;
+      for (var i = 1; i <= this.grid.rows; i++) {
+        for (var j = 1; j <= this.grid.columns; j++) {
+          if (this._isObstructed(i, j)) {
+            continue;
+          }
+
+          var currAreaLimit = (this.grid.rows - i + 1) * (this.grid.columns - j + 1);
+          if (currAreaLimit < maxSurfaceArea) {
+            break;
+          }
+
+          currMaxArea = _findLargestEmptyAreaFrom(new GridPoint(i, j), this);
+          currMaxSurfaceArea = currMaxArea.getSurfaceArea();
+
+          if (currMaxSurfaceArea > maxSurfaceArea) {
+            maxSurfaceArea = currMaxSurfaceArea;
+            maxArea = currMaxArea;
+          }
+        }
+      }
+      return maxArea;
+    };
+
+
+    /**
+     * Finds the largest empty area that starts at a given position.
+     * 
+     * @param {GridPoint} start Start position
+     * @return {GridArea} Largest empty area, or null
+     */
+    function _findLargestEmptyAreaFrom(start, rendering) {
+      if (!angular.isDefined(rendering) || !angular.isDefined(rendering.grid) ||
+          !angular.isNumber(rendering.grid.columns) || !angular.isNumber(rendering.grid.rows)) {
+        return null;
+      }
+
+      var maxArea = null,
+          maxSurfaceArea = 0,
+          endColumn = rendering.grid.columns;
+      for (var i = start.top; i <= rendering.grid.rows; i++) {
+        for (var j = start.left; j <= endColumn; j++) {
+          if (rendering._isObstructed(i, j)) {
+            endColumn = j - 1;
+            continue;
+          }
+
+          var currHeight = (i - start.top + 1),
+              currWidth = (j - start.left + 1),
+              currSurfaceArea = currHeight * currWidth;
+
+          if (currSurfaceArea > maxSurfaceArea) {
+            maxSurfaceArea = currSurfaceArea;
+            maxArea = new GridArea(start.top, start.left, currHeight, currWidth);
+          }
+        }
+      }
+      return maxArea;
+    }
 
     return GridRendering;
   });

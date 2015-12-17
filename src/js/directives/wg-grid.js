@@ -6,6 +6,20 @@
     highlightNextPosition: false
   };
 
+  /**
+   * @ngdoc controller
+   * @name widgetGrid.wgGridController
+   * 
+   * @description
+   * Container for dashboard elements ("widgets").
+   * 
+   * @restict AE
+   * @requires $element
+   * @requires $scope
+   * @requires $timeout
+   * @requires widgetGrid.Grid
+   * @requires widgetGrid.gridRenderer
+   */
   angular.module('widgetGrid').controller('wgGridController', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
 
@@ -24,7 +38,6 @@
     vm.updateWidget = updateWidget;
     vm.getWidgetRenderPosition = getWidgetPosition;
     vm.getWidgetStyle = getWidgetStyle;
-    vm.isPositionObstructed = isObstructed;
     vm.isAreaObstructed = isAreaObstructed;
     vm.highlightArea = highlightArea;
     vm.resetHighlights = resetHighlights;
@@ -148,11 +161,6 @@
     }
 
 
-    function isObstructed(i, j, options) {
-      return vm.rendering ? vm.rendering.isObstructed(i, j, options) : true;
-    }
-
-
     function isAreaObstructed(area, options) {
       return vm.rendering ? vm.rendering.isAreaObstructed(area, options) : true;
     }
@@ -180,6 +188,15 @@
   });
 
 
+  /**
+   * @ngdoc directive
+   * @name widgetGrid.wgGrid
+   * 
+   * @description
+   * Describes the grid, and acts as a container for dashboard items ("widgets").
+   * 
+   * @restict AE
+   */
   angular.module('widgetGrid').directive('wgGrid', function () {
     return {
       scope: {

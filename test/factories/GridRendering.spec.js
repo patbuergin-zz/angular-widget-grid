@@ -121,12 +121,9 @@ describe('GridRendering', function () {
       expect(rendering.isObstructed(1, 1)).toBe(false);
     });
     
-    it('returns true when coords are not the bounds of the grid (unless param expanding is truthy)', function () {
+    it('returns true when coords are not the bounds of the grid', function () {
       var rendering = new GridRendering(medGrid, {});
       expect(rendering.isObstructed(9, 5)).toBe(true);
-      // w/ param expanding
-      expect(rendering.isObstructed(9, 5, { expanding: true })).toBe(false);
-      
       expect(rendering.isObstructed(4, 13)).toBe(true);
       expect(rendering.isObstructed(0, 5)).toBe(true);
       expect(rendering.isObstructed(5, 0)).toBe(true);

@@ -29,12 +29,4 @@ describe('gridUtil', function () {
       expect(sorted).toEqual([w2, w3, w1]);
     });
   });
-  
-  describe('#getUID', function () {
-    it('returns increasing integers as string, starting from 1', function () {
-      expect(gridUtil.getUID()).toEqual("1");
-      expect(gridUtil.getUID()).toEqual("2");
-      expect(gridUtil.getUID()).toEqual("3");
-    });
-  });
 });

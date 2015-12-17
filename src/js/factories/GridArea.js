@@ -66,7 +66,7 @@
      * @description
      * Returns the row in which the area ends.
      * 
-     * @return {GridArea} Bottom row
+     * @return {number} Bottom row
      */
     GridArea.prototype.getBottom = function () {
       return this.top + this.height - 1;
@@ -81,7 +81,7 @@
      * @description
      * Returns the column in which the area ends.
      * 
-     * @return {GridArea} Bottom row
+     * @return {number} Bottom row
      */
     GridArea.prototype.getRight = function () {
       return this.left + this.width - 1;

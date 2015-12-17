@@ -6,9 +6,9 @@
    * @description
    * Describes a widget container.
    * 
-   * @requires widgetGrid.gridUtil
+   * @requires widgetGrid.GridArea
    */
-  angular.module('widgetGrid').factory('Widget', function (gridUtil, GridArea) {
+  angular.module('widgetGrid').factory('Widget', function (GridArea) {
     /**
      * @ngdoc method
      * @name Widget
@@ -20,8 +20,7 @@
      * @param {GridArea} gridArea Widget position
      */
     var Widget = function Widget(gridArea) {
-      this.id = gridUtil.getUID();
-      this.style = {};
+      this.id = generateUID();
 
       gridArea = gridArea || GridArea.empty;
       this.top = parseInt(gridArea.top) || 0;
@@ -62,6 +61,17 @@
       this.width = angular.isNumber(gridArea.width) ? gridArea.width : this.width;
       this.height = angular.isNumber(gridArea.height) ? gridArea.height : this.height;
     };
+
+
+    /**
+     * Generates a unique identifier (UID).
+     * 
+     * @return {number} Unique identifier
+     */
+    var nextId = 1;
+    function generateUID() {
+      return (nextId++).toString();
+    }
 
     return Widget;
   });
