@@ -1,0 +1,106 @@
+<a href="https://github.com/patbuergin/angular-widget-grid/edit/master/src/js/factories/GridRendering.js" class="improve-docs"><i class="icon-edit"> </i>Improve this doc</a><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L13" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">GridRendering</code>
+<div><span class="hint">service in module <code ng:non-bindable="">widgetGrid</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="widgetgrid-gridrendering-page"><p>A rendering of a grid, assigning positions to each of its widgets,
+keeping track of obstructions, and providing utility functions.</p>
+</div></div>
+<h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/widgetGrid.GridArea">GridArea</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="#/api/widgetGrid.GridPoint">GridPoint</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L24" class="view-source icon-eye-open"> </a><h3 id="methods_gridrendering">GridRendering(grid)</h3>
+<div class="gridrendering"><div class="gridrendering-page"><p>Constructor.</p>
+</div><h5 id="methods_gridrendering_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>grid</td><td><a href="" class="label type-hint type-hint-grid">Grid</a></td><td><div class="gridrendering-page"><p>Rendered grid</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L220" class="view-source icon-eye-open"> </a><h3 id="methods__isobstructed">_isObstructed(i, j)</h3>
+<div class="_isobstructed"><div class="-isobstructed-page"><p>Checks whether a given point in the grid is obstructed by a widget.</p>
+</div><h5 id="methods__isobstructed_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>i</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="-isobstructed-page"><p>Top position</p>
+</div></td></tr><tr><td>j</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="-isobstructed-page"><p>Left position</p>
+</div></td></tr></tbody></table><h5 id="methods__isobstructed_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="-isobstructed-page"><p>Whether it is obstructed</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L348" class="view-source icon-eye-open"> </a><h3 id="methods_findlargestemptyarea">findLargestEmptyArea()</h3>
+<div class="findlargestemptyarea"><div class="findlargestemptyarea-page"><p>Finds the largest non-obstructed area in a given rendering, if any.</p>
+</div><h5 id="methods_findlargestemptyarea_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-gridarea">GridArea</a></td><td><div class="findlargestemptyarea-page"><p>Largest empty area, or null</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L160" class="view-source icon-eye-open"> </a><h3 id="methods_getnextposition">getNextPosition()</h3>
+<div class="getnextposition"><div class="getnextposition-page"><p>Gets the next best unoccupied area in the current rendering, if any.
+Can e.g. be used to determine positions for newly added widgets.</p>
+</div><h5 id="methods_getnextposition_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-gridposition">GridPosition</a></td><td><div class="getnextposition-page"><p>Next position, or null</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L280" class="view-source icon-eye-open"> </a><h3 id="methods_getstyle">getStyle(widgetId)</h3>
+<div class="getstyle"><div class="getstyle-page"><p>Gets the CSS rules for a given widget.</p>
+</div><h5 id="methods_getstyle_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>widgetId</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="getstyle-page"><p>Id of the widget</p>
+</div></td></tr></tbody></table><h5 id="methods_getstyle_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-map">Map&lt;string, string&gt;</a></td><td><div class="getstyle-page"><p>CSS rules</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L70" class="view-source icon-eye-open"> </a><h3 id="methods_getwidgetidat">getWidgetIdAt(i, j)</h3>
+<div class="getwidgetidat"><div class="getwidgetidat-page"><p>Gets the id of the widget at a given grid position, if any.</p>
+</div><h5 id="methods_getwidgetidat_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>i</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="getwidgetidat-page"><p>Top position</p>
+</div></td></tr><tr><td>j</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="getwidgetidat-page"><p>Left position</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L94" class="view-source icon-eye-open"> </a><h3 id="methods_getwidgetposition">getWidgetPosition(widgetId)</h3>
+<div class="getwidgetposition"><div class="getwidgetposition-page"><p>Gets the rendered position of a given widget.</p>
+</div><h5 id="methods_getwidgetposition_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>widgetId</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="getwidgetposition-page"><p>Id of the widget</p>
+</div></td></tr></tbody></table><h5 id="methods_getwidgetposition_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-gridarea">GridArea</a></td><td><div class="getwidgetposition-page"><p>Rendered position</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L139" class="view-source icon-eye-open"> </a><h3 id="methods_hasspaceleft">hasSpaceLeft()</h3>
+<div class="hasspaceleft"><div class="hasspaceleft-page"><p>Whether any cell in the grid is unoccupied.</p>
+</div><h5 id="methods_hasspaceleft_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="hasspaceleft-page"><p>Has space left</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L237" class="view-source icon-eye-open"> </a><h3 id="methods_isareaobstructed">isAreaObstructed(area, options)</h3>
+<div class="isareaobstructed"><div class="isareaobstructed-page"><p>Checks whether a given area in the grid is obstructed by a widget.</p>
+</div><h5 id="methods_isareaobstructed_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>area</td><td><a href="" class="label type-hint type-hint-gridarea">GridArea</a></td><td><div class="isareaobstructed-page"><p>Area</p>
+</div></td></tr><tr><td>options</td><td><a href="" class="label type-hint type-hint-map">Map&lt;string, any&gt;</a></td><td><div class="isareaobstructed-page"><p>Options: <code>fromBottom</code> (start search from bottom), <code>fromRight</code> (.. from right), <code>excludedArea</code> (area to ignore).</p>
+</div></td></tr></tbody></table><h5 id="methods_isareaobstructed_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="isareaobstructed-page"><p>Whether it is obstructed</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L189" class="view-source icon-eye-open"> </a><h3 id="methods_isobstructed">isObstructed(i, j, excludedArea)</h3>
+<div class="isobstructed"><div class="isobstructed-page"><p>Checks whether a given point in the grid is obstructed by a widget,
+considering the current grid&#39;s bounds, as well as an optional excluded area.</p>
+</div><h5 id="methods_isobstructed_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>i</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="isobstructed-page"><p>Top position</p>
+</div></td></tr><tr><td>j</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="isobstructed-page"><p>Left position</p>
+</div></td></tr><tr><td>excludedArea</td><td><a href="" class="label type-hint type-hint-gridarea">GridArea</a></td><td><div class="isobstructed-page"><p>Area to ignore (optional)</p>
+</div></td></tr></tbody></table><h5 id="methods_isobstructed_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="isobstructed-page"><p>Whether it is obstructed</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L325" class="view-source icon-eye-open"> </a><h3 id="methods_printobstructions">printObstructions()</h3>
+<div class="printobstructions"><div class="printobstructions-page"><p>Prints the current obstruction state of a rendering to the console.</p>
+</div></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L49" class="view-source icon-eye-open"> </a><h3 id="methods_rasterizecoords">rasterizeCoords(top, left, gridWidth, gridHeight)</h3>
+<div class="rasterizecoords"><div class="rasterizecoords-page"><p>Returns grid coordinates for a set of pixel coordinates.</p>
+</div><h5 id="methods_rasterizecoords_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>top</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="rasterizecoords-page"><p>Top position (px)</p>
+</div></td></tr><tr><td>left</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="rasterizecoords-page"><p>Left position (px)</p>
+</div></td></tr><tr><td>gridWidth</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="rasterizecoords-page"><p>Width of the grid container (px)</p>
+</div></td></tr><tr><td>gridHeight</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="rasterizecoords-page"><p>Height of the grid container (px)</p>
+</div></td></tr></tbody></table><h5 id="methods_rasterizecoords_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-gridpoint">GridPoint</a></td><td><div class="rasterizecoords-page"><p>Corresponding point on the grid</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L308" class="view-source icon-eye-open"> </a><h3 id="methods_setobstructionvalues">setObstructionValues(area, value)</h3>
+<div class="setobstructionvalues"><div class="setobstructionvalues-page"><p>Sets the obstruction state of an area to a given value. </p>
+</div><h5 id="methods_setobstructionvalues_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>area</td><td><a href="" class="label type-hint type-hint-gridarea">GridArea</a></td><td><div class="setobstructionvalues-page"><p>Affected area</p>
+</div></td></tr><tr><td>value</td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="setobstructionvalues-page"><p>New obstruction value</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><a href="https://github.com/patbuergin/angular-widget-grid/blob/3e715c0/src/js/factories/GridRendering.js#L110" class="view-source icon-eye-open"> </a><h3 id="methods_setwidgetposition">setWidgetPosition(widgetId, newPosition)</h3>
+<div class="setwidgetposition"><div class="setwidgetposition-page"><p>Sets the rendered position for a given widget.</p>
+</div><h5 id="methods_setwidgetposition_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>widgetId</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="setwidgetposition-page"><p>Id of the widget</p>
+</div></td></tr><tr><td>newPosition</td><td><a href="" class="label type-hint type-hint-gridarea">GridArea</a></td><td><div class="setwidgetposition-page"><p>Rendered position</p>
+</div></td></tr></tbody></table></div>
+</li>
+</ul>
+</div>
+</div>

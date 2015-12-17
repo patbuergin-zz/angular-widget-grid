@@ -50,12 +50,57 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "widgetGrid.GridRendering",
+      "shortName": "widgetGrid.GridRendering",
+      "type": "object",
+      "moduleName": "widgetGrid",
+      "shortDescription": "A rendering of a grid, assigning positions to each of its widgets,",
+      "keywords": "_isobstructed api area assigning best bottom bounds cell checks considering console container coordinates corresponding css current determine empty excluded excludedarea findlargestemptyarea finds frombottom fromright functions getnextposition getstyle getwidgetidat getwidgetposition grid gridarea gridheight gridpoint gridrendering gridwidth hasspaceleft height ignore isareaobstructed isobstructed keeping largest left method newly newposition non-obstructed null object obstructed obstruction obstructions optional options pixel point position positions printobstructions prints providing rasterizecoords rendered rendering returns rules search set setobstructionvalues sets setwidgetposition space string top track unoccupied utility widget widgetgrid widgetid widgets width"
+    },
+    {
+      "section": "api",
       "id": "widgetGrid.gridUtil",
       "shortName": "widgetGrid.gridUtil",
       "type": "service",
       "moduleName": "widgetGrid",
       "shortDescription": "Provides utility functions for various library components.",
-      "keywords": "$templatecache api area bottom-right build cache cached cellsize collection components empty findlargestemptyarea finds functions gettemplate getuid gridarea gridpoint gridutil identifier key largest library markup method ngtemplates non-obstructed null populated position rendering retrieve returns service sorted sorts sortwidgets template templatename top-left unique utility widgetgrid widgets"
+      "keywords": "$templatecache api bottom-right build cache cached collection components functions gettemplate gridutil key library markup method ngtemplates populated position retrieve service sorted sorts sortwidgets template templatename top-left utility widgetgrid widgets"
+    },
+    {
+      "section": "api",
+      "id": "widgetGrid.PathIterator",
+      "shortName": "widgetGrid.PathIterator",
+      "type": "object",
+      "moduleName": "widgetGrid",
+      "shortDescription": "Generates a path between two points on a grid.",
+      "keywords": "api generates grid gridpoint hasnext method object path pathiterator point points result start widgetgrid"
+    },
+    {
+      "section": "api",
+      "id": "widgetGrid.wgGrid",
+      "shortName": "widgetGrid.wgGrid",
+      "type": "directive",
+      "moduleName": "widgetGrid",
+      "shortDescription": "Describes the grid, and acts as a container for dashboard items (&quot;widgets&quot;).",
+      "keywords": "acts ae api container dashboard describes directive grid items wggrid widgetgrid widgets"
+    },
+    {
+      "section": "api",
+      "id": "widgetGrid.wgGridController",
+      "shortName": "widgetGrid.wgGridController",
+      "type": "controller",
+      "moduleName": "widgetGrid",
+      "shortDescription": "Container for dashboard elements (&quot;widgets&quot;).",
+      "keywords": "$element $scope $timeout ae api container controller dashboard elements grid gridrenderer wggridcontroller widgetgrid widgets"
+    },
+    {
+      "section": "api",
+      "id": "widgetGrid.wgWidget",
+      "shortName": "widgetGrid.wgWidget",
+      "type": "directive",
+      "moduleName": "widgetGrid",
+      "shortDescription": "Container for dashboard elements (&quot;widgets&quot;).",
+      "keywords": "ae api associated container dashboard directive elements instance method position rendering setwidgetposition updates view wgwidget widget widgetgrid widgets"
     },
     {
       "section": "api",
@@ -64,7 +109,7 @@ NG_DOCS={
       "type": "object",
       "moduleName": "widgetGrid",
       "shortDescription": "Describes a widget container.",
-      "keywords": "api container describes getposition gridarea gridutil method object position setposition updates widget widgetgrid"
+      "keywords": "api container describes getposition gridarea method object path point position setposition updates widget widgetgrid yields"
     }
   ],
   "apis": {
