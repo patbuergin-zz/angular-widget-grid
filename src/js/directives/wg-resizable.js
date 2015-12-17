@@ -202,7 +202,7 @@
                   // check whether adding another row would cause any conflict
                   foundCollision = false;
                   for (j = Math.max(startPos.left, requestedPos.left); j <= Math.min(startPos.right, requestedPos.right); j++) {
-                    if (gridCtrl.isPositionObstructed(finalPos.top - 1, j)) {
+                    if (gridCtrl.isPointObstructed(finalPos.top - 1, j)) {
                       foundCollision = true;
                       break;
                     }
@@ -217,7 +217,7 @@
                 while (finalPos.bottom < requestedPos.bottom) {
                   foundCollision = false;
                   for (j = Math.max(startPos.left, requestedPos.left); j <= Math.min(startPos.right, requestedPos.right); j++) {
-                    if (gridCtrl.isPositionObstructed(finalPos.bottom + 1, j)) {
+                    if (gridCtrl.isPointObstructed(finalPos.bottom + 1, j)) {
                       foundCollision = true;
                       break;
                     }
@@ -238,7 +238,7 @@
                   // check whether adding another column would cause any conflict
                   foundCollision = false;
                   for (i = finalPos.top; i <= finalPos.bottom; i++) {
-                    if (gridCtrl.isPositionObstructed(i, finalPos.left - 1)) {
+                    if (gridCtrl.isPointObstructed(i, finalPos.left - 1)) {
                       foundCollision = true;
                       break;
                     }
@@ -253,7 +253,7 @@
                 while (finalPos.right < requestedPos.right) {
                   foundCollision = false;
                   for (i = finalPos.top; i <= finalPos.bottom; i++) {
-                    if (gridCtrl.isPositionObstructed(i, finalPos.right + 1)) {
+                    if (gridCtrl.isPointObstructed(i, finalPos.right + 1)) {
                       foundCollision = true;
                       break;
                     }

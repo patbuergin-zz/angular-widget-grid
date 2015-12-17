@@ -38,6 +38,7 @@
     vm.updateWidget = updateWidget;
     vm.getWidgetRenderPosition = getWidgetPosition;
     vm.getWidgetStyle = getWidgetStyle;
+    vm.isPointObstructed = isPointObstructed;
     vm.isAreaObstructed = isAreaObstructed;
     vm.highlightArea = highlightArea;
     vm.resetHighlights = resetHighlights;
@@ -158,6 +159,11 @@
         };
       }
       return { top: 0, left: 0, height: 0, width: 0 };
+    }
+
+
+    function isPointObstructed(i, j) {
+      return vm.rendering ? vm.rendering.isObstructed(i, j) : true;
     }
 
 
