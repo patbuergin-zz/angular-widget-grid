@@ -125,7 +125,7 @@
   });
 })();
 
-(function () {  
+(function () {
   var DEFAULT_OPTIONS = {
     showGrid: false,
     highlightNextPosition: false
@@ -134,18 +134,19 @@
   /**
    * @ngdoc controller
    * @name widgetGrid.wgGridController
-   * 
+   *
    * @description
    * Container for dashboard elements ("widgets").
-   * 
+   *
    * @restict AE
    * @requires $element
    * @requires $scope
    * @requires $timeout
    * @requires widgetGrid.Grid
-   * @requires widgetGrid.gridRenderer
+   * @requires widgetGrid.GridArea
+   * @requires widgetGrid.GridRendering
    */
-  angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
+  angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'GridArea', 'GridRendering', function ($element, $scope, $timeout, Grid, GridArea, GridRendering) {
     var vm = this;
 
     vm.grid = new Grid($scope.rows, $scope.columns);
@@ -210,10 +211,47 @@
 
     var usedToBeFull = false;
     function updateRendering() {
-      vm.rendering = gridRenderer.render(vm.grid);
+      vm.rendering = render(vm.grid);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
       $scope.$broadcast('wg-update-rendering');
+    }
+
+
+    function render(grid) {
+      var widgets = grid && grid.widgets ? grid.widgets : [];
+      var unpositionedWidgets = [];
+      var rendering = new GridRendering(grid);
+
+      angular.forEach(widgets, function (widget) {
+        var position = widget.getPosition();
+        if (position.width * position.height === 0 ||
+           rendering.isAreaObstructed(position)) {
+          unpositionedWidgets.push(widget);
+        } else {
+          rendering.setWidgetPosition(widget.id, widget);
+        }
+      });
+
+      angular.forEach(unpositionedWidgets, function (widget) {
+        var nextPosition = rendering.getNextPosition();
+        if (nextPosition !== null) {
+          widget.setPosition(nextPosition);
+          rendering.setWidgetPosition(widget.id, nextPosition);
+        } else {
+          widget.setPosition(GridArea.empty);
+          rendering.setWidgetPosition(widget.id, GridArea.empty);
+        }
+      });
+
+      angular.forEach(unpositionedWidgets, function (widget) {
+        $scope.$emit('wg-update-position', {
+          index: getWidgetIndex(widget),
+          newPosition: widget.getPosition()
+        });
+      });
+
+      return rendering;
     }
 
 
@@ -322,10 +360,10 @@
   /**
    * @ngdoc directive
    * @name widgetGrid.wgGrid
-   * 
+   *
    * @description
    * Describes the grid, and acts as a container for dashboard items ("widgets").
-   * 
+   *
    * @restict AE
    */
   angular.module('widgetGrid').directive('wgGrid', function () {
@@ -872,8 +910,11 @@
 
         scope.setWidgetPosition = setWidgetPosition;
 
-        scope.$watch('position', function(){
-           setWidgetPosition(scope.position);
+        scope.$watch('position', function(newValue, oldValue) {
+          if (newValue.top !== oldValue.top || newValue.left !== oldValue.left ||
+              newValue.width !== oldValue.width || newValue.height !== oldValue.height ) {
+            setWidgetPosition(newValue);
+          }
         }, true);
 
         scope.$on('wg-update-rendering', updateView);
