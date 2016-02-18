@@ -36,8 +36,11 @@
 
         scope.setWidgetPosition = setWidgetPosition;
 
-        scope.$watch('position', function(){
-           setWidgetPosition(scope.position);
+        scope.$watch('position', function(newValue, oldValue) {
+          if (newValue.top !== oldValue.top || newValue.left !== oldValue.left ||
+              newValue.width !== oldValue.width || newValue.height !== oldValue.height ) {
+            setWidgetPosition(newValue);
+          }
         }, true);
 
         scope.$on('wg-update-rendering', updateView);
