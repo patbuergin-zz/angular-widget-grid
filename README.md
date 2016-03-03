@@ -85,7 +85,7 @@ Highlights the largest free area in the grid, if any. This area will be automati
 ```html
 <wg-grid columns="20" rows="15" options="{ clickThrough: true }">
 ```
-Passes the mouse down element to the underlying element, when the widget wasn't dragged. This enables the possibility to both have the widget moveable and be able to click or select elements within the widget content.
+Passes the mouse down event to the underlying element, when the widget wasn't dragged. This enables the possibility to both have the widget moveable and be able to click or select elements within the widget content.
 
 ### Events
 ##### `wg-grid-full` & `wg-grid-space-available`
