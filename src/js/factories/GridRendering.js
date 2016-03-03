@@ -166,7 +166,7 @@
         return null;
       }
 
-      var maxPosition = this.findLargestEmptyArea(this);
+      var maxPosition = this.findLargestEmptyArea();
       this.cachedNextPosition = maxPosition;
       return maxPosition;
     };

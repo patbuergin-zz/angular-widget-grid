@@ -50,10 +50,10 @@
 
           widgetElement.addClass('wg-moving');
           
-          var startPos = {}; // grid positions
-          startPos = gridCtrl.getWidgetRenderPosition(scope.widget);
-          startPos.bottom = startPos.top + startPos.height - 1;
-          startPos.right = startPos.left + startPos.width - 1;
+          var startPosition = {}; // grid positions
+          startPosition = gridCtrl.getWidgetRenderPosition(scope.widget);
+          startPosition.bottom = startPosition.top + startPosition.height - 1;
+          startPosition.right = startPosition.left + startPosition.width - 1;
           
           var startRender = {}; // pixel values
           startRender.top = widgetContainer.offsetTop;
@@ -65,7 +65,7 @@
           event.offsetX = event.offsetX || event.layerX;
           event.offsetY = event.offsetY || event.layerY;
           
-          var requestedRender = { top: startRender.top, left: startRender.left };
+          var desiredPosition = { top: startRender.top, left: startRender.left };
           
           var moverOffset = {
             top: event.offsetY + element[0].offsetTop || 0,
@@ -96,15 +96,15 @@
             var dragPositionX = Math.round(event.clientX) - gridPositions.left,
                 dragPositionY = Math.round(event.clientY) - gridPositions.top;
             
-            requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
-            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
+            desiredPosition.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
+            desiredPosition.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
             
-            var currentFinalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
+            var currentFinalPos = determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth);
             gridCtrl.highlightArea(currentFinalPos);
 
             widgetElement.css({
-              top: requestedRender.top + 'px',
-              left: requestedRender.left + 'px'
+              top: desiredPosition.top + 'px',
+              left: desiredPosition.left + 'px'
             });
           }
           
@@ -113,30 +113,34 @@
             $document.off(eventMove, onMove);
             $document.off(eventUp, onUp);
 
-            var finalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
+            var finalPos = determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth);
             gridCtrl.resetHighlights();
 
             widgetElement.removeClass('wg-moving');
             scope.setWidgetPosition(finalPos);
           }
         }
-        
-        function determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth) {
-          if (startRender.top === requestedRender.top && startRender.left === requestedRender.left) {
-            return startPos;
+
+
+        /**
+         * Determines a final area after moving an element, given
+         */
+        function determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth) {
+          if (startRender.top === desiredPosition.top && startRender.left === desiredPosition.left) {
+            return startPosition;
           }
           
           var anchorTop, anchorLeft;
-          if ((requestedRender.top % cellHeight) > cellHeight / 2) {
-            anchorTop = requestedRender.top + Math.floor(cellHeight);
+          if ((desiredPosition.top % cellHeight) > cellHeight / 2) {
+            anchorTop = desiredPosition.top + Math.floor(cellHeight);
           } else {
-            anchorTop = requestedRender.top;
+            anchorTop = desiredPosition.top;
           }
           
-          if ((requestedRender.left % cellWidth) > cellWidth / 2) {
-            anchorLeft = requestedRender.left + Math.floor(cellWidth);
+          if ((desiredPosition.left % cellWidth) > cellWidth / 2) {
+            anchorLeft = desiredPosition.left + Math.floor(cellWidth);
           } else {
-            anchorLeft = requestedRender.left;
+            anchorLeft = desiredPosition.left;
           }
           
           var movedDown = anchorTop >= startRender.top,
@@ -144,7 +148,7 @@
               
           var desiredFinalPosition = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           
-          var path = new PathIterator(desiredFinalPosition, startPos);
+          var path = new PathIterator(desiredFinalPosition, startPosition);
           
           // var path = gridUtil.getPathIterator(startPos, { top: desiredFinalPosition.i, left: desiredFinalPosition.j });
           
@@ -154,12 +158,12 @@
             var targetArea = {
               top: currPos.top,
               left: currPos.left,
-              height: startPos.height,
-              width: startPos.width
+              height: startPosition.height,
+              width: startPosition.width
             };
             
             var options = {
-              excludedArea: startPos,
+              excludedArea: startPosition,
               fromBottom: movedDown,
               fromRight: movedRight
             };
