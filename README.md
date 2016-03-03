@@ -81,6 +81,12 @@ Highlights the largest free area in the grid, if any. This area will be automati
 ![Highlight Next Position (1/2)](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-6.png)
 ![Highlight Next Position (2/2)](https://raw.githubusercontent.com/patbuergin/angular-widget-grid/master/doc/wg-7.png)
 
+##### `clickThrough` (default: `false`)  
+```html
+<wg-grid columns="20" rows="15" options="{ clickThrough: true }">
+```
+Passes the mouse down element to the underlying element, when the widget wasn't dragged. This enables the possibility to both have the widget moveable and be able to click or select elements within the widget content.
+
 ### Events
 ##### `wg-grid-full` & `wg-grid-space-available`
 The grid emits `wg-grid-full` and `wg-grid-space-available` in the respective situations, so that you can e.g. enable/disable UI elements accordingly.

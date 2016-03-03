@@ -49,8 +49,9 @@
               widgetElement = angular.element(widgetContainer);
 
           widgetElement.addClass('wg-moving');
-          
-          var startPos = {}; // grid positions
+
+          var downPos = { x: event.clientX, y: event.clientY },
+              startPos = {}; // grid positions
           startPos = gridCtrl.getWidgetRenderPosition(scope.widget);
           startPos.bottom = startPos.top + startPos.height - 1;
           startPos.right = startPos.left + startPos.width - 1;
@@ -112,6 +113,16 @@
             event.preventDefault();
             $document.off(eventMove, onMove);
             $document.off(eventUp, onUp);
+
+            if (gridCtrl.options.clickThrough) {
+                if (event.clientX === downPos.x && event.clientY === downPos.y) {
+                    // user clicked but didn't drag the widget, so pass the onDown event to the underlying element
+                    element.hide();
+                    var elBeneath = document.elementFromPoint(downPos.x, downPos.y);
+                    element.show();
+                    angular.element(elBeneath).trigger('click');
+                }
+            }
 
             var finalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
             gridCtrl.resetHighlights();
