@@ -40,126 +40,134 @@
         
         function onDown(event) {
           event.preventDefault();
-          
           if (angular.isObject(event.originalEvent)) {
             event = event.originalEvent;
           }
-         
+
+          var mouseDownPosition = { x: event.clientX, y: event.clientY };
           var widgetContainer = element[0].parentElement,
               widgetElement = angular.element(widgetContainer);
 
           widgetElement.addClass('wg-moving');
-          
-          var startPos = {}; // grid positions
-          startPos = gridCtrl.getWidgetRenderPosition(scope.widget);
-          startPos.bottom = startPos.top + startPos.height - 1;
-          startPos.right = startPos.left + startPos.width - 1;
-          
+
+          var startPosition = {}; // grid positions
+          startPosition = gridCtrl.getWidgetRenderPosition(scope.widget);
+          startPosition.bottom = startPosition.top + startPosition.height - 1;
+          startPosition.right = startPosition.left + startPosition.width - 1;
+
           var startRender = {}; // pixel values
           startRender.top = widgetContainer.offsetTop;
           startRender.left = widgetContainer.offsetLeft;
           startRender.height = widgetContainer.clientHeight;
           startRender.width = widgetContainer.clientWidth;
-          
-          
+
           event.offsetX = event.offsetX || event.layerX;
           event.offsetY = event.offsetY || event.layerY;
-          
-          var requestedRender = { top: startRender.top, left: startRender.left };
-          
+
+          var desiredPosition = { top: startRender.top, left: startRender.left };
+
           var moverOffset = {
             top: event.offsetY + element[0].offsetTop || 0,
             left: event.offsetX + element[0].offsetLeft || 0
           };
-          
+
           var gridPositions = gridCtrl.getPositions();
-          
           var cellHeight = (gridCtrl.grid.cellSize.height / 100) * gridPositions.height,
               cellWidth = (gridCtrl.grid.cellSize.width / 100) * gridPositions.width;
-          
+
           $document.on(eventMove, onMove);
           $document.on(eventUp, onUp);
-          
+
           function onMove(event) {
             event.preventDefault();
-                      
+
             if (angular.isObject(event.originalEvent)) {
               event = event.originalEvent;
             }
-            
+
             if (event.touches) {
               event.clientX = event.touches[0].clientX;
               event.clientY = event.touches[0].clientY;
             }
-            
+
             // normalize the drag position
             var dragPositionX = Math.round(event.clientX) - gridPositions.left,
                 dragPositionY = Math.round(event.clientY) - gridPositions.top;
-            
-            requestedRender.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
-            requestedRender.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
-            
-            var currentFinalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
+
+            desiredPosition.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
+            desiredPosition.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
+
+            var currentFinalPos = determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth);
             gridCtrl.highlightArea(currentFinalPos);
 
             widgetElement.css({
-              top: requestedRender.top + 'px',
-              left: requestedRender.left + 'px'
+              top: desiredPosition.top + 'px',
+              left: desiredPosition.left + 'px'
             });
           }
-          
+
           function onUp(event) {
             event.preventDefault();
             $document.off(eventMove, onMove);
             $document.off(eventUp, onUp);
 
-            var finalPos = determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth);
-            gridCtrl.resetHighlights();
+            if (gridCtrl.options.clickThrough) {
+                if (event.clientX === mouseDownPosition.x && event.clientY === mouseDownPosition.y) {
+                    // user clicked but didn't drag the widget, so pass the onDown event to the underlying element
+                    element.hide();
+                    var elBeneath = document.elementFromPoint(mouseDownPosition.x, mouseDownPosition.y);
+                    element.show();
+                    angular.element(elBeneath).trigger('click');
+                }
+            }
 
+            var finalPos = determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth);
+            gridCtrl.resetHighlights();
             widgetElement.removeClass('wg-moving');
             scope.setWidgetPosition(finalPos);
           }
         }
-        
-        function determineFinalPos(startPos, startRender, requestedRender, cellHeight, cellWidth) {
-          if (startRender.top === requestedRender.top && startRender.left === requestedRender.left) {
-            return startPos;
+
+
+        /**
+         * Determines a final area after moving an element, given
+         */
+        function determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth) {
+          if (startRender.top === desiredPosition.top && startRender.left === desiredPosition.left) {
+            return startPosition;
           }
-          
+
           var anchorTop, anchorLeft;
-          if ((requestedRender.top % cellHeight) > cellHeight / 2) {
-            anchorTop = requestedRender.top + Math.floor(cellHeight);
+          if ((desiredPosition.top % cellHeight) > cellHeight / 2) {
+            anchorTop = desiredPosition.top + Math.floor(cellHeight);
           } else {
-            anchorTop = requestedRender.top;
+            anchorTop = desiredPosition.top;
           }
-          
-          if ((requestedRender.left % cellWidth) > cellWidth / 2) {
-            anchorLeft = requestedRender.left + Math.floor(cellWidth);
+
+          if ((desiredPosition.left % cellWidth) > cellWidth / 2) {
+            anchorLeft = desiredPosition.left + Math.floor(cellWidth);
           } else {
-            anchorLeft = requestedRender.left;
+            anchorLeft = desiredPosition.left;
           }
-          
+
           var movedDown = anchorTop >= startRender.top,
               movedRight = anchorLeft >= startRender.left;
-              
+
           var desiredFinalPosition = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
-          
-          var path = new PathIterator(desiredFinalPosition, startPos);
-          
-          // var path = gridUtil.getPathIterator(startPos, { top: desiredFinalPosition.i, left: desiredFinalPosition.j });
-          
+          var path = new PathIterator(desiredFinalPosition, startPosition);
+
           while (path.hasNext()) {
             var currPos = path.next();
             
             var targetArea = {
               top: currPos.top,
               left: currPos.left,
-              height: startPos.height,
-              width: startPos.width
+              height: startPosition.height,
+              width: startPosition.width
             };
-            
+
             var options = {
-              excludedArea: startPos,
+              excludedArea: startPosition,
               fromBottom: movedDown,
               fromRight: movedRight
             };
@@ -183,7 +191,7 @@
                   targetArea.top++;
                 }
               }
-              
+
               if (desiredFinalPosition.left < targetArea.left) {
                 while (desiredFinalPosition.left <= targetArea.left - 1 &&
                        !gridCtrl.isAreaObstructed({ top: targetArea.top,
@@ -201,7 +209,7 @@
                   targetArea.left++;
                 }
               }
-              
+
               return targetArea;
             }
           }

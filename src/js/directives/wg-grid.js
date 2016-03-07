@@ -3,7 +3,8 @@
 (function () {
   var DEFAULT_OPTIONS = {
     showGrid: false,
-    highlightNextPosition: false
+    highlightNextPosition: false,
+    clickThrough: false
   };
 
   /**

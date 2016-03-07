@@ -1,4 +1,13 @@
 (function () {
+  /**
+   * @ngdoc directive
+   * @name widgetGrid.wgGridOverlay
+   * 
+   * @description
+   * Manages overlays on the grid, namely grid lines and area highlights.
+   * 
+   * @restict AE
+   */
   angular.module('widgetGrid').directive('wgGridOverlay', function () {
     return {
       scope: {
