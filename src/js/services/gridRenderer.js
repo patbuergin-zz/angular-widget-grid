@@ -2,10 +2,10 @@
   /**
    * @ngdoc service
    * @name widgetGrid.gridRenderer
-   * 
+   *
    * @description
    * Provides methods for rendering grids.
-   * 
+   *
    * @requires widgetGrid.GridArea
    * @requires widgetGrid.GridRendering
    */
@@ -18,15 +18,15 @@
      * @ngdoc method
      * @name render
      * @methodOf widgetGrid.gridRenderer
-     * 
+     *
      * @description
      * Creates a rendering for a given grid, assigning positions to unpositioned widgets,
      * repositioning widgets with non-valid positions, and resolving position clashes.
-     * 
+     *
      * @param {Grid} grid Grid
      * @return {GridRendering} Rendering
      */
-    function render(grid) {
+    function render(grid, emitWidgetPositionUpdated) {
       var widgets = grid && grid.widgets ? grid.widgets : [];
       var unpositionedWidgets = [];
       var rendering = new GridRendering(grid);
@@ -49,6 +49,9 @@
         } else {
           widget.setPosition(GridArea.empty);
           rendering.setWidgetPosition(widget.id, GridArea.empty);
+        }
+        if (emitWidgetPositionUpdated !== undefined) {
+          emitWidgetPositionUpdated(widget);
         }
       });
 

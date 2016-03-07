@@ -13,15 +13,14 @@
    * @description
    * Container for dashboard elements ("widgets").
    *
-   * @restict AE
+   * @restrict AE
    * @requires $element
    * @requires $scope
    * @requires $timeout
    * @requires widgetGrid.Grid
-   * @requires widgetGrid.GridArea
-   * @requires widgetGrid.GridRendering
+   * @requires widgetGrid.gridRenderer
    */
-  angular.module('widgetGrid').controller('wgGridController', function ($element, $scope, $timeout, Grid, GridArea, GridRendering) {
+  angular.module('widgetGrid').controller('wgGridController', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
 
     vm.grid = new Grid($scope.rows, $scope.columns);
@@ -86,49 +85,19 @@
 
     var usedToBeFull = false;
     function updateRendering() {
-      vm.rendering = render(vm.grid);
+      vm.rendering = gridRenderer.render(vm.grid, emitUpdatePosition);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
       $scope.$broadcast('wg-update-rendering');
     }
 
 
-    function render(grid) {
-      var widgets = grid && grid.widgets ? grid.widgets : [];
-      var unpositionedWidgets = [];
-      var rendering = new GridRendering(grid);
-
-      angular.forEach(widgets, function (widget) {
-        var position = widget.getPosition();
-        if (position.width * position.height === 0 ||
-           rendering.isAreaObstructed(position)) {
-          unpositionedWidgets.push(widget);
-        } else {
-          rendering.setWidgetPosition(widget.id, widget);
-        }
+    function emitUpdatePosition(widget) {
+      $scope.$emit('wg-update-position', {
+        index: getWidgetIndex(widget),
+        newPosition: widget.getPosition()
       });
-
-      angular.forEach(unpositionedWidgets, function (widget) {
-        var nextPosition = rendering.getNextPosition();
-        if (nextPosition !== null) {
-          widget.setPosition(nextPosition);
-          rendering.setWidgetPosition(widget.id, nextPosition);
-        } else {
-          widget.setPosition(GridArea.empty);
-          rendering.setWidgetPosition(widget.id, GridArea.empty);
-        }
-      });
-
-      angular.forEach(unpositionedWidgets, function (widget) {
-        $scope.$emit('wg-update-position', {
-          index: getWidgetIndex(widget),
-          newPosition: widget.getPosition()
-        });
-      });
-
-      return rendering;
     }
-
 
     function assessAvailableGridSpace() {
       var gridHasSpaceLeft = vm.rendering.hasSpaceLeft();
@@ -145,10 +114,7 @@
     function updateWidget(widget) {
       var newPosition = widget.getPosition();
       vm.rendering.setWidgetPosition(widget.id, newPosition);
-      $scope.$emit('wg-update-position', {
-        index: getWidgetIndex(widget),
-        newPosition: newPosition
-      });
+      emitUpdatePosition(widget);
       assessAvailableGridSpace();
     }
 
