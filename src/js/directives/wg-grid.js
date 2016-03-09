@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
 
-(function () {  
+(function () {
   var DEFAULT_OPTIONS = {
     showGrid: false,
     highlightNextPosition: false,
@@ -10,11 +10,11 @@
   /**
    * @ngdoc controller
    * @name widgetGrid.wgGridController
-   * 
+   *
    * @description
    * Container for dashboard elements ("widgets").
-   * 
-   * @restict AE
+   *
+   * @restrict AE
    * @requires $element
    * @requires $scope
    * @requires $timeout
@@ -86,12 +86,19 @@
 
     var usedToBeFull = false;
     function updateRendering() {
-      vm.rendering = gridRenderer.render(vm.grid);
+      vm.rendering = gridRenderer.render(vm.grid, emitUpdatePosition);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
       $scope.$broadcast('wg-update-rendering');
     }
 
+
+    function emitUpdatePosition(widget) {
+      $scope.$emit('wg-update-position', {
+        index: getWidgetIndex(widget),
+        newPosition: widget.getPosition()
+      });
+    }
 
     function assessAvailableGridSpace() {
       var gridHasSpaceLeft = vm.rendering.hasSpaceLeft();
@@ -108,10 +115,7 @@
     function updateWidget(widget) {
       var newPosition = widget.getPosition();
       vm.rendering.setWidgetPosition(widget.id, newPosition);
-      $scope.$emit('wg-update-position', {
-        index: getWidgetIndex(widget),
-        newPosition: newPosition
-      });
+      emitUpdatePosition(widget);
       assessAvailableGridSpace();
     }
 
@@ -198,10 +202,10 @@
   /**
    * @ngdoc directive
    * @name widgetGrid.wgGrid
-   * 
+   *
    * @description
    * Describes the grid, and acts as a container for dashboard items ("widgets").
-   * 
+   *
    * @restict AE
    */
   angular.module('widgetGrid').directive('wgGrid', function () {

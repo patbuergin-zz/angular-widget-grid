@@ -134,7 +134,7 @@
   });
 })();
 
-(function () {  
+(function () {
   var DEFAULT_OPTIONS = {
     showGrid: false,
     highlightNextPosition: false,
@@ -144,11 +144,11 @@
   /**
    * @ngdoc controller
    * @name widgetGrid.wgGridController
-   * 
+   *
    * @description
    * Container for dashboard elements ("widgets").
-   * 
-   * @restict AE
+   *
+   * @restrict AE
    * @requires $element
    * @requires $scope
    * @requires $timeout
@@ -220,12 +220,19 @@
 
     var usedToBeFull = false;
     function updateRendering() {
-      vm.rendering = gridRenderer.render(vm.grid);
+      vm.rendering = gridRenderer.render(vm.grid, emitUpdatePosition);
       updateNextPositionHighlight();
       assessAvailableGridSpace();
       $scope.$broadcast('wg-update-rendering');
     }
 
+
+    function emitUpdatePosition(widget) {
+      $scope.$emit('wg-update-position', {
+        index: getWidgetIndex(widget),
+        newPosition: widget.getPosition()
+      });
+    }
 
     function assessAvailableGridSpace() {
       var gridHasSpaceLeft = vm.rendering.hasSpaceLeft();
@@ -242,10 +249,7 @@
     function updateWidget(widget) {
       var newPosition = widget.getPosition();
       vm.rendering.setWidgetPosition(widget.id, newPosition);
-      $scope.$emit('wg-update-position', {
-        index: getWidgetIndex(widget),
-        newPosition: newPosition
-      });
+      emitUpdatePosition(widget);
       assessAvailableGridSpace();
     }
 
@@ -332,10 +336,10 @@
   /**
    * @ngdoc directive
    * @name widgetGrid.wgGrid
-   * 
+   *
    * @description
    * Describes the grid, and acts as a container for dashboard items ("widgets").
-   * 
+   *
    * @restict AE
    */
   angular.module('widgetGrid').directive('wgGrid', function () {
@@ -853,7 +857,7 @@
 })();
 
 (function () {
-  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', function($scope, $compile) {    
+  angular.module('widgetGrid').controller('wgWidgetController', ['$scope', '$compile', function($scope, $compile) {
     this.innerCompile = function (element) {
       $compile(element)($scope);
     };
@@ -863,10 +867,10 @@
   /**
    * @ngdoc directive
    * @name widgetGrid.wgWidget
-   * 
+   *
    * @description
    * Container for dashboard elements ("widgets").
-   * 
+   *
    * @restict AE
    * @requires widgetGrid.Widget
    */
@@ -890,6 +894,13 @@
 
         scope.setWidgetPosition = setWidgetPosition;
 
+        scope.$watch('position', function(newValue, oldValue) {
+          if (newValue.top !== oldValue.top || newValue.left !== oldValue.left ||
+              newValue.width !== oldValue.width || newValue.height !== oldValue.height ) {
+            setWidgetPosition(newValue);
+          }
+        }, true);
+
         scope.$on('wg-update-rendering', updateView);
         scope.$on('$destroy', function () {
           gridCtrl.removeWidget(widget);
@@ -902,10 +913,10 @@
          * @ngdoc method
          * @name setWidgetPosition
          * @methodOf widgetGrid.wgWidget
-         * 
+         *
          * @description
          * Updates the position of the associated widget instance, and updates the view.
-         * 
+         *
          * @param {GridArea} position Position
          * @return {GridRendering} Rendering
          */
@@ -913,7 +924,7 @@
           var oldPosition = widget.getPosition();
           widget.setPosition(position);
           var newPosition = widget.getPosition();
-          
+
           if (!angular.equals(oldPosition, newPosition)) {
             gridCtrl.updateWidget(widget);
           }
@@ -1781,10 +1792,10 @@
   /**
    * @ngdoc service
    * @name widgetGrid.gridRenderer
-   * 
+   *
    * @description
    * Provides methods for rendering grids.
-   * 
+   *
    * @requires widgetGrid.GridArea
    * @requires widgetGrid.GridRendering
    */
@@ -1797,15 +1808,15 @@
      * @ngdoc method
      * @name render
      * @methodOf widgetGrid.gridRenderer
-     * 
+     *
      * @description
      * Creates a rendering for a given grid, assigning positions to unpositioned widgets,
      * repositioning widgets with non-valid positions, and resolving position clashes.
-     * 
+     *
      * @param {Grid} grid Grid
      * @return {GridRendering} Rendering
      */
-    function render(grid) {
+    function render(grid, emitWidgetPositionUpdated) {
       var widgets = grid && grid.widgets ? grid.widgets : [];
       var unpositionedWidgets = [];
       var rendering = new GridRendering(grid);
@@ -1828,6 +1839,9 @@
         } else {
           widget.setPosition(GridArea.empty);
           rendering.setWidgetPosition(widget.id, GridArea.empty);
+        }
+        if (emitWidgetPositionUpdated !== undefined) {
+          emitWidgetPositionUpdated(widget);
         }
       });
 

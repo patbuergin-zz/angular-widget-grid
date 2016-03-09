@@ -1,5 +1,5 @@
 (function () {
-  angular.module('widgetGrid').controller('wgWidgetController', function($scope, $compile) {    
+  angular.module('widgetGrid').controller('wgWidgetController', function($scope, $compile) {
     this.innerCompile = function (element) {
       $compile(element)($scope);
     };
@@ -9,10 +9,10 @@
   /**
    * @ngdoc directive
    * @name widgetGrid.wgWidget
-   * 
+   *
    * @description
    * Container for dashboard elements ("widgets").
-   * 
+   *
    * @restict AE
    * @requires widgetGrid.Widget
    */
@@ -36,6 +36,13 @@
 
         scope.setWidgetPosition = setWidgetPosition;
 
+        scope.$watch('position', function(newValue, oldValue) {
+          if (newValue.top !== oldValue.top || newValue.left !== oldValue.left ||
+              newValue.width !== oldValue.width || newValue.height !== oldValue.height ) {
+            setWidgetPosition(newValue);
+          }
+        }, true);
+
         scope.$on('wg-update-rendering', updateView);
         scope.$on('$destroy', function () {
           gridCtrl.removeWidget(widget);
@@ -48,10 +55,10 @@
          * @ngdoc method
          * @name setWidgetPosition
          * @methodOf widgetGrid.wgWidget
-         * 
+         *
          * @description
          * Updates the position of the associated widget instance, and updates the view.
-         * 
+         *
          * @param {GridArea} position Position
          * @return {GridRendering} Rendering
          */
@@ -59,7 +66,7 @@
           var oldPosition = widget.getPosition();
           widget.setPosition(position);
           var newPosition = widget.getPosition();
-          
+
           if (!angular.equals(oldPosition, newPosition)) {
             gridCtrl.updateWidget(widget);
           }
