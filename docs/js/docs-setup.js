@@ -95,6 +95,15 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "widgetGrid.wgGridOverlay",
+      "shortName": "widgetGrid.wgGridOverlay",
+      "type": "directive",
+      "moduleName": "widgetGrid",
+      "shortDescription": "Manages overlays on the grid, namely grid lines and area highlights.",
+      "keywords": "ae api area directive grid highlights lines manages overlays wggridoverlay widgetgrid"
+    },
+    {
+      "section": "api",
       "id": "widgetGrid.wgWidget",
       "shortName": "widgetGrid.wgWidget",
       "type": "directive",
