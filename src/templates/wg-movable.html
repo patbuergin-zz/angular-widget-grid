@@ -1,1 +1,1 @@
-<div wg-mover ng-show="editable" class="wg-widget-edit wg-widget-edit-move"></div>
+<div wg-mover ng-show="editable" ng-class="{ 'wg-widget-edit-move' : movableCtrl.isMovable() }" class="wg-widget-edit"></div>
