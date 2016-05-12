@@ -19,9 +19,11 @@
       controller: ['$attrs', '$parse', '$scope', function ($attrs, $parse, $scope) {
         var vm = this;
 
+        var DEFAULT_MOVABLE = true;
+        
         vm.isMovable = function () {
           var attrValue = $parse($attrs.wgMovable)($scope);
-          return attrValue && attrValue.enabled !== undefined ? attrValue.enabled : true;
+          return angular.isDefined(attrValue) && angular.isDefined(attrValue.enabled) ? attrValue.enabled : DEFAULT_MOVABLE;
         };
       }],
       controllerAs: 'movableCtrl'
