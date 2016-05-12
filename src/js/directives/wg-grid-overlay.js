@@ -11,9 +11,9 @@
   angular.module('widgetGrid').directive('wgGridOverlay', function () {
     return {
       scope: {
-        'rendering': '=',
-        'highlight': '=?',
-        'options': '=?'
+        'rendering': '=wgRendering',
+        'highlight': '=?wgHighlight',
+        'options': '=?wgOptions',
       },
       restrict: 'AE',
       replace: true,
@@ -33,7 +33,6 @@
             updateGridLines(rendering, scope.options);
           }
         }
-
 
         function applyOptions(options) {
           updateGridLines(scope.rendering, options);

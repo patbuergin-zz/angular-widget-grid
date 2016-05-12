@@ -211,9 +211,9 @@
   angular.module('widgetGrid').directive('wgGrid', function () {
     return {
       scope: {
-        'columns': '@',
-        'rows': '@',
-        'options': '=?'
+        'columns': '=wgColumns',
+        'rows': '=wgRows',
+        'options': '=?wgOptions'
       },
       restrict: 'AE',
       controller: 'wgGridController',
