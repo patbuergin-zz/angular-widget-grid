@@ -1,8 +1,8 @@
 /**
- * @license angular-widget-grid v0.3.0
+ * @license angular-widget-grid v0.3.1
  * (c) 2016 Patrick Buergin
  * License: MIT
- * https://github.com/patbuergin/angular-widget-grid
+ * https://github.com/marchrius/angular-widget-grid
  */
 (function () {
   angular.module('widgetGrid', []);
