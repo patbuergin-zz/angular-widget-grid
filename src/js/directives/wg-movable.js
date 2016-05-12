@@ -40,6 +40,7 @@
         var movableCtrl = ctrls[1];
 
         if (!movableCtrl.isMovable()) {
+          element.removeClass('wg-widget-edit-move');
           return;
         }
 
