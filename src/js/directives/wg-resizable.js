@@ -20,10 +20,20 @@
         var vm = this;
         
         var DEFAULT_DIRECTIONS = ['NW', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W'];
-        
+        var DEFAULT_RESIZABLE = true;
+
         vm.getResizeDirections = function () {
+          if (vm.isResizable()) {
             var attrValue = $parse($attrs.wgResizable)($scope);
             return attrValue && attrValue.directions ? attrValue.directions : DEFAULT_DIRECTIONS;
+          } else {
+            return [];
+          }
+        };
+
+        vm.isResizable = function () {
+          var attrValue = $parse($attrs.wgResizable)($scope);
+          return angular.isDefined(attrValue) && angular.isDefined(attrValue.enabled) ? attrValue.enabled : DEFAULT_RESIZABLE;
         };
       }],
       controllerAs: 'resizableCtrl'
