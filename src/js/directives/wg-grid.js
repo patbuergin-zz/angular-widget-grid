@@ -76,9 +76,6 @@
       vm.options = angular.extend({}, DEFAULT_OPTIONS, $scope.options);
       vm.overlayOptions.showGrid = vm.options.showGrid;
 
-      vm.grid.maxHeight = vm.options.maxHeight;
-      vm.grid.maxWidth = vm.options.maxWidth;
-
       if (vm.options.highlightNextPosition) {
         updateNextPositionHighlight();
       } else {
