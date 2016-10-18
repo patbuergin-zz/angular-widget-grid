@@ -1,5 +1,5 @@
 /**
- * @license angular-widget-grid v0.3.1
+ * @license angular-widget-grid v0.3.2
  * (c) 2016 Patrick Buergin
  * License: MIT
  * https://github.com/marchrius/angular-widget-grid
@@ -1966,7 +1966,7 @@ angular.module('widgetGrid').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('wg-grid',
-    "<div class=wg-grid><div class=wg-grid-widgets ng-transclude></div><div wg-grid-overlay wg-options=gridCtrl.overlayOptions wg-rendering=gridCtrl.rendering wg-highlight=\"gridCtrl.highlight\"></div>"
+    "<div class=wg-grid><div class=wg-grid-widgets ng-transclude></div><div wg-grid-overlay wg-options=gridCtrl.overlayOptions wg-rendering=gridCtrl.rendering wg-highlight=gridCtrl.highlight></div>"
   );
 
 
