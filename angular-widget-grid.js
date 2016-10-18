@@ -157,6 +157,8 @@
   angular.module('widgetGrid').controller('wgGridController', ['$element', '$scope', '$timeout', 'Grid', 'gridRenderer', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
 
+    // TODO: look for a better way to skip ui.grid.Grid conflict with widgetGrid.Grid
+    Grid = angular.injector(['ng', 'widgetGrid']).get('Grid');
     vm.grid = new Grid($scope.rows, $scope.columns);
     vm.rendering = null;
     vm.highlight = null;
@@ -208,9 +210,6 @@
     function updateOptions() {
       vm.options = angular.extend({}, DEFAULT_OPTIONS, $scope.options);
       vm.overlayOptions.showGrid = vm.options.showGrid;
-
-      vm.grid.maxHeight = vm.options.maxHeight;
-      vm.grid.maxWidth = vm.options.maxWidth;
 
       if (vm.options.highlightNextPosition) {
         updateNextPositionHighlight();
@@ -401,6 +400,7 @@
         var movableCtrl = ctrls[1];
 
         if (!movableCtrl.isMovable()) {
+          element.removeClass('wg-widget-edit-move');
           return;
         }
 
@@ -1971,7 +1971,7 @@ angular.module('widgetGrid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('wg-movable',
-    "<div wg-mover ng-show=editable ng-class=\"{ 'wg-widget-edit-move' : movableCtrl.isMovable() }\" class=wg-widget-edit></div>"
+    "<div wg-mover ng-show=editable class=\"wg-widget-edit wg-widget-edit-move\"></div>"
   );
 
 
