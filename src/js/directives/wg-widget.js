@@ -19,8 +19,8 @@
   angular.module('widgetGrid').directive('wgWidget', function (Widget) {
     return {
       scope: {
-        position: '=',
-        editable: '@?'
+        position: '=wgPosition',
+        editable: '=?wgEditable',
       },
       restrict: 'AE',
       controller: 'wgWidgetController',
@@ -31,7 +31,10 @@
       link: function (scope, element, attrs, gridCtrl) {
         var widget = new Widget(scope.position);
 
-        scope.editable = 'false';
+        if (!angular.isDefined(attrs.wgEditable)) {
+          scope.editable = false;
+        }
+  
         scope.widget = widget;
 
         scope.setWidgetPosition = setWidgetPosition;

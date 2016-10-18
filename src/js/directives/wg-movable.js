@@ -15,7 +15,18 @@
             widgetCtrl.innerCompile(template);
           }
         }
-      }
+      },
+      controller: ['$attrs', '$parse', '$scope', function ($attrs, $parse, $scope) {
+        var vm = this;
+
+        var DEFAULT_MOVABLE = true;
+        
+        vm.isMovable = function () {
+          var attrValue = $parse($attrs.wgMovable)($scope);
+          return angular.isDefined(attrValue) && angular.isDefined(attrValue.enabled) ? attrValue.enabled : DEFAULT_MOVABLE;
+        };
+      }],
+      controllerAs: 'movableCtrl'
     };
   });
 
@@ -23,8 +34,16 @@
   angular.module('widgetGrid').directive('wgMover', function ($document, gridUtil, PathIterator) {
     return {
       restrict: 'A',
-      require: '^wgGrid',
-      link: function (scope, element, attrs, gridCtrl) {
+      require: ['^wgGrid', '^wgMovable'],
+      link: function (scope, element, attrs, ctrls) {
+        var gridCtrl = ctrls[0];
+        var movableCtrl = ctrls[1];
+
+        if (!movableCtrl.isMovable()) {
+          element.removeClass('wg-widget-edit-move');
+          return;
+        }
+
         var eventDown, eventMove, eventUp;
         if (window.navigator.pointerEnabled) {
           eventDown = 'pointerdown';
@@ -46,7 +65,7 @@
 
           var mouseDownPosition = { x: event.clientX, y: event.clientY };
           var widgetContainer = element[0].parentElement,
-              widgetElement = angular.element(widgetContainer);
+          widgetElement = angular.element(widgetContainer);
 
           widgetElement.addClass('wg-moving');
 
@@ -73,7 +92,7 @@
 
           var gridPositions = gridCtrl.getPositions();
           var cellHeight = (gridCtrl.grid.cellSize.height / 100) * gridPositions.height,
-              cellWidth = (gridCtrl.grid.cellSize.width / 100) * gridPositions.width;
+          cellWidth = (gridCtrl.grid.cellSize.width / 100) * gridPositions.width;
 
           $document.on(eventMove, onMove);
           $document.on(eventUp, onUp);
@@ -92,7 +111,7 @@
 
             // normalize the drag position
             var dragPositionX = Math.round(event.clientX) - gridPositions.left,
-                dragPositionY = Math.round(event.clientY) - gridPositions.top;
+            dragPositionY = Math.round(event.clientY) - gridPositions.top;
 
             desiredPosition.top = Math.min(Math.max(dragPositionY - moverOffset.top, 0), gridPositions.height - startRender.height - 1);
             desiredPosition.left = Math.min(Math.max(dragPositionX - moverOffset.left, 0), gridPositions.width - startRender.width - 1);
@@ -112,27 +131,27 @@
             $document.off(eventUp, onUp);
 
             if (gridCtrl.options.clickThrough) {
-                if (event.clientX === mouseDownPosition.x && event.clientY === mouseDownPosition.y) {
+              if (event.clientX === mouseDownPosition.x && event.clientY === mouseDownPosition.y) {
                     // user clicked but didn't drag the widget, so pass the onDown event to the underlying element
                     element.hide();
                     var elBeneath = document.elementFromPoint(mouseDownPosition.x, mouseDownPosition.y);
                     element.show();
                     angular.element(elBeneath).trigger('click');
+                  }
                 }
-            }
 
-            var finalPos = determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth);
-            gridCtrl.resetHighlights();
-            widgetElement.removeClass('wg-moving');
-            scope.setWidgetPosition(finalPos);
-          }
-        }
+                var finalPos = determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth);
+                gridCtrl.resetHighlights();
+                widgetElement.removeClass('wg-moving');
+                scope.setWidgetPosition(finalPos);
+              }
+            }
 
 
         /**
          * Determines a final area after moving an element, given
          */
-        function determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth) {
+         function determineFinalPos(startPosition, desiredPosition, startRender, cellHeight, cellWidth) {
           if (startRender.top === desiredPosition.top && startRender.left === desiredPosition.left) {
             return startPosition;
           }
@@ -151,7 +170,7 @@
           }
 
           var movedDown = anchorTop >= startRender.top,
-              movedRight = anchorLeft >= startRender.left;
+          movedRight = anchorLeft >= startRender.left;
 
           var desiredFinalPosition = gridCtrl.rasterizeCoords(anchorLeft, anchorTop);
           var path = new PathIterator(desiredFinalPosition, startPosition);
@@ -176,45 +195,45 @@
               // try to get closer to the desired position by leaving the original path
               if (desiredFinalPosition.top < targetArea.top) {
                 while (desiredFinalPosition.top <= targetArea.top - 1 &&
-                       !gridCtrl.isAreaObstructed({ top: targetArea.top - 1,
-                                                    left: targetArea.left,
-                                                    height: targetArea.height,
-                                                    width: targetArea.width }, options)) {
+                 !gridCtrl.isAreaObstructed({ top: targetArea.top - 1,
+                  left: targetArea.left,
+                  height: targetArea.height,
+                  width: targetArea.width }, options)) {
                   targetArea.top--;
-                }
-              } else if (desiredFinalPosition.top > targetArea.top) {
-                while (desiredFinalPosition.top >= targetArea.top + 1 &&
-                       !gridCtrl.isAreaObstructed({ top: targetArea.top + 1,
-                                                    left: targetArea.left,
-                                                    height: targetArea.height,
-                                                    width: targetArea.width }, options)) {
-                  targetArea.top++;
-                }
               }
-
-              if (desiredFinalPosition.left < targetArea.left) {
-                while (desiredFinalPosition.left <= targetArea.left - 1 &&
-                       !gridCtrl.isAreaObstructed({ top: targetArea.top,
-                                                    left: targetArea.left - 1,
-                                                    height: targetArea.height,
-                                                    width: targetArea.width }, options)) {
-                  targetArea.left--;
-                }
-              } else if (desiredFinalPosition.left > targetArea.left) {
-                while (desiredFinalPosition.left >= targetArea.left + 1 &&
-                       !gridCtrl.isAreaObstructed({ top: targetArea.top,
-                                                    left: targetArea.left + 1,
-                                                    height: targetArea.height,
-                                                    width: targetArea.width }, options)) {
-                  targetArea.left++;
-                }
-              }
-
-              return targetArea;
+            } else if (desiredFinalPosition.top > targetArea.top) {
+              while (desiredFinalPosition.top >= targetArea.top + 1 &&
+               !gridCtrl.isAreaObstructed({ top: targetArea.top + 1,
+                left: targetArea.left,
+                height: targetArea.height,
+                width: targetArea.width }, options)) {
+                targetArea.top++;
             }
           }
+
+          if (desiredFinalPosition.left < targetArea.left) {
+            while (desiredFinalPosition.left <= targetArea.left - 1 &&
+             !gridCtrl.isAreaObstructed({ top: targetArea.top,
+              left: targetArea.left - 1,
+              height: targetArea.height,
+              width: targetArea.width }, options)) {
+              targetArea.left--;
+          }
+        } else if (desiredFinalPosition.left > targetArea.left) {
+          while (desiredFinalPosition.left >= targetArea.left + 1 &&
+           !gridCtrl.isAreaObstructed({ top: targetArea.top,
+            left: targetArea.left + 1,
+            height: targetArea.height,
+            width: targetArea.width }, options)) {
+            targetArea.left++;
         }
       }
-    };
-  });
+
+      return targetArea;
+    }
+  }
+}
+}
+};
+});
 })();
