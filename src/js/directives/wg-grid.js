@@ -24,6 +24,8 @@
   angular.module('widgetGrid').controller('wgGridController', function ($element, $scope, $timeout, Grid, gridRenderer) {
     var vm = this;
 
+    // TODO: look for a better way to skip ui.grid.Grid conflict with widgetGrid.Grid
+    Grid = angular.injector(['ng', 'widgetGrid']).get('Grid');
     vm.grid = new Grid($scope.rows, $scope.columns);
     vm.rendering = null;
     vm.highlight = null;
