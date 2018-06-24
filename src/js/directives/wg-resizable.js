@@ -66,7 +66,7 @@
         
         var directions = resizableCtrl.getResizeDirections();
         for (var i = 0; i < directions.length; i++) {
-          var dragger = draggers[angular.uppercase(directions[i])];
+          var dragger = draggers[directions[i].toUpperCase()];
           if (angular.isDefined(dragger)) {
             registerDragHandler(dragger, element);
             element.append(dragger.element);
