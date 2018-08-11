@@ -1,6 +1,6 @@
 /**
- * @license angular-widget-grid v0.2.5
- * (c) 2016 Patrick Buergin
+ * @license angular-widget-grid v0.3.0-tn2.1
+ * (c) 2018 Patrick Buergin
  * License: MIT
  * https://github.com/patbuergin/angular-widget-grid
  */
@@ -644,7 +644,7 @@
         
         var directions = resizableCtrl.getResizeDirections();
         for (var i = 0; i < directions.length; i++) {
-          var dragger = draggers[angular.uppercase(directions[i])];
+          var dragger = draggers[directions[i].toUpperCase()];
           if (angular.isDefined(dragger)) {
             registerDragHandler(dragger, element);
             element.append(dragger.element);

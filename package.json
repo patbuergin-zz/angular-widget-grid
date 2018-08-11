@@ -1,6 +1,6 @@
 {
   "name": "angular-widget-grid",
-  "version": "0.3.0",
+  "version": "0.3.0-tn2.1",
   "description": "A flexible grid layout for responsive dashboards",
   "main": "angular-widget-grid.js",
   "scripts": {
